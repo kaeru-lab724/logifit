@@ -51,6 +51,12 @@
   --border-draggable-placed: rgba(255, 255, 255, 0.05);
 
   --bg-chat-msg-self: rgba(255, 255, 255, 0.04);
+
+  /* Badge styling variables */
+  --bg-badge-unlocked: linear-gradient(135deg, rgba(20, 22, 37, 0.6) 0%, rgba(30, 33, 56, 0.4) 100%);
+  --bg-badge-locked: rgba(255, 255, 255, 0.01);
+  --border-badge-locked: var(--border-color);
+  --text-badge-locked: var(--text-muted);
   
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -408,6 +414,12 @@ body.light-theme {
   --border-draggable-placed: rgba(15, 23, 42, 0.15);
 
   --bg-chat-msg-self: rgba(15, 23, 42, 0.03);
+
+  /* Badge styling variables (Light Theme Overrides) */
+  --bg-badge-unlocked: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.85) 100%);
+  --bg-badge-locked: rgba(15, 23, 42, 0.02);
+  --border-badge-locked: rgba(15, 23, 42, 0.06);
+  --text-badge-locked: rgba(15, 23, 42, 0.3);
 
   /* コントラストを高めたゲーム固有カラー (ライトモード用) */
   --color-cyan: #0891b2;

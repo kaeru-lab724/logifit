@@ -341,11 +341,11 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('training');
 
   const badgeDetails = [
-    { title: 'ファクト調査官', desc: '「事実 vs 意見」で80%以上', color: 'var(--color-cyan)' },
-    { title: '冷徹なロジシャン', desc: '「論理の妥当性」で80%以上', color: 'var(--color-emerald)' },
-    { title: 'ツリーの巨匠', desc: '「ロジックツリー」で100%', color: 'var(--color-amber)' },
-    { title: '論破マスター', desc: '「論理的誤謬」で80%以上', color: 'var(--color-rose)' },
-    { title: '論理の求道者', desc: 'すべてのトレーニングを体験', color: 'var(--color-primary)' }
+    { title: 'ファクト調査官', desc: '「事実 vs 意見」で80%以上', color: 'var(--color-cyan)', colorRgb: '6, 182, 212' },
+    { title: '冷徹なロジシャン', desc: '「論理の妥当性」で80%以上', color: 'var(--color-emerald)', colorRgb: '16, 185, 129' },
+    { title: 'ツリーの巨匠', desc: '「ロジックツリー」で100%', color: 'var(--color-amber)', colorRgb: '245, 158, 11' },
+    { title: '論破マスター', desc: '「論理的誤謬」で80%以上', color: 'var(--color-rose)', colorRgb: '244, 63, 94' },
+    { title: '論理の求道者', desc: 'すべてのトレーニングを体験', color: 'var(--color-primary)', colorRgb: '139, 92, 246' }
   ];
 
   return (
@@ -1172,16 +1172,18 @@ export default function App() {
                         gap: '14px',
                         opacity: isUnlocked ? 1 : 0.4,
                         background: isUnlocked 
-                          ? `linear-gradient(135deg, rgba(20, 22, 37, 0.6) 0%, rgba(30, 33, 56, 0.4) 100%)` 
-                          : 'rgba(255, 255, 255, 0.01)',
-                        border: isUnlocked ? `1px solid ${badge.color}` : '1px solid var(--border-color)',
-                        boxShadow: isUnlocked ? `0 0 15px rgba(255, 255, 255, 0.03)` : 'none'
+                          ? 'var(--bg-badge-unlocked)' 
+                          : 'var(--bg-badge-locked)',
+                        border: isUnlocked ? `1px solid ${badge.color}` : '1px solid var(--border-badge-locked)',
+                        boxShadow: isUnlocked 
+                          ? `0 8px 24px rgba(0, 0, 0, 0.08), 0 0 15px rgba(${badge.colorRgb}, 0.08)` 
+                          : 'none'
                       }}
                     >
                       <div 
                         style={{ 
-                          color: isUnlocked ? badge.color : 'var(--text-muted)',
-                          background: isUnlocked ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                          color: isUnlocked ? badge.color : 'var(--text-badge-locked)',
+                          background: isUnlocked ? `rgba(${badge.colorRgb}, 0.08)` : 'transparent',
                           padding: '10px',
                           borderRadius: '12px',
                           display: 'flex',
