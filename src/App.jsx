@@ -8,6 +8,7 @@ import LogicTreeAssembler from './components/games/LogicTreeAssembler';
 import FallacyDetective from './components/games/FallacyDetective';
 import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
+import Dashboard from './components/Dashboard';
 import { 
   Award, 
   Brain, 
@@ -557,742 +558,30 @@ export default function App() {
 
         {/* Dashboard Home */}
         {activeGame === null && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="fade-in">
-            
-            {/* Hero & Evolution Status */}
-            <div 
-              className="glass-panel"
-              style={{
-                padding: '40px 32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '24px',
-                background: 'var(--hero-bg)',
-                borderLeft: '4px solid var(--color-primary)'
-              }}
-            >
-              <div style={{ flex: '1 1 450px', textAlign: 'left' }}>
-                {isNewUser ? (
-                  <>
-                    <div style={{ marginBottom: "16px" }}>
-                      <span className="game-badge" style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#06b6d4", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold" }}>
-                        SPECIAL TOOL
-                      </span>
-                    </div>
-                    <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '8px', marginTop: 0 }}>
-                      まず、アタマのレントゲンで思考の偏りをスキャン。
-                    </h1>
-                    <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '14px', marginBottom: '24px' }}>
-                      LogiFit（ロジフィット）は、アタマのレントゲン（診断）であなたの思考のクセや弱点を見つけ、ゲーム感覚で脳内OSをデバッグする総合思考トレーニングジムです。まずは3分間の診断から始めましょう。
-                    </p>
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <button 
-                        onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
-                        className="btn btn-primary"
-                        style={{
-                          background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
-                          boxShadow: '0 4px 15px rgba(6, 182, 212, 0.4)'
-                        }}
-                      >
-                        🧠 レントゲン（思考診断）をはじめる
-                      </button>
-                      <button 
-                        onClick={() => { 
-                          playSound('click'); 
-                          document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
-                        }} 
-                        className="btn btn-secondary"
-                      >
-                        🎯 トレーニング一覧へ
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--color-badge-text)', fontWeight: 'bold', background: 'var(--color-badge-bg)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-badge-border)' }}>
-                        現在の進化クラス
-                      </span>
-                      <strong style={{ fontSize: '15px', color: 'var(--text-primary)', textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
-                        {charClass.title}
-                      </strong>
-                      <button
-                        onClick={() => handleShareToX(`🧠 論理思考の筋トレ「LogiFit」で脳内OSをデバッグ中！\n私の現在の思考クラス：【${charClass.title}】 (Lv. ${gameState.level} / ${gameState.xp} XP)\n\nあなたの脳の「摩擦係数」はどれくらい？測定してみよう！\n#LogiFit #ロジフィット #論理的思考`)}
-                        className="btn btn-secondary"
-                        style={{
-                          padding: '4px 10px',
-                          fontSize: '11px',
-                          borderRadius: '6px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          cursor: 'pointer',
-                          border: '1px solid var(--border-color)',
-                          background: 'rgba(255,255,255,0.02)'
-                        }}
-                        title="Xで自分の肩書きをシェア"
-                      >
-                        <span>𝕏 シェア</span>
-                      </button>
-                    </div>
-
-                    <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '8px', marginTop: 0 }}>
-                      思考の基礎体力を、ここから。
-                    </h1>
-                    <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '14px', marginBottom: '12px' }}>
-                      {charClass.desc}
-                    </p>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '24px', lineHeight: '1.5' }}>
-                      ゲームをクリアするたびにパラメータが成長します。弱点パラメータを重点的にデバッグしていきましょう。
-                    </p>
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <button 
-                        onClick={() => { 
-                          playSound('click'); 
-                          document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
-                        }} 
-                        className="btn btn-primary"
-                        style={{
-                          background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)',
-                          boxShadow: '0 4px 15px var(--color-primary-glow)'
-                        }}
-                      >
-                        🎯 トレーニングを再開する
-                      </button>
-                      <button 
-                        onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
-                        className="btn btn-secondary"
-                        style={{
-                          border: '1px solid rgba(6, 182, 212, 0.3)',
-                          background: 'rgba(6, 182, 212, 0.03)',
-                          color: 'var(--color-cyan)'
-                        }}
-                      >
-                        🧠 思考診断を受け直す
-                      </button>
-                      <button 
-                        onClick={() => { playSound('click'); setShowGuideModal(true); }}
-                        className="btn btn-secondary"
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '12px 20px',
-                          borderRadius: '12px',
-                          fontWeight: 'bold',
-                          fontSize: '14px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <HelpCircle size={16} />
-                        ガイド
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Radar Chart Panel */}
-              <div 
-                className="glass-panel"
-                style={{
-                  padding: '24px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(255, 255, 255, 0.01)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '16px',
-                  minWidth: '320px'
-                }}
-              >
-                <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                  思考力パラメーター
-                </div>
-                <svg width="320" height="300" style={{ overflow: 'visible' }}>
-                  <polygon points="160,70 240,150 160,230 80,150" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                  <polygon points="160,102 208,150 160,198 112,150" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                  <polygon points="160,126 184,150 160,174 136,150" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-
-                  <line x1="160" y1="70" x2="160" y2="230" stroke="rgba(255,255,255,0.08)" strokeDasharray="3,3" />
-                  <line x1="80" y1="150" x2="240" y2="150" stroke="rgba(255,255,255,0.08)" strokeDasharray="3,3" />
-
-                  {/* Labels */}
-                  <text x="160" y="44" textAnchor="middle" fill="var(--color-cyan)" fontSize="11" fontWeight="bold">
-                    事実分析 <tspan fill="var(--text-muted)" fontSize="9" fontWeight="normal">(FACT)</tspan>
-                  </text>
-                  <text x="248" y="138" textAnchor="start" fill="var(--color-emerald)" fontSize="11" fontWeight="bold">
-                    演繹・推論
-                    <tspan x="248" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(LOGIC)</tspan>
-                  </text>
-                  <text x="160" y="252" textAnchor="middle" fill="var(--color-amber)" fontSize="11" fontWeight="bold">
-                    構造化 <tspan fill="var(--text-muted)" fontSize="9" fontWeight="normal">(MECE)</tspan>
-                  </text>
-                  <text x="72" y="138" textAnchor="end" fill="var(--color-rose)" fontSize="11" fontWeight="bold">
-                    批判思考
-                    <tspan x="72" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(FALLACY)</tspan>
-                  </text>
-
-                  {/* Scores */}
-                  <text x="160" y="58" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{gameState.scores.factsOpinions}%</text>
-                  <text x="248" y="168" textAnchor="start" fill="var(--text-secondary)" fontSize="10">{gameState.scores.logicalValidity}%</text>
-                  <text x="160" y="266" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{gameState.scores.logicTree}%</text>
-                  <text x="72" y="168" textAnchor="end" fill="var(--text-secondary)" fontSize="10">{gameState.scores.fallacy}%</text>
-
-                  <circle cx="160" cy="150" r="3" fill="var(--text-muted)" />
-
-                  <polygon 
-                    points={(() => {
-                      const s1 = gameState.scores.factsOpinions || 10;
-                      const s2 = gameState.scores.logicalValidity || 10;
-                      const s3 = gameState.scores.logicTree || 10;
-                      const s4 = gameState.scores.fallacy || 10;
-                      return `160,${150 - 80 * (s1 / 100)} ${160 + 80 * (s2 / 100)},150 160,${150 + 80 * (s3 / 100)} ${160 - 80 * (s4 / 100)},150`;
-                    })()} 
-                    fill="rgba(139, 92, 246, 0.25)" 
-                    stroke="var(--color-primary)" 
-                    strokeWidth="2.5"
-                    style={{ transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' }}
-                  />
-                  
-                  {gameState.scores.factsOpinions > 0 && <circle cx="160" cy={150 - 80 * (gameState.scores.factsOpinions / 100)} r="4" fill="var(--color-cyan)" />}
-                  {gameState.scores.logicalValidity > 0 && <circle cx={160 + 80 * (gameState.scores.logicalValidity / 100)} cy="150" r="4" fill="var(--color-emerald)" />}
-                  {gameState.scores.logicTree > 0 && <circle cx="160" cy={150 + 80 * (gameState.scores.logicTree / 100)} r="4" fill="var(--color-amber)" />}
-                  {gameState.scores.fallacy > 0 && <circle cx={160 - 80 * (gameState.scores.fallacy / 100)} cy="150" r="4" fill="var(--color-rose)" />}
-                </svg>
-              </div>
-            </div>
-
-            {/* 3 STEP PLAY GUIDE CONTAINER */}
-            <div 
-              className="glass-panel"
-              style={{
-                padding: '32px 24px',
-                background: 'rgba(255, 255, 255, 0.01)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '16px',
-                textAlign: 'center',
-                marginTop: '8px'
-              }}
-            >
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', marginBottom: '24px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                <Sparkles size={18} style={{ color: 'var(--color-cyan)' }} />
-                脳内OSをアップデートする 3 STEP
-              </h2>
-              <div 
-                style={{ 
-                  display: 'flex', 
-                  gap: '24px', 
-                  flexWrap: 'wrap',
-                  justifyContent: 'center',
-                  textAlign: 'left'
-                }}
-              >
-                {/* Step 1 */}
-                <div style={{ flex: '1 1 250px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
-                  <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-cyan) 0%, #0891b2 100%)', color: '#0a0b10', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                    STEP 01
-                  </div>
-                  <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    🧠 アタマをスキャンする
-                  </h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
-                    「アタマのレントゲン（診断）」を受け、あなたの思考の偏り（ロジカル、クリティカル、ラディカル、エモーショナル）を暴きます。
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div style={{ flex: '1 1 250px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
-                  <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                    STEP 02
-                  </div>
-                  <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    🎯 弱点をデバッグする
-                  </h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
-                    診断で見つかった「思考のバグ（弱点）」を克服するトレーニングゲーム（事実vs意見、誤謬特定など）に挑戦します。
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div style={{ flex: '1 1 250px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
-                  <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                    STEP 03
-                  </div>
-                  <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    🚀 脳内OSをアップデート
-                  </h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
-                    トレーニングのベストスコアが蓄積され、パラメータ（レーダーチャート）とあなたの「進化クラス（肩書き）」が成長します。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tab Navigation */}
-            <div 
-              style={{ 
-                display: 'flex', 
-                gap: '12px', 
-                borderBottom: '1px solid var(--border-color)',
-                paddingBottom: '12px',
-                marginBottom: '8px',
-                marginTop: '16px'
-              }}
-            >
-              {[
-                { id: 'training', label: '🎯 トレーニング', count: null },
-                { id: 'encyclopedia', label: '📖 思考スキル図鑑', count: Object.values(gameState.scores).filter(s => s >= 80).length },
-                { id: 'achievements', label: '🏆 獲得実績', count: gameState.badges.filter(Boolean).length }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => { playSound('click'); setActiveTab(tab.id); }}
-                  className={`btn ${activeTab === tab.id ? 'btn-primary' : 'btn-secondary'}`}
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '12px',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    background: activeTab === tab.id 
-                      ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
-                      : 'rgba(255, 255, 255, 0.02)',
-                    color: activeTab === tab.id ? '#fff' : 'var(--text-secondary)',
-                    border: activeTab === tab.id ? 'none' : '1px solid var(--border-color)',
-                    boxShadow: activeTab === tab.id ? '0 0 12px var(--color-primary-glow)' : 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  <span>{tab.label}</span>
-                  {tab.count !== null && (
-                    <span 
-                      style={{ 
-                        fontSize: '11px', 
-                        background: activeTab === tab.id ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
-                        color: activeTab === tab.id ? '#fff' : 'var(--text-muted)',
-                        padding: '2px 6px',
-                        borderRadius: '6px',
-                        marginLeft: '4px'
-                      }}
-                    >
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {activeTab === 'training' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="fade-in">
-                {/* Middle Section: Modules & Sidebars */}
-            <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', textAlign: 'left' }}>
-              
-              {/* Training Modules Grid */}
-              <div style={{ flex: '2 1 600px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <h2 id="training-menu" style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <TrendingUp size={20} style={{ color: 'var(--color-primary)' }} />
-                  {mode === 'daily' ? 'トレーニングメニュー（日常編・入門）' : 'トレーニングメニュー（ビジネス編）'}
-                </h2>
-
-                <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: '4px 0 16px 0', lineHeight: '1.5' }}>
-                  {isNewUser ? (
-                    <>
-                      アタマのレントゲン診断がまだの方は、まず <span onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} style={{ color: 'var(--color-cyan)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}>思考バランス診断</span> から始めるのがおすすめです。
-                    </>
-                  ) : (
-                    <>
-                      定期的に <span onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} style={{ color: 'var(--color-cyan)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}>思考バランス診断</span> を受け直すことで、思考の偏りの変化をスキャンできます。
-                    </>
-                  )}
-                </p>
-
-                <div 
-                  style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-                    gap: '20px' 
-                  }}
-                >
-                  {/* Module 1 */}
-                  <div 
-                    onClick={() => { playSound('click'); setActiveGame('factsOpinions'); }}
-                    className="glass-panel"
-                    style={{ padding: '24px', cursor: 'pointer', borderLeft: '4px solid var(--color-cyan)' }}
-                  >
-                    <div style={{ color: 'var(--color-cyan)', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>MODULE 01</div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)' }}>事実 vs 意見</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '16px' }}>
-                      {mode === 'daily' 
-                        ? '身近な会話やニュースから主観的な「意見」と客観的な「事実」を切り分ける入門編。'
-                        : '提案書やデータ分析で、個人の「解釈」と客観的な「事実」を正しく選別する実務編。'}
-                    </p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>難易度: 初級</span>
-                      <span style={{ fontSize: '13px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>
-                        ベスト: {gameState.scores.factsOpinions}%
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Module 2 */}
-                  <div 
-                    onClick={() => { playSound('click'); setActiveGame('logicalValidity'); }}
-                    className="glass-panel"
-                    style={{ padding: '24px', cursor: 'pointer', borderLeft: '4px solid var(--color-emerald)' }}
-                  >
-                    <div style={{ color: 'var(--color-emerald)', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>MODULE 02</div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)' }}>論理の妥当性</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '16px' }}>
-                      {mode === 'daily'
-                        ? '日常の会話や推論のつながりから、論理の飛躍（バグ）や勘違いを見分ける入門編。'
-                        : 'ビジネス上の予測や三段論法を検証し、論理的なエラーのない結論を導く推論編。'}
-                    </p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>難易度: 初級</span>
-                      <span style={{ fontSize: '13px', color: 'var(--color-emerald)', fontWeight: 'bold' }}>
-                        ベスト: {gameState.scores.logicalValidity}%
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Module 3 */}
-                  <div 
-                    onClick={() => { playSound('click'); setActiveGame('logicTree'); }}
-                    className="glass-panel"
-                    style={{ padding: '24px', cursor: 'pointer', borderLeft: '4px solid var(--color-amber)' }}
-                  >
-                    <div style={{ color: 'var(--color-amber)', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>MODULE 03</div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)' }}>ロジックツリー</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '16px' }}>
-                      {mode === 'daily'
-                        ? '身近な整理整頓や時間の使い方をモレなくダブりなく（MECE）整理する入門編。'
-                        : '売上高やコスト削減の要因を、公式やプロセスに沿ってMECEに構造化する実践編。'}
-                    </p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>難易度: 初級</span>
-                      <span style={{ fontSize: '13px', color: 'var(--color-amber)', fontWeight: 'bold' }}>
-                        ベスト: {gameState.scores.logicTree}%
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Module 4 */}
-                  <div 
-                    onClick={() => { playSound('click'); setActiveGame('fallacy'); }}
-                    className="glass-panel"
-                    style={{ padding: '24px', cursor: 'pointer', borderLeft: '4px solid var(--color-rose)' }}
-                  >
-                    <div style={{ color: 'var(--color-rose)', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>MODULE 04</div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)' }}>論理的誤謬の特定</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '16px' }}>
-                      {mode === 'daily'
-                        ? '友達や家族との会話、SNSの意見に潜むおかしな屁理屈（詭弁）を見破る入門編。'
-                        : '商談や会議の議論で、相手の極端なすり替えや誤った前提（誤謬）を検出する批判思考編。'}
-                    </p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>難易度: 初級</span>
-                      <span style={{ fontSize: '13px', color: 'var(--color-rose)', fontWeight: 'bold' }}>
-                        ベスト: {gameState.scores.fallacy}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sidebar: Specialized teaser & Spell */}
-              <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                
-                {/* Specialized Spinoff Apps Teaser */}
-                <div className="glass-panel" style={{ padding: '20px', border: '1px solid rgba(139, 92, 246, 0.25)', boxShadow: '0 0 15px rgba(139, 92, 246, 0.05)' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '14px', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Sparkles size={18} />
-                    次のステップ（専門特化アプリ）
-                  </h3>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {/* Spinoff 1 */}
-                    <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '12px', position: 'relative' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                        <Sword size={14} style={{ color: 'var(--color-amber)' }} />
-                        <strong style={{ fontSize: '13px', color: 'var(--color-amber)' }}>LogiFit: Tree Quest</strong>
-                      </div>
-                      <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                        ロジックツリーを深く学ぶ、意思決定シミュレーターRPG。崩壊寸前のラーメン屋を論理的決断で救え！
-                      </p>
-                      <span style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '9px', color: 'var(--color-primary)', fontWeight: 'bold', background: 'rgba(139, 92, 246, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>
-                        Coming Soon
-                      </span>
-                    </div>
-
-                    {/* Spinoff 2 */}
-                    <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '12px', position: 'relative' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                        <Search size={14} style={{ color: 'var(--color-rose)' }} />
-                        <strong style={{ fontSize: '13px', color: 'var(--color-rose)' }}>LogiFit: Fallacy Hunter</strong>
-                      </div>
-                      <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                        議論や会見に潜む詭弁を暴く論理的探偵ゲーム。ストローマンや二分法の嘘を見破れ！
-                      </p>
-                      <span style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '9px', color: 'var(--color-primary)', fontWeight: 'bold', background: 'rgba(139, 92, 246, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>
-                        Coming Soon
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Hiragana Spell Backup Box */}
-                <div className="glass-panel" style={{ padding: '20px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <KeyRound size={18} style={{ color: 'var(--color-primary)' }} />
-                    ふっかつのじゅもん
-                  </h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.4', marginBottom: '16px' }}>
-                    データをコピペ保存できます（短い<strong>12文字</strong>のひらがなコードです）。
-                  </p>
-
-                  <div 
-                    onClick={() => handleCopySpell(currentSpell)}
-                    style={{ 
-                      background: 'rgba(0, 0, 0, 0.2)', 
-                      border: '1px solid var(--border-color)', 
-                      borderOffset: '8px', 
-                      borderRadius: '8px', 
-                      padding: '10px 14px', 
-                      fontFamily: 'var(--font-display)', 
-                      fontSize: '16px', 
-                      fontWeight: 'bold',
-                      color: 'var(--color-primary)',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      userSelect: 'all',
-                      transition: 'all 0.2s',
-                      letterSpacing: '2px',
-                      textShadow: '0 0 8px var(--color-primary-glow)'
-                    }}
-                    title="クリックしてコピー"
-                  >
-                    <span>{currentSpell}</span>
-                    <Copy size={14} style={{ opacity: 0.6 }} />
-                  </div>
-
-                  <form onSubmit={handleRestoreSpell} style={{ marginTop: '20px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                    <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
-                      じゅもんを唱えて復活する:
-                    </label>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <input 
-                        type="text" 
-                        value={spellInput}
-                        onChange={(e) => setSpellInput(e.target.value)}
-                        placeholder="ひらがな12文字を入力"
-                        style={{
-                          flex: 1,
-                          background: 'rgba(255, 255, 255, 0.03)',
-                          border: '1px solid var(--border-color)',
-                          borderRadius: '8px',
-                          padding: '8px 12px',
-                          color: '#fff',
-                          outline: 'none',
-                          fontSize: '13px'
-                        }}
-                      />
-                      <button type="submit" className="btn btn-primary" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px' }}>
-                        復活
-                      </button>
-                    </div>
-                    {spellError && <p style={{ color: 'var(--color-rose)', fontSize: '11px', marginTop: '6px' }}>❌ {spellError}</p>}
-                    {spellSuccess && <p style={{ color: 'var(--color-emerald)', fontSize: '11px', marginTop: '6px' }}>✨ じゅもんが　みごとに　きまった！</p>}
-                  </form>
-                </div>
-
-                {/* 独立した広告カード */}
-                <div 
-                  className="glass-panel" 
-                  style={{ 
-                    padding: '16px', 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    background: 'rgba(255, 255, 255, 0.01)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '16px'
-                  }}
-                >
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                    Sponsored Link
-                  </div>
-                  <RakutenWidget size="250x250" ts="1779836909524" />
-                </div>
-              </div>
-
-            </div>
-              </div>
-            )}
-
-            {activeTab === 'encyclopedia' && (
-              <div className="fade-in">
-            {/* Skills Encyclopedia */}
-            <section style={{ textAlign: 'left' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <BookOpen size={20} style={{ color: 'var(--color-primary)' }} />
-                思考スキル図鑑
-              </h2>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" }}>
-                {skillsData.map((skill) => {
-                  const score = gameState.scores[skill.id] || 0;
-                  const isUnlocked = score >= 80;
-
-                  return (
-                    <div 
-                      key={skill.id}
-                      className={`glass-panel skill-card ${isUnlocked ? 'unlocked' : ''}`}
-                      style={{ 
-                        borderLeftColor: isUnlocked ? 'var(--color-primary)' : 'var(--border-color)',
-                        opacity: isUnlocked ? 1 : 0.6
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '10px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {isUnlocked ? (
-                            <Unlock size={18} style={{ color: 'var(--color-primary)' }} />
-                          ) : (
-                            <Lock size={18} style={{ color: 'var(--text-muted)' }} />
-                          )}
-                          <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: isUnlocked ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
-                            {skill.name}
-                          </h3>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '220px' }}>
-                          <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div 
-                              style={{ 
-                                height: '100%', 
-                                width: `${score}%`, 
-                                background: isUnlocked ? 'var(--color-primary)' : 'var(--text-muted)',
-                                borderRadius: '3px'
-                              }} 
-                            />
-                          </div>
-                          <span style={{ fontSize: '12px', fontWeight: 'bold', color: isUnlocked ? 'var(--color-primary)' : 'var(--text-muted)', width: '80px', textAlign: 'right' }}>
-                            {isUnlocked ? '習得完了' : `進捗 ${score}/80%`}
-                          </span>
-                        </div>
-                      </div>
-
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '12px' }}>
-                        {skill.desc}
-                      </p>
-
-                      {isUnlocked ? (
-                        <div 
-                          className="fade-in"
-                          style={{ 
-                            background: 'rgba(139, 92, 246, 0.03)', 
-                            border: '1px solid rgba(139, 92, 246, 0.1)', 
-                            borderRadius: '8px', 
-                            padding: '12px 16px', 
-                            fontSize: '13px',
-                            lineHeight: '1.5'
-                          }}
-                        >
-                          <strong style={{ color: 'var(--color-primary)', display: 'block', marginBottom: '6px' }}>
-                            💡 現実社会での具体的な活かし方:
-                          </strong>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
-                            <div>
-                              <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>【仕事・学業】</span>
-                              <p style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '12px' }}>{skill.lifeApplication.work}</p>
-                            </div>
-                            <div>
-                              <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>【プライベート】</span>
-                              <p style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '12px' }}>{skill.lifeApplication.private}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <p style={{ color: 'var(--text-muted)', fontSize: '11px', fontStyle: 'italic' }}>
-                          ※このスキルトレーニングで80%以上のベストスコアを獲得すると、解説書がアンロックされます。
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-              </div>
-            )}
-
-            {activeTab === 'achievements' && (
-              <div className="fade-in">
-            {/* Achievements Section */}
-            <section style={{ textAlign: 'left' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Award size={20} style={{ color: 'var(--color-primary)' }} />
-                獲得バッジ・実績
-              </h2>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
-                {badgeDetails.map((badge, idx) => {
-                  const isUnlocked = gameState.badges[idx];
-                  return (
-                    <div 
-                      key={idx}
-                      className="glass-panel"
-                      style={{
-                        padding: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                        opacity: isUnlocked ? 1 : 0.4,
-                        background: isUnlocked 
-                          ? 'var(--bg-badge-unlocked)' 
-                          : 'var(--bg-badge-locked)',
-                        border: isUnlocked ? `1px solid ${badge.color}` : '1px solid var(--border-badge-locked)',
-                        boxShadow: isUnlocked 
-                          ? `0 8px 24px rgba(0, 0, 0, 0.08), 0 0 15px rgba(${badge.colorRgb}, 0.08)` 
-                          : 'none'
-                      }}
-                    >
-                      <div 
-                        style={{ 
-                          color: isUnlocked ? badge.color : 'var(--text-badge-locked)',
-                          background: isUnlocked ? `rgba(${badge.colorRgb}, 0.08)` : 'transparent',
-                          padding: '10px',
-                          borderRadius: '12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                      >
-                        {isUnlocked ? <Sparkles size={24} /> : <HelpCircle size={24} />}
-                      </div>
-                      <div>
-                        <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: isUnlocked ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                          {isUnlocked ? badge.title : '未アンロック'}
-                        </h4>
-                        <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', lineHeight: '1.3' }}>
-                          {badge.desc}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-              </div>
-            )}
-          </div>
+          <Dashboard
+            isNewUser={isNewUser}
+            isFullUnlocked={isFullUnlocked}
+            gameState={gameState}
+            charClass={charClass}
+            playSound={playSound}
+            setActiveGame={setActiveGame}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            mode={mode}
+            displayScores={displayScores}
+            primaryDebugCategory={primaryDebugCategory}
+            rooms={rooms}
+            spellInput={spellInput}
+            setSpellInput={setSpellInput}
+            spellError={spellError}
+            spellSuccess={spellSuccess}
+            handleRestoreSpell={handleRestoreSpell}
+            handleCopySpell={handleCopySpell}
+            currentSpell={currentSpell}
+            setShowGuideModal={setShowGuideModal}
+            badgeDetails={badgeDetails}
+            skillsData={skillsData}
+          />
         )}
       </main>
 
@@ -1366,6 +655,58 @@ export default function App() {
       {/* Guide Modal */}
       {showGuideModal && (
         <GuideModal isOpen={showGuideModal} onClose={() => setShowGuideModal(false)} />
+      )}
+
+      {/* Unlock Modal (🎉 すべての部屋が解放されました！ ) */}
+      {showUnlockModal && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '480px', padding: '36px' }}>
+            <div 
+              style={{ 
+                background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                width: '64px',
+                height: '64px',
+                borderRadius: '22px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px',
+                boxShadow: '0 0 25px rgba(6, 182, 212, 0.5)',
+                animation: 'pulse 2s infinite'
+              }}
+            >
+              <Sparkles size={34} color="#fff" />
+            </div>
+
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '800', marginBottom: '12px', color: 'var(--text-primary)' }}>
+              🎉 思考ルーム全解放！
+            </h2>
+            
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
+              おめでとうございます！最初のトレーニングミッションをクリアし、脳内OSのデバッグ能力が証明されました。<br/>
+              これで<strong>すべての思考ルーム（ロジカル、クリティカル、ラディカル、エモーショナル）</strong>と、図鑑・実績機能が完全に解放されました！
+            </p>
+
+            <button 
+              onClick={() => {
+                playSound('correct');
+                setShowUnlockModal(false);
+              }} 
+              className="btn btn-primary" 
+              style={{ 
+                width: '100%', 
+                padding: '14px', 
+                fontSize: '15px', 
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                border: 'none',
+                boxShadow: '0 4px 15px rgba(6, 182, 212, 0.4)'
+              }}
+            >
+              思考ジムへ入室する
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Footer */}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { diagnosticQuestions, determineDiagnosticType } from "../data/diagnosticData";
 
-export default function DiagnosticContainer({ onSelectGame }) {
+export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) {
   const [step, setStep] = useState("start"); // start, quiz, analyzing, result
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -28,8 +28,12 @@ export default function DiagnosticContainer({ onSelectGame }) {
             // Complete analysis
             const finalScores = calculateFinalScores();
             setScores(finalScores);
-            setResultType(determineDiagnosticType(finalScores));
+            const finalType = determineDiagnosticType(finalScores);
+            setResultType(finalType);
             setStep("result");
+            if (onSaveDiagnostic) {
+              onSaveDiagnostic(finalScores, finalType);
+            }
             return prev;
           }
           return prev + 1;
