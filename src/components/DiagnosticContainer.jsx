@@ -108,9 +108,10 @@ https://www.logifit.site/`;
   };
 
   // SVG Radar Chart Data calculation
-  // Radar graph center is (160, 160) inside a 320x320 SVG viewport
-  const center = 160;
-  const maxRadius = 110;
+  // Radar graph center is (200, 160) inside a 400x320 SVG viewport to prevent label clipping
+  const centerX = 200;
+  const centerY = 160;
+  const maxRadius = 100;
   
   // Points based on score percentages (0-100)
   const getCoordinates = () => {
@@ -121,10 +122,10 @@ https://www.logifit.site/`;
 
     // L: Up, C: Right, R: Down, E: Left
     return {
-      logical: { x: center, y: center - (pL / 100) * maxRadius },
-      critical: { x: center + (pC / 100) * maxRadius, y: center },
-      radical: { x: center, y: center + (pR / 100) * maxRadius },
-      emotional: { x: center - (pE / 100) * maxRadius, y: center }
+      logical: { x: centerX, y: centerY - (pL / 100) * maxRadius },
+      critical: { x: centerX + (pC / 100) * maxRadius, y: centerY },
+      radical: { x: centerX, y: centerY + (pR / 100) * maxRadius },
+      emotional: { x: centerX - (pE / 100) * maxRadius, y: centerY }
     };
   };
 
@@ -280,15 +281,15 @@ https://www.logifit.site/`;
             {/* Layout: Chart Left, Explanation Right (Flex container for larger screens) */}
             <div style={{ display: "flex", flexDirection: "column", mdDirection: "row", gap: "40px", alignItems: "center" }} className="diagnostic-result-layout">
               {/* Radar Chart SVG */}
-              <div style={{ flexShrink: 0, position: "relative", width: "320px", height: "320px" }}>
-                <svg viewBox="0 0 320 320" style={{ width: "100%", height: "100%" }}>
+              <div style={{ flexShrink: 0, position: "relative", width: "100%", maxWidth: "380px", aspectRatio: "380 / 304" }}>
+                <svg viewBox="0 0 400 320" style={{ width: "100%", height: "100%", overflow: "visible" }}>
                   {/* Outer boundaries (hishigata) */}
                   {[25, 50, 75, 100].map((val) => {
                     const r = (val / 100) * maxRadius;
                     return (
                       <polygon 
                         key={val}
-                        points={`${center},${center - r} ${center + r},${center} ${center},${center + r} ${center - r},${center}`}
+                        points={`${centerX},${centerY - r} ${centerX + r},${centerY} ${centerX},${centerY + r} ${centerX - r},${centerY}`}
                         fill="none"
                         stroke="rgba(255, 255, 255, 0.06)"
                         strokeWidth="1"
@@ -297,18 +298,18 @@ https://www.logifit.site/`;
                   })}
 
                   {/* Cross Axes */}
-                  <line x1={center} y1={center - maxRadius} x2={center} y2={center + maxRadius} stroke="rgba(255, 255, 255, 0.12)" strokeDasharray="3,3" />
-                  <line x1={center - maxRadius} y1={center} x2={center + maxRadius} y2={center} stroke="rgba(255, 255, 255, 0.12)" strokeDasharray="3,3" />
+                  <line x1={centerX} y1={centerY - maxRadius} x2={centerX} y2={centerY + maxRadius} stroke="rgba(255, 255, 255, 0.12)" strokeDasharray="3,3" />
+                  <line x1={centerX - maxRadius} y1={centerY} x2={centerX + maxRadius} y2={centerY} stroke="rgba(255, 255, 255, 0.12)" strokeDasharray="3,3" />
 
                   {/* Axis labels */}
-                  <text x={center} y={center - maxRadius - 12} textAnchor="middle" fill="#8b5cf6" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">ロジカル</text>
-                  <text x={center + maxRadius + 10} y={center + 4} textAnchor="start" fill="#f43f5e" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">クリティカル</text>
-                  <text x={center} y={center + maxRadius + 22} textAnchor="middle" fill="#f59e0b" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">ラディカル</text>
-                  <text x={center - maxRadius - 10} y={center + 4} textAnchor="end" fill="#06b6d4" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">エモーショナル</text>
+                  <text x={centerX} y={centerY - maxRadius - 12} textAnchor="middle" fill="#8b5cf6" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">ロジカル</text>
+                  <text x={centerX + maxRadius + 10} y={centerY + 4} textAnchor="start" fill="#f43f5e" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">クリティカル</text>
+                  <text x={centerX} y={centerY + maxRadius + 22} textAnchor="middle" fill="#f59e0b" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">ラディカル</text>
+                  <text x={centerX - maxRadius - 10} y={centerY + 4} textAnchor="end" fill="#06b6d4" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">エモーショナル</text>
 
                   {/* Inner grid percentage text */}
-                  <text x={center + 4} y={center - maxRadius * 0.5 + 4} fill="rgba(255,255,255,0.2)" fontSize="9">50%</text>
-                  <text x={center + 4} y={center - maxRadius + 4} fill="rgba(255,255,255,0.2)" fontSize="9">100%</text>
+                  <text x={centerX + 4} y={centerY - maxRadius * 0.5 + 4} fill="rgba(255,255,255,0.2)" fontSize="9">50%</text>
+                  <text x={centerX + 4} y={centerY - maxRadius + 4} fill="rgba(255,255,255,0.2)" fontSize="9">100%</text>
 
                   {/* The actual data shape */}
                   {coords && (
