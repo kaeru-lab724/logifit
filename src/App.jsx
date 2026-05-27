@@ -967,6 +967,25 @@ export default function App() {
                     {spellError && <p style={{ color: 'var(--color-rose)', fontSize: '11px', marginTop: '6px' }}>❌ {spellError}</p>}
                     {spellSuccess && <p style={{ color: 'var(--color-emerald)', fontSize: '11px', marginTop: '6px' }}>✨ じゅもんが　みごとに　きまった！</p>}
                   </form>
+                </div>
+
+                {/* 独立した広告カード */}
+                <div 
+                  className="glass-panel" 
+                  style={{ 
+                    padding: '16px', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    background: 'rgba(255, 255, 255, 0.01)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '16px'
+                  }}
+                >
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    Sponsored Link
+                  </div>
                   <RakutenWidget size="250x250" ts="1779836909524" />
                 </div>
               </div>
