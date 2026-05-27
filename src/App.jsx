@@ -1324,7 +1324,7 @@ export default function App() {
         }}
       >
         <div>
-          © 2026 LogiFit Project. All rights reserved.
+          © 2026 kaeru-lab. All rights reserved.
         </div>
         <div style={{ display: 'flex', gap: '16px' }}>
           <span>思考のフィットネスで、揺るぎないロジックを。</span>
