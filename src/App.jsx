@@ -118,10 +118,22 @@ export default function App() {
   });
 
   useEffect(() => {
+    if (window.gtag) {
+      window.gtag('event', 'mode_change', {
+        event_category: 'Settings',
+        event_label: mode
+      });
+    }
     document.body.setAttribute('data-theme', mode);
   }, [mode]);
 
   useEffect(() => {
+    if (window.gtag) {
+      window.gtag('event', 'theme_change', {
+        event_category: 'Settings',
+        event_label: theme
+      });
+    }
     if (theme === 'light') {
       document.body.classList.add('light-theme');
     } else {
@@ -169,6 +181,26 @@ export default function App() {
       localStorage.setItem('logifit_seen_guide', 'true');
     }
   }, [gameState.xp]);
+
+  // Google Analytics ゲーム開始の計測
+  useEffect(() => {
+    if (activeGame && window.gtag) {
+      window.gtag('event', 'game_start', {
+        event_category: 'Game',
+        event_label: activeGame,
+        mode: mode
+      });
+    }
+  }, [activeGame]);
+
+  // Google Analytics ガイド表示の計測
+  useEffect(() => {
+    if (showGuideModal && window.gtag) {
+      window.gtag('event', 'show_guide', {
+        event_category: 'Engagement'
+      });
+    }
+  }, [showGuideModal]);
 
   // 報酬ポップアップモーダル状態
   const [rewardModal, setRewardModal] = useState({
@@ -251,6 +283,15 @@ export default function App() {
 
       return updatedState;
     });
+
+    if (window.gtag && !shouldExit) {
+      window.gtag('event', 'game_clear', {
+        event_category: 'Game',
+        event_label: gameKey,
+        score: score,
+        mode: mode
+      });
+    }
 
     if (shouldExit) {
       setActiveGame(null);
