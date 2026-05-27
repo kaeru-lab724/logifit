@@ -1,64 +1,93 @@
 import React, { useEffect, useRef } from 'react';
 
 export default function RakutenWidget({ size, ts }) {
-  const containerRef = useRef(null);
+  const iframeRef = useRef(null);
+  const [width, height] = size.split('x');
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!iframeRef.current) return;
 
-    // クリーンアップ (多重描画防止)
-    containerRef.current.innerHTML = '';
-
-    // 広告用のプレミアム外枠 div
-    const wrapper = document.createElement('div');
-    wrapper.style.display = 'inline-block';
-    wrapper.style.background = 'rgba(255, 255, 255, 0.02)';
-    wrapper.style.border = '1px solid var(--border-color)';
-    wrapper.style.borderRadius = '12px';
-    wrapper.style.padding = '8px';
-    wrapper.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.2)';
+    const iframe = iframeRef.current;
     
-    // 設定用のスクリプトタグを生成
-    const configScript = document.createElement('script');
-    configScript.type = 'text/javascript';
-    configScript.innerHTML = `
-      rakuten_design="slide";
-      rakuten_affiliateId="13d7e480.d3ca8031.13d7e481.fbbf2c18";
-      rakuten_items="ctsmatch";
-      rakuten_genreId="0";
-      rakuten_size="${size}";
-      rakuten_target="_blank";
-      rakuten_theme="gray";
-      rakuten_border="off";
-      rakuten_auto_mode="on";
-      rakuten_genre_title="off";
-      rakuten_recommend="on";
-      rakuten_ts="${ts}";
+    // iframe内のHTMLコンテンツを構築
+    const iframeHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            background: transparent; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        </style>
+      </head>
+      <body>
+        <script type="text/javascript">
+          rakuten_design="slide";
+          rakuten_affiliateId="13d7e480.d3ca8031.13d7e481.fbbf2c18";
+          rakuten_items="ctsmatch";
+          rakuten_genreId="0";
+          rakuten_size="${size}";
+          rakuten_target="_blank";
+          rakuten_theme="gray";
+          rakuten_border="off";
+          rakuten_auto_mode="on";
+          rakuten_genre_title="off";
+          rakuten_recommend="on";
+          rakuten_ts="${ts}";
+        </script>
+        <script type="text/javascript" src="https://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js?20230106"></script>
+      </body>
+      </html>
     `;
 
-    // 読み込み・実行用のスクリプトタグを生成
-    const widgetScript = document.createElement('script');
-    widgetScript.type = 'text/javascript';
-    widgetScript.src = 'https://xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js?20230106';
-
-    // ラッパーにスクリプトを追加
-    wrapper.appendChild(configScript);
-    wrapper.appendChild(widgetScript);
-
-    // コンテナにアペンド
-    containerRef.current.appendChild(wrapper);
+    // iframeにドキュメントを書き込む
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(iframeHtml);
+      doc.close();
+    } catch (e) {
+      console.error('Failed to inject Rakuten widget into iframe:', e);
+    }
   }, [size, ts]);
 
   return (
     <div 
-      ref={containerRef} 
       style={{ 
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center',
         margin: '24px 0', 
         width: '100%' 
-      }} 
-    />
+      }}
+    >
+      <div
+        style={{
+          display: 'inline-block',
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '12px',
+          padding: '8px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+          lineHeight: 0
+        }}
+      >
+        <iframe
+          ref={iframeRef}
+          title={`rakuten-widget-${size}`}
+          width={width}
+          height={height}
+          style={{ border: 'none', background: 'transparent' }}
+          scrolling="no"
+        />
+      </div>
+    </div>
   );
 }
