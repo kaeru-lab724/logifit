@@ -338,6 +338,7 @@ export default function App() {
   const recGameKey = getRecommendedGameKey(gameState.scores);
   const isAllCompleted = Object.values(gameState.scores).every(s => s >= 100);
   const currentSpell = encodeState(gameState);
+  const [activeTab, setActiveTab] = useState('training');
 
   const badgeDetails = [
     { title: 'ファクト調査官', desc: '「事実 vs 意見」で80%以上', color: 'var(--color-cyan)' },
@@ -679,6 +680,66 @@ export default function App() {
               </div>
             </div>
 
+
+            {/* Tab Navigation */}
+            <div 
+              style={{ 
+                display: 'flex', 
+                gap: '12px', 
+                borderBottom: '1px solid var(--border-color)',
+                paddingBottom: '12px',
+                marginBottom: '8px',
+                marginTop: '16px'
+              }}
+            >
+              {[
+                { id: 'training', label: '🎯 トレーニング', count: null },
+                { id: 'encyclopedia', label: '📖 思考スキル図鑑', count: Object.values(gameState.scores).filter(s => s >= 80).length },
+                { id: 'achievements', label: '🏆 獲得実績', count: gameState.badges.filter(Boolean).length }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => { playSound('click'); setActiveTab(tab.id); }}
+                  className={`btn ${activeTab === tab.id ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '12px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    background: activeTab === tab.id 
+                      ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
+                      : 'rgba(255, 255, 255, 0.02)',
+                    color: activeTab === tab.id ? '#fff' : 'var(--text-secondary)',
+                    border: activeTab === tab.id ? 'none' : '1px solid var(--border-color)',
+                    boxShadow: activeTab === tab.id ? '0 0 12px var(--color-primary-glow)' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                >
+                  <span>{tab.label}</span>
+                  {tab.count !== null && (
+                    <span 
+                      style={{ 
+                        fontSize: '11px', 
+                        background: activeTab === tab.id ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
+                        color: activeTab === tab.id ? '#fff' : 'var(--text-muted)',
+                        padding: '2px 6px',
+                        borderRadius: '6px',
+                        marginLeft: '4px'
+                      }}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {activeTab === 'training' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="fade-in">
             {/* Features Section */}
             <div 
               style={{
@@ -991,7 +1052,11 @@ export default function App() {
               </div>
 
             </div>
+              </div>
+            )}
 
+            {activeTab === 'encyclopedia' && (
+              <div className="fade-in">
             {/* Skills Encyclopedia */}
             <section style={{ textAlign: 'left' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -999,7 +1064,7 @@ export default function App() {
                 思考スキル図鑑
               </h2>
 
-              <div className="skill-list">
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" }}>
                 {skillsData.map((skill) => {
                   const score = gameState.scores[skill.id] || 0;
                   const isUnlocked = score >= 80;
@@ -1081,7 +1146,11 @@ export default function App() {
                 })}
               </div>
             </section>
+              </div>
+            )}
 
+            {activeTab === 'achievements' && (
+              <div className="fade-in">
             {/* Achievements Section */}
             <section style={{ textAlign: 'left' }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1135,7 +1204,8 @@ export default function App() {
                 })}
               </div>
             </section>
-            
+              </div>
+            )}
           </div>
         )}
       </main>
