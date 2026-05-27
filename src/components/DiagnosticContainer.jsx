@@ -388,19 +388,99 @@ https://www.logifit.site/`;
             </div>
           </div>
 
-          {/* CTA Box (Recommended training) */}
-          <div className="glass-panel" style={{ padding: "28px", border: "1px solid var(--color-cyan-glow)", background: "rgba(6, 182, 212, 0.02)" }}>
-            <h3 style={{ fontSize: "16px", color: "var(--color-cyan)", fontWeight: "bold", marginBottom: "8px" }}>
-              💡 脳内バグを修正するトレーニングの提案
+          {/* 脳内デバッグロードマップ（学習ロードマップ） */}
+          <div className="glass-panel" style={{ padding: "32px", border: "1px solid var(--color-cyan-glow)", background: "rgba(6, 182, 212, 0.01)" }}>
+            <h3 style={{ fontSize: "18px", color: "var(--color-cyan)", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+              🧠 脳内デバッグ・学習ロードマップ
             </h3>
-            <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "20px" }}>
-              {resultType.recommendedReason}
+            <p style={{ color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5", marginBottom: "24px" }}>
+              あなたの診断結果に基づいた推奨学習ルートです。まずはLogiFitで基礎を鍛え、さらに深めたい場合は専門特化アプリへ進みましょう。
             </p>
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px", textAlign: "left" }}>
+              {/* 1. ロジカル思考 */}
+              <div style={{ borderLeft: "4px solid var(--color-cyan)", paddingLeft: "16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                  <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>1. ロジカル思考（事実と論理の整理）</strong>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                    スコア: {getPercentage(scores.L)}% {getPercentage(scores.L) < 40 && <span style={{ color: "#06b6d4", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  <button className="btn btn-secondary" onClick={() => onSelectGame('factsOpinions')} style={{ padding: "8px 16px", fontSize: "12px", borderRadius: "8px" }}>
+                    🎯 基礎：事実 vs 意見
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => onSelectGame('logicalValidity')} style={{ padding: "8px 16px", fontSize: "12px", borderRadius: "8px" }}>
+                    🎯 基礎：論理の妥当性
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. クリティカル思考 */}
+              <div style={{ borderLeft: "4px solid var(--color-rose)", paddingLeft: "16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                  <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>2. クリティカル思考（前提とバイアスの検証）</strong>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                    スコア: {getPercentage(scores.C)}% {getPercentage(scores.C) < 40 && <span style={{ color: "var(--color-rose)", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+                  <button className="btn btn-secondary" onClick={() => onSelectGame('fallacy')} style={{ padding: "8px 16px", fontSize: "12px", borderRadius: "8px" }}>
+                    🎯 基礎：論理的誤謬の特定
+                  </button>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.1)", padding: "6px 12px", borderRadius: "8px" }}>
+                    ⚔️ 応用：LogiFit: Fallacy Hunter (Coming Soon)
+                  </span>
+                </div>
+              </div>
+
+              {/* 3. ラディカル思考 */}
+              <div style={{ borderLeft: "4px solid var(--color-amber)", paddingLeft: "16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                  <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>3. ラディカル思考（本質と目的の深掘り）</strong>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                    スコア: {getPercentage(scores.R)}% {getPercentage(scores.R) < 40 && <span style={{ color: "var(--color-amber)", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+                  <button className="btn btn-secondary" onClick={() => onSelectGame('logicTree')} style={{ padding: "8px 16px", fontSize: "12px", borderRadius: "8px" }}>
+                    🎯 基礎：ロジックツリー
+                  </button>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(245, 158, 11, 0.05)", border: "1px solid rgba(245, 158, 11, 0.1)", padding: "6px 12px", borderRadius: "8px" }}>
+                    🛡️ 応用：LogiFit: Tree Quest (Coming Soon)
+                  </span>
+                </div>
+              </div>
+
+              {/* 4. エモーショナル */}
+              <div style={{ borderLeft: "4px solid var(--color-primary)", paddingLeft: "16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                  <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>4. エモーショナル（直感と感情の調和）</strong>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                    スコア: {getPercentage(scores.E)}% {getPercentage(scores.E) < 40 && <span style={{ color: "var(--color-primary)", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(139, 92, 246, 0.05)", border: "1px solid rgba(139, 92, 246, 0.1)", padding: "6px 12px", borderRadius: "8px" }}>
+                    🤝 応用：EQ・共感対話シミュレーター (Coming Soon)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "32px" }}>
               <button 
                 className="btn btn-primary" 
-                onClick={() => onSelectGame(resultType.recommendedGame)}
-                style={{ flex: 1, minWidth: "200px" }}
+                onClick={() => {
+                  const gameNames = {
+                    factsOpinions: '事実 vs 意見',
+                    logicalValidity: '論理の妥当性',
+                    logicTree: 'ロジックツリー',
+                    fallacy: '論理的誤謬の特定'
+                  };
+                  onSelectGame(resultType.recommendedGame);
+                }}
+                style={{ flex: 1, minWidth: "220px" }}
               >
                 おすすめトレーニングを開始する
               </button>
