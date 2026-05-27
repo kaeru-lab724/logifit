@@ -1,18 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { logicalValidityDaily, logicalValidityBusiness } from '../../data/questions';
 import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import RakutenWidget from '../common/RakutenWidget';
 
+const shuffleArray = (array) => {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
 export default function LogicalValidity({ onFinish, playSound, muted, toggleMute, mode }) {
   const [showTutorial, setShowTutorial] = useState(true);
+  const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // true for Valid, false for Invalid
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
 
-  const currentData = mode === 'business' ? logicalValidityBusiness : logicalValidityDaily;
-  const currentQuestion = currentData[currentIdx];
+  const initializeQuestions = () => {
+    const rawData = mode === 'business' ? logicalValidityBusiness : logicalValidityDaily;
+    const shuffled = shuffleArray(rawData).slice(0, 5); // 毎回ランダムに5問抽出
+    setQuestions(shuffled);
+    setCurrentIdx(0);
+    setSelectedAnswer(null);
+    setIsAnswered(false);
+    setScore(0);
+    setCompleted(false);
+  };
+
+  useEffect(() => {
+    initializeQuestions();
+  }, [mode]);
+
+  if (questions.length === 0) {
+    return null;
+  }
+
+  const currentQuestion = questions[currentIdx];
 
   const handleAnswer = (answer) => {
     if (isAnswered) return;
@@ -31,13 +59,13 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
 
   const handleNext = () => {
     playSound('click');
-    if (currentIdx < currentData.length - 1) {
+    if (currentIdx < questions.length - 1) {
       setCurrentIdx(prev => prev + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / currentData.length) * 100);
+      const finalScore = Math.round((score / questions.length) * 100);
       onFinish('logicalValidity', finalScore, false);
       playSound('success');
     }
@@ -45,11 +73,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
 
   const handleReset = () => {
     playSound('click');
-    setCurrentIdx(0);
-    setSelectedAnswer(null);
-    setIsAnswered(false);
-    setScore(0);
-    setCompleted(false);
+    initializeQuestions();
     setShowTutorial(true);
   };
 
@@ -79,7 +103,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
             </button>
             {!showTutorial && !completed && (
               <div className="score-badge" style={{ borderColor: 'var(--color-emerald)' }}>
-                進捗: {currentIdx + 1} / {currentData.length}
+                進捗: {currentIdx + 1} / {questions.length}
               </div>
             )}
           </div>
@@ -257,7 +281,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               {isAnswered && (
                 <button onClick={handleNext} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', boxShadow: '0 4px 15px var(--color-emerald-glow)' }}>
-                  {currentIdx < currentData.length - 1 ? '次の問題へ' : '結果を見る'}
+                  {currentIdx < questions.length - 1 ? '次の問題へ' : '結果を見る'}
                   <ArrowRight size={16} />
                 </button>
               )}
@@ -277,14 +301,14 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
               <div>
                 <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>正解数</div>
                 <div style={{ fontSize: '32px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-emerald)' }}>
-                  {score} / {currentData.length}
+                  {score} / {questions.length}
                 </div>
               </div>
               <div style={{ borderLeft: '1px solid var(--border-color)' }}></div>
               <div>
                 <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>スコア</div>
                 <div style={{ fontSize: '32px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                  {Math.round((score / currentData.length) * 100)}%
+                  {Math.round((score / questions.length) * 100)}%
                 </div>
               </div>
             </div>
@@ -299,9 +323,9 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
               <button
                 onClick={() => {
                   playSound('click');
-                  const finalPercent = Math.round((score / currentData.length) * 100);
+                  const finalPercent = Math.round((score / questions.length) * 100);
                   const modeText = mode === 'business' ? 'ビジネス編' : '日常編・入門';
-                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：論理の妥当性 (${modeText})\nスコア：${finalPercent}% (${score} / ${currentData.length} 問正解)\n\n前提から導き出される結論の妥当性を見分けられますか？\n#LogiFit #ロジフィット #論理的思考`;
+                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：論理の妥当性 (${modeText})\nスコア：${finalPercent}% (${score} / ${questions.length} 問正解)\n\n前提から導き出される結論の妥当性を見分けられますか？\n#LogiFit #ロジフィット #論理的思考`;
                   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://www.logifit.site/')}`;
                   window.open(shareUrl, '_blank', 'noopener,noreferrer');
                 }}
@@ -310,7 +334,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
               >
                 𝕏 でシェア
               </button>
-              <button onClick={() => onFinish('logicalValidity', Math.round((score / currentData.length) * 100))} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', boxShadow: '0 4px 15px var(--color-emerald-glow)' }}>
+              <button onClick={() => onFinish('logicalValidity', Math.round((score / questions.length) * 100))} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', boxShadow: '0 4px 15px var(--color-emerald-glow)' }}>
                 ダッシュボードへ戻る
               </button>
             </div>

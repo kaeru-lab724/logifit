@@ -3,8 +3,18 @@ import { logicTreesDaily, logicTreesBusiness } from '../../data/questions';
 import { CheckCircle2, XCircle, RotateCcw, Volume2, VolumeX, ArrowRight, HelpCircle } from 'lucide-react';
 import RakutenWidget from '../common/RakutenWidget';
 
+const shuffleArray = (array) => {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
 export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleMute, mode }) {
   const [showTutorial, setShowTutorial] = useState(true);
+  const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [placedItems, setPlacedItems] = useState({}); // slotId -> optionId
   const [selectedOptionId, setSelectedOptionId] = useState(null); // For click-to-place mobile support
@@ -14,8 +24,23 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
   const [completed, setCompleted] = useState(false);
   const [activeHintSlot, setActiveHintSlot] = useState(null); // 'root', 'sub1', 'sub2'
 
-  const currentData = mode === 'business' ? logicTreesBusiness : logicTreesDaily;
-  const currentTheme = currentData[currentIdx];
+  const initializeQuestions = () => {
+    const rawData = mode === 'business' ? logicTreesBusiness : logicTreesDaily;
+    const shuffled = shuffleArray(rawData).slice(0, 2); // ロジックツリーは1プレイ2問抽出
+    setQuestions(shuffled);
+    setCurrentIdx(0);
+    setPlacedItems({});
+    setSelectedOptionId(null);
+    setIsChecked(false);
+    setIsCorrect(false);
+    setScore(0);
+    setCompleted(false);
+    setActiveHintSlot(null);
+  };
+
+  useEffect(() => {
+    initializeQuestions();
+  }, [mode]);
 
   // Reset states when changing question
   useEffect(() => {
@@ -25,6 +50,12 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
     setIsCorrect(false);
     setActiveHintSlot(null);
   }, [currentIdx]);
+
+  if (questions.length === 0) {
+    return null;
+  }
+
+  const currentTheme = questions[currentIdx];
 
   // Drag and Drop handlers
   const handleDragStart = (e, optionId) => {
@@ -80,11 +111,14 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
     let correctCount = 0;
     const totalSlots = currentTheme.correctStructure.slots.length;
 
-    currentTheme.correctStructure.slots.forEach(slot => {
-      const placedOptionId = placedItems[slot.id];
-      const option = currentTheme.options.find(o => o.id === placedOptionId);
-      if (option && option.text === slot.expectedText) {
-        correctCount++;
+    currentTheme.options.forEach(option => {
+      // Find slot this option was placed in
+      const placedSlotId = Object.keys(placedItems).find(k => placedItems[k] === option.id);
+      if (placedSlotId) {
+        const slot = currentTheme.correctStructure.slots.find(s => s.id === placedSlotId);
+        if (slot && slot.expectedText === option.text) {
+          correctCount++;
+        }
       }
     });
 
@@ -102,11 +136,11 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
 
   const handleNext = () => {
     playSound('click');
-    if (currentIdx < currentData.length - 1) {
+    if (currentIdx < questions.length - 1) {
       setCurrentIdx(prev => prev + 1);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / currentData.length) * 100);
+      const finalScore = Math.round((score / questions.length) * 100);
       onFinish('logicTree', finalScore, false);
       playSound('success');
     }
@@ -114,13 +148,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
 
   const handleReset = () => {
     playSound('click');
-    setCurrentIdx(0);
-    setPlacedItems({});
-    setSelectedOptionId(null);
-    setIsChecked(false);
-    setIsCorrect(false);
-    setScore(0);
-    setCompleted(false);
+    initializeQuestions();
     setShowTutorial(true);
   };
 
@@ -151,7 +179,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
             </button>
             {!showTutorial && !completed && (
               <div className="score-badge" style={{ borderColor: 'var(--color-amber)' }}>
-                進捗: {currentIdx + 1} / {currentData.length}
+                進捗: {currentIdx + 1} / {questions.length}
               </div>
             )}
           </div>
@@ -199,7 +227,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
         ) : !completed ? (
           <div>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '15px' }}>
-              課題テーマを最も<strong>MECE（モレなくダブりなく）</strong>に構造化できるように、下部にあるパーツをロジックツリーの正しい位置（スロット）に配置してください。
+              課題テーマを最も<strong>MECE（モレなくダブりなく）</strong>に構造化できるように、下部にあるパーツをロジックツリー의正しい位置（スロット）に配置してください。
               <br /><span style={{ fontSize: '12px', opacity: 0.8 }}>※スロット横の「❓」マークをクリックするとヒントが表示されます。</span>
             </p>
 
@@ -494,7 +522,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
                     className="btn btn-primary" 
                     style={{ background: 'linear-gradient(135deg, var(--color-amber) 0%, #d97706 100%)', boxShadow: '0 4px 15px var(--color-amber-glow)' }}
                   >
-                    {currentIdx < currentData.length - 1 ? '次のテーマへ' : '結果を見る'}
+                    {currentIdx < questions.length - 1 ? '次のテーマへ' : '結果を見る'}
                     <ArrowRight size={16} />
                   </button>
                 )}
@@ -515,14 +543,14 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
               <div>
                 <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>正解数</div>
                 <div style={{ fontSize: '32px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-amber)' }}>
-                  {score} / {currentData.length}
+                  {score} / {questions.length}
                 </div>
               </div>
               <div style={{ borderLeft: '1px solid var(--border-color)' }}></div>
               <div>
                 <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>スコア</div>
                 <div style={{ fontSize: '32px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                  {Math.round((score / currentData.length) * 100)}%
+                  {Math.round((score / questions.length) * 100)}%
                 </div>
               </div>
             </div>
@@ -537,9 +565,9 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
               <button
                 onClick={() => {
                   playSound('click');
-                  const finalPercent = Math.round((score / currentData.length) * 100);
+                  const finalPercent = Math.round((score / questions.length) * 100);
                   const modeText = mode === 'business' ? 'ビジネス編' : '日常編・入門';
-                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：ロジックツリー (${modeText})\nスコア：${finalPercent}% (${score} / ${currentData.length} 問正解)\n\nモレなくダブりなく（MECE）構造化するスキルを鍛えよう！\n#LogiFit #ロジフィット #論理的思考`;
+                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：ロジックツリー (${modeText})\nスコア：${finalPercent}% (${score} / ${questions.length} 問正解)\n\nモレなくダブりなく（MECE）構造化するスキルを鍛えよう！\n#LogiFit #ロジフィット #論理的思考`;
                   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://www.logifit.site/')}`;
                   window.open(shareUrl, '_blank', 'noopener,noreferrer');
                 }}
@@ -548,7 +576,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
               >
                 𝕏 でシェア
               </button>
-              <button onClick={() => onFinish('logicTree', Math.round((score / currentData.length) * 100))} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-amber) 0%, #d97706 100%)', boxShadow: '0 4px 15px var(--color-amber-glow)' }}>
+              <button onClick={() => onFinish('logicTree', Math.round((score / questions.length) * 100))} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-amber) 0%, #d97706 100%)', boxShadow: '0 4px 15px var(--color-amber-glow)' }}>
                 ダッシュボードへ戻る
               </button>
             </div>
