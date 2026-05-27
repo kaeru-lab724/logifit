@@ -6,6 +6,7 @@ import FactsOpinions from './components/games/FactsOpinions';
 import LogicalValidity from './components/games/LogicalValidity';
 import LogicTreeAssembler from './components/games/LogicTreeAssembler';
 import FallacyDetective from './components/games/FallacyDetective';
+import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import { 
   Award, 
@@ -544,6 +545,14 @@ export default function App() {
             mode={mode}
           />
         )}
+        {activeGame === 'diagnostic' && (
+          <DiagnosticContainer 
+            onSelectGame={(gameKey) => {
+              playSound('click');
+              setActiveGame(gameKey);
+            }} 
+          />
+        )}
 
         {/* Dashboard Home */}
         {activeGame === null && (
@@ -600,16 +609,20 @@ export default function App() {
                 <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '24px', lineHeight: '1.5' }}>
                   LogiFit（ロジフィット）は、前提知識ゼロから考え、間違えながら基本を体得する「ロジカルシンキング入門総合ジム」です。まずは3分間の脳のストレッチを始めましょう。
                 </p>
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '24px' }}>
                   <button 
-                    onClick={() => { playSound('click'); setActiveGame(recGameKey); }} 
+                    onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
                     className="btn btn-primary"
                     style={{
-                      background: recGameKey === 'factsOpinions' ? 'linear-gradient(135deg, var(--color-cyan) 0%, #0891b2 100%)' :
-                                  recGameKey === 'logicalValidity' ? 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)' :
-                                  recGameKey === 'logicTree' ? 'linear-gradient(135deg, var(--color-amber) 0%, #d97706 100%)' :
-                                  'linear-gradient(135deg, var(--color-rose) 0%, #e11d48 100%)'
+                      background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                      boxShadow: '0 4px 15px rgba(6, 182, 212, 0.4)'
                     }}
+                  >
+                    🧠 思考の偏り診断を開始
+                  </button>
+                  <button 
+                    onClick={() => { playSound('click'); setActiveGame(recGameKey); }} 
+                    className="btn btn-secondary"
                   >
                     {getGameName(recGameKey)} を開始
                   </button>
@@ -628,7 +641,7 @@ export default function App() {
                     }}
                   >
                     <HelpCircle size={16} />
-                    はじめてガイド
+                    ガイド
                   </button>
                 </div>
               </div>
@@ -853,6 +866,43 @@ export default function App() {
                   <TrendingUp size={20} style={{ color: 'var(--color-primary)' }} />
                   {mode === 'daily' ? 'トレーニングメニュー（日常編・入門）' : 'トレーニングメニュー（ビジネス編）'}
                 </h2>
+
+                {/* Special Diagnostic Promo Banner */}
+                <div 
+                  onClick={() => { playSound('click'); setActiveGame('diagnostic'); }}
+                  className="glass-panel text-glow-hover fade-in"
+                  style={{ 
+                    padding: '24px', 
+                    cursor: 'pointer', 
+                    background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%)',
+                    border: '1px solid rgba(139, 92, 246, 0.25)',
+                    borderRadius: '16px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    boxShadow: '0 8px 32px 0 rgba(139, 92, 246, 0.08)',
+                    marginBottom: '10px'
+                  }}
+                >
+                  <div style={{ flex: '1 1 450px' }}>
+                    <span style={{ fontSize: '10px', color: '#06b6d4', fontWeight: 'bold', background: 'rgba(6, 182, 212, 0.1)', padding: '3px 8px', borderRadius: '4px', border: '1px solid rgba(6, 182, 212, 0.2)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      SPECIAL TOOL
+                    </span>
+                    <h3 style={{ fontSize: '20px', fontWeight: '800', marginTop: '8px', marginBottom: '6px', color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
+                      🧠 思考バランス診断（アタマのレントゲン）
+                    </h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', margin: 0, maxWidth: '520px' }}>
+                      7つの質問であなたの思考の「偏り・クセ」をスキャン！ロジカル、クリティカル、ラディカル、エモーショナルの比率から脳内キャラクターを判定します。
+                    </p>
+                  </div>
+                  <div className="btn btn-primary" style={{ flexShrink: 0, padding: '10px 24px', fontSize: '13px', background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)', border: 'none', boxShadow: '0 4px 10px rgba(6,182,212,0.3)', fontWeight: 'bold' }}>
+                    診断をはじめる
+                  </div>
+                </div>
 
                 <div 
                   style={{ 
