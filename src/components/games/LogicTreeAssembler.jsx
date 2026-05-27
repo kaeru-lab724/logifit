@@ -27,7 +27,11 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? logicTreesBusiness : logicTreesDaily;
     const shuffled = shuffleArray(rawData).slice(0, 2); // ロジックツリーは1プレイ2問抽出
-    setQuestions(shuffled);
+    const finalized = shuffled.map(q => ({
+      ...q,
+      options: shuffleArray(q.options) // パーツの並び順もシャッフルして固定順を防止
+    }));
+    setQuestions(finalized);
     setCurrentIdx(0);
     setPlacedItems({});
     setSelectedOptionId(null);

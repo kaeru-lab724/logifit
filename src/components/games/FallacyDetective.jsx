@@ -24,7 +24,11 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? fallaciesBusiness : fallaciesDaily;
     const shuffled = shuffleArray(rawData).slice(0, 4); // 毎回ランダムに4問抽出
-    setQuestions(shuffled);
+    const finalized = shuffled.map(q => ({
+      ...q,
+      choices: shuffleArray(q.choices) // 選択肢自体もシャッフルして「常に1番目が正解」を防止
+    }));
+    setQuestions(finalized);
     setCurrentIdx(0);
     setSelectedChoiceIdx(null);
     setIsAnswered(false);
