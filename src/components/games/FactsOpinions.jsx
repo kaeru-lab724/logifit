@@ -226,7 +226,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               {isAnswered && (
                 <button onClick={handleNext} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-cyan) 0%, #0891b2 100%)', boxShadow: '0 4px 15px var(--color-cyan-glow)' }}>
-                  {currentIdx < factsOpinionsData.length - 1 ? '次の問題へ' : '結果を見る'}
+                  {currentIdx < currentData.length - 1 ? '次の問題へ' : '結果を見る'}
                   <ArrowRight size={16} />
                 </button>
               )}
