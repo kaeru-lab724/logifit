@@ -540,7 +540,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
                   const finalPercent = Math.round((score / currentData.length) * 100);
                   const modeText = mode === 'business' ? 'ビジネス編' : '日常編・入門';
                   const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：ロジックツリー (${modeText})\nスコア：${finalPercent}% (${score} / ${currentData.length} 問正解)\n\nモレなくダブりなく（MECE）構造化するスキルを鍛えよう！\n#LogiFit #ロジフィット #論理的思考`;
-                  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://kaeru-lab724.github.io/logifit/')}`;
+                  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://www.logifit.site/')}`;
                   window.open(shareUrl, '_blank', 'noopener,noreferrer');
                 }}
                 className="btn btn-secondary"

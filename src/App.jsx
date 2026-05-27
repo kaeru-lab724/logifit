@@ -330,7 +330,7 @@ export default function App() {
 
   const handleShareToX = (text) => {
     playSound('click');
-    const appUrl = 'https://kaeru-lab724.github.io/logifit/';
+    const appUrl = 'https://www.logifit.site/';
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(appUrl)}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
