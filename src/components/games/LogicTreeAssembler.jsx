@@ -107,7 +107,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
     } else {
       setCompleted(true);
       const finalScore = Math.round((score / currentData.length) * 100);
-      onFinish('logicTree', finalScore);
+      onFinish('logicTree', finalScore, false);
       playSound('success');
     }
   };

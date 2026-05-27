@@ -38,7 +38,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
     } else {
       setCompleted(true);
       const finalScore = Math.round((score / currentData.length) * 100);
-      onFinish('factsOpinions', finalScore);
+      onFinish('factsOpinions', finalScore, false);
       playSound('success');
     }
   };

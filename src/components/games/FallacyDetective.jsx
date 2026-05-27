@@ -38,7 +38,7 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
     } else {
       setCompleted(true);
       const finalScore = Math.round((score / currentData.length) * 100);
-      onFinish('fallacy', finalScore);
+      onFinish('fallacy', finalScore, false);
       playSound('success');
     }
   };

@@ -180,7 +180,7 @@ export default function App() {
   });
 
   // ゲーム終了時のスコア・XP更新、レベルアップ・バッジ判定
-  const handleGameFinish = (gameKey, score) => {
+  const handleGameFinish = (gameKey, score, shouldExit = true) => {
     playSound('click');
     
     setGameState(prev => {
@@ -252,7 +252,9 @@ export default function App() {
       return updatedState;
     });
 
-    setActiveGame(null);
+    if (shouldExit) {
+      setActiveGame(null);
+    }
   };
 
   // ふっかつのじゅもん復元処理

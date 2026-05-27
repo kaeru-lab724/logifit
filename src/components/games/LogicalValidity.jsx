@@ -38,7 +38,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
     } else {
       setCompleted(true);
       const finalScore = Math.round((score / currentData.length) * 100);
-      onFinish('logicalValidity', finalScore);
+      onFinish('logicalValidity', finalScore, false);
       playSound('success');
     }
   };
