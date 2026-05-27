@@ -1,0 +1,447 @@
+/* Logica - Premium CSS Design System */
+
+:root {
+  /* Colors */
+  --bg-dark: #0a0b10;
+  --bg-card: rgba(20, 22, 37, 0.6);
+  --bg-card-hover: rgba(30, 33, 56, 0.8);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  
+  --color-primary: #8b5cf6; /* Violet */
+  --color-primary-glow: rgba(139, 92, 246, 0.35);
+  
+  --color-cyan: #06b6d4; /* Facts & Opinions */
+  --color-cyan-glow: rgba(6, 182, 212, 0.35);
+  
+  --color-emerald: #10b981; /* Logical Validity */
+  --color-emerald-glow: rgba(16, 185, 129, 0.35);
+  
+  --color-amber: #f59e0b; /* Logic Tree */
+  --color-amber-glow: rgba(245, 158, 11, 0.35);
+  
+  --color-rose: #f43f5e; /* Fallacy Detective */
+  --color-rose-glow: rgba(244, 63, 94, 0.35);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Badge colors (Dark Theme Default) */
+  --color-badge-bg: rgba(139, 92, 246, 0.1);
+  --color-badge-border: rgba(139, 92, 246, 0.2);
+  --color-badge-text: var(--color-primary);
+
+  /* Specific backgrounds for Hero and Modal (Dark Theme Default) */
+  --hero-bg: linear-gradient(135deg, rgba(20, 22, 37, 0.4) 0%, rgba(15, 17, 28, 0.8) 100%);
+  --modal-bg: linear-gradient(135deg, rgba(25, 27, 43, 0.95) 0%, rgba(15, 17, 28, 0.98) 100%);
+  --modal-border: rgba(255, 255, 255, 0.08);
+  
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Outfit', var(--font-sans);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(15, 17, 28, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(16px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Glassmorphism Base Card */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Glowing Typography */
+.text-glow {
+  text-shadow: 0 0 12px var(--color-primary-glow);
+}
+
+/* Layout Utilities */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 32px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  outline: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 4px 15px var(--color-primary-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  filter: brightness(1.1);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Game styles */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.card-stack {
+  position: relative;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status & Indicators */
+.score-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Calendar (Grass) Styles */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  max-width: 180px;
+  width: 100%;
+}
+
+.calendar-cell {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s;
+  position: relative;
+}
+
+.calendar-cell.active {
+  background: var(--color-emerald);
+  box-shadow: 0 0 8px var(--color-emerald-glow);
+  border-color: #34d399;
+}
+
+.calendar-cell:hover::after {
+  content: attr(data-date);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  border: 1px solid var(--border-color);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 11, 16, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-content {
+  background: var(--glass-bg);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 30px var(--color-primary-glow);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Spell Display Code */
+.spell-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--color-primary);
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+/* Skill Tree Styles */
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skill-card {
+  border-left: 4px solid var(--border-color);
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 0 12px 12px 0;
+  transition: all 0.3s;
+}
+
+.skill-card.unlocked {
+  background: rgba(139, 92, 246, 0.02);
+}
+
+/* ==========================================================================
+   DAILY & BUSINESS THEME VARIABLES OVERRIDES
+   ========================================================================== */
+
+/* 🌿 Daily Mode (入門): Organic, Soft Earthy Cyan & Forest Green Aura */
+body[data-theme="daily"] {
+  --color-primary: #06b6d4; /* シアンを日常のメインテーマに */
+  --color-primary-glow: rgba(6, 182, 212, 0.35);
+  --color-badge-bg: rgba(6, 182, 212, 0.1);
+  --color-badge-border: rgba(6, 182, 212, 0.2);
+  --color-badge-text: var(--color-primary);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 45%);
+  transition: background-image 0.5s ease-in-out;
+}
+
+/* 💼 Business Mode (中級): Futuristic Cyber Purple & Magenta Aura */
+body[data-theme="business"] {
+  --color-primary: #8b5cf6; /* 元の紫をビジネスのメインテーマに */
+  --color-primary-glow: rgba(139, 92, 246, 0.35);
+  --color-badge-bg: rgba(139, 92, 246, 0.1);
+  --color-badge-border: rgba(139, 92, 246, 0.2);
+  --color-badge-text: var(--color-primary);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.08) 0%, transparent 45%);
+  transition: background-image 0.5s ease-in-out;
+}
+
+/* 各エレメントのスムーズな色変化のためのトランジション */
+body, .btn-primary, .glass-panel, .spell-box, .score-badge {
+  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease;
+}
+
+/* ==========================================================================
+   LIGHT MODE OVERRIDES (プレミアム・ライトテーマ)
+   ========================================================================== */
+body.light-theme {
+  --bg-dark: #f1f5f9; /* 背景を少し落ち着いた slate-100 にしてコントラスト確保 */
+  --bg-card: rgba(255, 255, 255, 0.85); /* 不透明度を上げて白をはっきりと */
+  --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-color: rgba(15, 23, 42, 0.12); /* 境界線を少し濃く */
+  --border-hover: rgba(15, 23, 42, 0.22);
+  
+  --text-primary: #0f172a; /* 濃いグレー (slate-900) */
+  --text-secondary: #334155; /* slate-600 から slate-700 に濃くして視認性大幅アップ */
+  --text-muted: #475569; /* slate-500 から slate-600 に濃くして視認性大幅アップ */
+  
+  --glass-bg: rgba(255, 255, 255, 0.88); /* カード背景の白さを強めて文字のコントラストを確保 */
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.08);
+
+  /* Specific backgrounds for Hero and Modal (Light Theme Overrides) */
+  --hero-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(241, 245, 249, 0.9) 100%);
+  --modal-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 245, 249, 0.98) 100%);
+  --modal-border: rgba(15, 23, 42, 0.1);
+}
+
+/* 🌿 ライトモード + 日常モード (入門) */
+body.light-theme[data-theme="daily"] {
+  --color-primary: #0891b2; /* ライトモード用に少し濃いシアンを選択 */
+  --color-badge-bg: rgba(8, 145, 178, 0.08);
+  --color-badge-border: rgba(8, 145, 178, 0.2);
+  --color-badge-text: #0e7490; /* コントラスト十分な極濃シアン */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 45%);
+}
+
+/* 💼 ライトモード + ビジネスモード (中級) */
+body.light-theme[data-theme="business"] {
+  --color-primary: #7c3aed; /* ライトモード用に少し濃いバイオレットを選択 */
+  --color-badge-bg: rgba(124, 58, 237, 0.08);
+  --color-badge-border: rgba(124, 58, 237, 0.2);
+  --color-badge-text: #6d28d9; /* コントラスト十分な極濃バイオレット */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.04) 0%, transparent 45%);
+}
+
+/* ライトモード向けUIコンポーネント微調整 */
+body.light-theme .btn-secondary {
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: var(--text-primary);
+}
+
+body.light-theme .btn-secondary:hover {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.15);
+}
+
+body.light-theme .spell-box {
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .calendar-cell {
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+body.light-theme input, 
+body.light-theme textarea {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(15, 23, 42, 0.1);
+  color: var(--text-primary);
+}
+
+body.light-theme input:focus, 
+body.light-theme textarea:focus {
+  background: #ffffff;
+  border-color: var(--color-primary);
+}
+
+/* ライトモード時のレーダーチャート補助線のコントラスト調整 */
+body.light-theme svg polygon[stroke="rgba(255,255,255,0.06)"] {
+  stroke: rgba(15, 23, 42, 0.08);
+}
+body.light-theme svg line[stroke="rgba(255,255,255,0.08)"] {
+  stroke: rgba(15, 23, 42, 0.1);
+}
+
