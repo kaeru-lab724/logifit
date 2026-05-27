@@ -345,6 +345,7 @@ export default function App() {
   const charClass = getCharacterClass(gameState.scores, gameState.level);
   const recGameKey = getRecommendedGameKey(gameState.scores);
   const isAllCompleted = Object.values(gameState.scores).every(s => s >= 100);
+  const isNewUser = Object.values(gameState.scores).every(s => s === 0) && gameState.xp === 0;
   const currentSpell = encodeState(gameState);
   const [activeTab, setActiveTab] = useState('training');
 
@@ -573,80 +574,124 @@ export default function App() {
               }}
             >
               <div style={{ flex: '1 1 450px', textAlign: 'left' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--color-badge-text)', fontWeight: 'bold', background: 'var(--color-badge-bg)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-badge-border)' }}>
-                    現在の進化クラス
-                  </span>
-                  <strong style={{ fontSize: '15px', color: 'var(--text-primary)', textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
-                    {charClass.title}
-                  </strong>
-                  <button
-                    onClick={() => handleShareToX(`🧠 論理思考の筋トレ「LogiFit」で脳内OSをデバッグ中！\n私の現在の思考クラス：【${charClass.title}】 (Lv. ${gameState.level} / ${gameState.xp} XP)\n\nあなたの脳の「摩擦係数」はどれくらい？測定してみよう！\n#LogiFit #ロジフィット #論理的思考`)}
-                    className="btn btn-secondary"
-                    style={{
-                      padding: '4px 10px',
-                      fontSize: '11px',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      cursor: 'pointer',
-                      border: '1px solid var(--border-color)',
-                      background: 'rgba(255,255,255,0.02)'
-                    }}
-                    title="Xで自分の肩書きをシェア"
-                  >
-                    <span>𝕏 シェア</span>
-                  </button>
-                </div>
+                {isNewUser ? (
+                  <>
+                    <div style={{ marginBottom: "16px" }}>
+                      <span className="game-badge" style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#06b6d4", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold" }}>
+                        SPECIAL TOOL
+                      </span>
+                    </div>
+                    <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '8px', marginTop: 0 }}>
+                      まず、アタマのレントゲンで思考の偏りをスキャン。
+                    </h1>
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '14px', marginBottom: '24px' }}>
+                      LogiFit（ロジフィット）は、アタマのレントゲン（診断）であなたの思考のクセや弱点を見つけ、ゲーム感覚で脳内OSをデバッグする総合思考トレーニングジムです。まずは3分間の診断から始めましょう。
+                    </p>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <button 
+                        onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
+                        className="btn btn-primary"
+                        style={{
+                          background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                          boxShadow: '0 4px 15px rgba(6, 182, 212, 0.4)'
+                        }}
+                      >
+                        🧠 レントゲン（思考診断）をはじめる
+                      </button>
+                      <button 
+                        onClick={() => { 
+                          playSound('click'); 
+                          document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
+                        }} 
+                        className="btn btn-secondary"
+                      >
+                        🎯 トレーニング一覧へ
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--color-badge-text)', fontWeight: 'bold', background: 'var(--color-badge-bg)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-badge-border)' }}>
+                        現在の進化クラス
+                      </span>
+                      <strong style={{ fontSize: '15px', color: 'var(--text-primary)', textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
+                        {charClass.title}
+                      </strong>
+                      <button
+                        onClick={() => handleShareToX(`🧠 論理思考の筋トレ「LogiFit」で脳内OSをデバッグ中！\n私の現在の思考クラス：【${charClass.title}】 (Lv. ${gameState.level} / ${gameState.xp} XP)\n\nあなたの脳の「摩擦係数」はどれくらい？測定してみよう！\n#LogiFit #ロジフィット #論理的思考`)}
+                        className="btn btn-secondary"
+                        style={{
+                          padding: '4px 10px',
+                          fontSize: '11px',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          cursor: 'pointer',
+                          border: '1px solid var(--border-color)',
+                          background: 'rgba(255,255,255,0.02)'
+                        }}
+                        title="Xで自分の肩書きをシェア"
+                      >
+                        <span>𝕏 シェア</span>
+                      </button>
+                    </div>
 
-                <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '8px', marginTop: 0 }}>
-                  まず、アタマのレントゲンで思考の偏りをスキャン。
-                </h1>
-                <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '14px', marginBottom: '12px' }}>
-                  {charClass.desc}
-                </p>
-                <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '24px', lineHeight: '1.5' }}>
-                  LogiFit（ロジフィット）は、アタマのレントゲン（診断）であなたの思考のクセや弱点を見つけ、ゲーム感覚で脳内OSをデバッグする総合思考トレーニングジムです。
-                </p>
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '24px' }}>
-                  <button 
-                    onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
-                    className="btn btn-primary"
-                    style={{
-                      background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
-                      boxShadow: '0 4px 15px rgba(6, 182, 212, 0.4)'
-                    }}
-                  >
-                    🧠 レントゲン（思考診断）をはじめる
-                  </button>
-                  <button 
-                    onClick={() => { 
-                      playSound('click'); 
-                      document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
-                    }} 
-                    className="btn btn-secondary"
-                  >
-                    🎯 トレーニング一覧へ
-                  </button>
-                  <button 
-                    onClick={() => { playSound('click'); setShowGuideModal(true); }}
-                    className="btn btn-secondary"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '12px 20px',
-                      borderRadius: '12px',
-                      fontWeight: 'bold',
-                      fontSize: '14px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <HelpCircle size={16} />
-                    ガイド
-                  </button>
-                </div>
+                    <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '8px', marginTop: 0 }}>
+                      思考の基礎体力を、ここから。
+                    </h1>
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '14px', marginBottom: '12px' }}>
+                      {charClass.desc}
+                    </p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '24px', lineHeight: '1.5' }}>
+                      ゲームをクリアするたびにパラメータが成長します。弱点パラメータを重点的にデバッグしていきましょう。
+                    </p>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <button 
+                        onClick={() => { 
+                          playSound('click'); 
+                          document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
+                        }} 
+                        className="btn btn-primary"
+                        style={{
+                          background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)',
+                          boxShadow: '0 4px 15px var(--color-primary-glow)'
+                        }}
+                      >
+                        🎯 トレーニングを再開する
+                      </button>
+                      <button 
+                        onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
+                        className="btn btn-secondary"
+                        style={{
+                          border: '1px solid rgba(6, 182, 212, 0.3)',
+                          background: 'rgba(6, 182, 212, 0.03)',
+                          color: 'var(--color-cyan)'
+                        }}
+                      >
+                        🧠 思考診断を受け直す
+                      </button>
+                      <button 
+                        onClick={() => { playSound('click'); setShowGuideModal(true); }}
+                        className="btn btn-secondary"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '12px 20px',
+                          borderRadius: '12px',
+                          fontWeight: 'bold',
+                          fontSize: '14px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <HelpCircle size={16} />
+                        ガイド
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Radar Chart Panel */}
@@ -846,86 +891,7 @@ export default function App() {
 
             {activeTab === 'training' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="fade-in">
-            {/* Features Section */}
-            <div 
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '20px',
-                textAlign: 'left'
-              }}
-            >
-              <div 
-                className="glass-panel"
-                style={{
-                  padding: '24px',
-                  borderTop: '3px solid var(--color-cyan)',
-                  background: 'rgba(255, 255, 255, 0.01)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  borderRadius: '16px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ background: 'rgba(6, 182, 212, 0.15)', padding: '8px', borderRadius: '10px', display: 'flex', color: 'var(--color-cyan)' }}>
-                    <Brain size={20} />
-                  </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: 'var(--text-primary)' }}>1回3分の直感的な脳トレ</h3>
-                </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>
-                  専門書のような難解な数式や専門用語は一切不要。日常の会話や仕事の身近なシーンをテーマにした直感的な問題で、脳の思考力をストレッチします。
-                </p>
-              </div>
-
-              <div 
-                className="glass-panel"
-                style={{
-                  padding: '24px',
-                  borderTop: '3px solid var(--color-primary)',
-                  background: 'rgba(255, 255, 255, 0.01)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  borderRadius: '16px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ background: 'rgba(139, 92, 246, 0.15)', padding: '8px', borderRadius: '10px', display: 'flex', color: 'var(--color-primary)' }}>
-                    <TrendingUp size={20} />
-                  </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: 'var(--text-primary)' }}>診断と連動する可視化チャート</h3>
-                </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>
-                  「アタマのレントゲン（診断）」と日々のトレーニングが完全連動。あなたの脳内OSの進化や思考パラメータがリアルタイムにグラフに反映されます。
-                </p>
-              </div>
-
-              <div 
-                className="glass-panel"
-                style={{
-                  padding: '24px',
-                  borderTop: '3px solid var(--color-emerald)',
-                  background: 'rgba(255, 255, 255, 0.01)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  borderRadius: '16px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ background: 'rgba(16, 185, 129, 0.15)', padding: '8px', borderRadius: '10px', display: 'flex', color: 'var(--color-emerald)' }}>
-                    <Award size={20} />
-                  </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0, color: 'var(--text-primary)' }}>🌿選べる2モード 💾保存も完璧</h3>
-                </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>
-                  主婦や初心者向けの「日常編（シアン色）」と、実務に役立つ「ビジネス編（パープル色）」をトグルで簡単切替。「ふっかつのじゅもん」で端末を跨いでの記録復元も可能です。
-                </p>
-              </div>
-            </div>
-
-            {/* Middle Section: Modules & Sidebars */}
+                {/* Middle Section: Modules & Sidebars */}
             <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', textAlign: 'left' }}>
               
               {/* Training Modules Grid */}
@@ -936,7 +902,15 @@ export default function App() {
                 </h2>
 
                 <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: '4px 0 16px 0', lineHeight: '1.5' }}>
-                  アタマのレントゲン診断がまだの方は、まず <span onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} style={{ color: 'var(--color-cyan)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}>思考バランス診断</span> から始めるのがおすすめです。
+                  {isNewUser ? (
+                    <>
+                      アタマのレントゲン診断がまだの方は、まず <span onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} style={{ color: 'var(--color-cyan)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}>思考バランス診断</span> から始めるのがおすすめです。
+                    </>
+                  ) : (
+                    <>
+                      定期的に <span onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} style={{ color: 'var(--color-cyan)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}>思考バランス診断</span> を受け直すことで、思考の偏りの変化をスキャンできます。
+                    </>
+                  )}
                 </p>
 
                 <div 
