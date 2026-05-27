@@ -328,6 +328,13 @@ export default function App() {
     }
   };
 
+  const handleShareToX = (text) => {
+    playSound('click');
+    const appUrl = 'https://kaeru-lab724.github.io/logifit/';
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(appUrl)}`;
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+  };
+
   const handleCopySpell = (spellText) => {
     navigator.clipboard.writeText(spellText);
     playSound('click');
@@ -557,13 +564,31 @@ export default function App() {
               }}
             >
               <div style={{ flex: '1 1 450px', textAlign: 'left' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '11px', color: 'var(--color-badge-text)', fontWeight: 'bold', background: 'var(--color-badge-bg)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-badge-border)' }}>
                     現在の進化クラス
                   </span>
                   <strong style={{ fontSize: '15px', color: 'var(--text-primary)', textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
                     {charClass.title}
                   </strong>
+                  <button
+                    onClick={() => handleShareToX(`🧠 論理思考の筋トレ「LogiFit」で脳内OSをデバッグ中！\n私の現在の思考クラス：【${charClass.title}】 (Lv. ${gameState.level} / ${gameState.xp} XP)\n\nあなたの脳の「摩擦係数」はどれくらい？測定してみよう！\n#LogiFit #ロジフィット #論理的思考`)}
+                    className="btn btn-secondary"
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: '11px',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      cursor: 'pointer',
+                      border: '1px solid var(--border-color)',
+                      background: 'rgba(255,255,255,0.02)'
+                    }}
+                    title="Xで自分の肩書きをシェア"
+                  >
+                    <span>𝕏 シェア</span>
+                  </button>
                 </div>
 
                 <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '8px', marginTop: 0 }}>
@@ -1255,13 +1280,26 @@ export default function App() {
               </button>
             </div>
 
-            <button 
-              onClick={() => setRewardModal(prev => ({ ...prev, show: false }))} 
-              className="btn btn-primary" 
-              style={{ width: '100%', marginTop: '16px' }}
-            >
-              トレーニングに戻る
-            </button>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+              <button
+                onClick={() => handleShareToX(
+                  rewardModal.type === 'level'
+                    ? `✨ 思考の筋トレ「LogiFit」でレベルアップ！\n【${rewardModal.value}】に到達しました！脳の回路が活性化中。\n\n#LogiFit #ロジフィット #論理的思考`
+                    : `🏆 思考の筋トレ「LogiFit」で実績アンロック！\n称号【${rewardModal.value}】を獲得しました！\n\n#LogiFit #ロジフィット #論理的思考`
+                )}
+                className="btn btn-secondary"
+                style={{ flex: 1, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '14px' }}
+              >
+                𝕏 でシェア
+              </button>
+              <button 
+                onClick={() => setRewardModal(prev => ({ ...prev, show: false }))} 
+                className="btn btn-primary" 
+                style={{ flex: 1, padding: '12px', fontSize: '14px' }}
+              >
+                閉じる
+              </button>
+            </div>
           </div>
         </div>
       )}

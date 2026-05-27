@@ -291,10 +291,24 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
 
             <RakutenWidget size="300x250" ts="1779836954537" />
 
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={handleReset} className="btn btn-secondary">
                 <RotateCcw size={16} />
                 もう一度挑戦
+              </button>
+              <button
+                onClick={() => {
+                  playSound('click');
+                  const finalPercent = Math.round((score / currentData.length) * 100);
+                  const modeText = mode === 'business' ? 'ビジネス編' : '日常編・入門';
+                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：論理の妥当性 (${modeText})\nスコア：${finalPercent}% (${score} / ${currentData.length} 問正解)\n\n前提から導き出される結論の妥当性を見分けられますか？\n#LogiFit #ロジフィット #論理的思考`;
+                  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://kaeru-lab724.github.io/logifit/')}`;
+                  window.open(shareUrl, '_blank', 'noopener,noreferrer');
+                }}
+                className="btn btn-secondary"
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                𝕏 でシェア
               </button>
               <button onClick={() => onFinish('logicalValidity', Math.round((score / currentData.length) * 100))} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', boxShadow: '0 4px 15px var(--color-emerald-glow)' }}>
                 ダッシュボードへ戻る
