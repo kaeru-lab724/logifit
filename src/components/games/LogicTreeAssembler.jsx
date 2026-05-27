@@ -206,7 +206,7 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
             {/* Tree Area */}
             <div 
               style={{ 
-                background: 'rgba(0, 0, 0, 0.2)', 
+                background: 'var(--bg-inner-box)', 
                 borderRadius: '16px', 
                 padding: '24px', 
                 marginBottom: '32px',
@@ -289,8 +289,8 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => handleDrop(e, 'root')}
                     style={{
-                      border: `2px dashed ${placedItems['root'] ? 'var(--color-amber)' : 'rgba(255, 255, 255, 0.2)'}`,
-                      background: placedItems['root'] ? 'rgba(245, 158, 11, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                      border: `2px dashed ${placedItems['root'] ? 'var(--color-amber)' : 'var(--border-item-slot)'}`,
+                      background: placedItems['root'] ? 'rgba(245, 158, 11, 0.08)' : 'var(--bg-item-slot)',
                       minHeight: '60px',
                       width: '320px',
                       borderRadius: '12px',
@@ -366,8 +366,8 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => handleDrop(e, slot.id)}
                         style={{
-                          border: `2px dashed ${placedItems[slot.id] ? 'var(--color-amber)' : 'rgba(255, 255, 255, 0.2)'}`,
-                          background: placedItems[slot.id] ? 'rgba(245, 158, 11, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                          border: `2px dashed ${placedItems[slot.id] ? 'var(--color-amber)' : 'var(--border-item-slot)'}`,
+                          background: placedItems[slot.id] ? 'rgba(245, 158, 11, 0.08)' : 'var(--bg-item-slot)',
                           minHeight: '60px',
                           width: '100%',
                           borderRadius: '12px',
@@ -417,11 +417,11 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
                           borderRadius: '12px',
                           background: isSelected 
                             ? 'var(--color-amber)' 
-                            : 'rgba(255, 255, 255, 0.04)',
-                          border: `1px solid ${isSelected ? 'var(--color-amber)' : isPlaced ? 'rgba(255,255,255,0.05)' : 'var(--border-color)'}`,
-                          color: isSelected ? '#0a0b10' : isPlaced ? 'var(--text-muted)' : 'var(--text-primary)',
+                            : 'var(--bg-draggable-item)',
+                          border: `1px solid ${isSelected ? 'var(--color-amber)' : isPlaced ? 'var(--border-draggable-placed)' : 'var(--border-color)'}`,
+                          color: isSelected ? '#0a0b10' : isPlaced ? 'var(--text-draggable-placed)' : 'var(--text-primary)',
                           cursor: isPlaced ? 'not-allowed' : 'grab',
-                          opacity: isPlaced ? 0.3 : 1,
+                          opacity: isPlaced ? 'var(--opacity-placed)' : 1,
                           fontSize: '14px',
                           fontWeight: '500',
                           transition: 'all 0.2s',

@@ -141,7 +141,8 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
                 className="glass-panel" 
                 style={{ 
                   padding: '16px 20px', 
-                  backgroundColor: 'rgba(255, 255, 255, 0.01)',
+                  backgroundColor: 'var(--bg-quiz-statement)',
+                  border: '1px solid var(--bg-quiz-statement-border)',
                   borderLeft: '4px solid var(--text-muted)'
                 }}
               >
@@ -153,7 +154,8 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
                 className="glass-panel" 
                 style={{ 
                   padding: '16px 20px', 
-                  backgroundColor: 'rgba(255, 255, 255, 0.01)',
+                  backgroundColor: 'var(--bg-quiz-statement)',
+                  border: '1px solid var(--bg-quiz-statement-border)',
                   borderLeft: '4px solid var(--text-muted)'
                 }}
               >
@@ -165,9 +167,10 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
                 className="glass-panel" 
                 style={{ 
                   padding: '20px', 
-                  backgroundColor: 'rgba(16, 185, 129, 0.03)',
+                  backgroundColor: 'var(--bg-inner-box)',
+                  border: '1px solid var(--border-color)',
                   borderLeft: '4px solid var(--color-emerald)',
-                  boxShadow: 'inset 0 0 20px rgba(16, 185, 129, 0.05)'
+                  boxShadow: 'inset 0 0 20px rgba(16, 185, 129, 0.02)'
                 }}
               >
                 <div style={{ fontSize: '12px', color: 'var(--color-emerald)', fontWeight: 'bold', marginBottom: '4px' }}>結論</div>

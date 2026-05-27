@@ -145,7 +145,7 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
             {/* Chat Box Scenario UI */}
             <div 
               style={{ 
-                background: 'rgba(0, 0, 0, 0.25)', 
+                background: 'var(--bg-inner-box)', 
                 borderRadius: '16px', 
                 padding: '20px', 
                 marginBottom: '28px',
@@ -178,15 +178,15 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                       fontSize: '15px', 
                       lineHeight: '1.5',
                       background: msg.isSelf 
-                        ? 'rgba(255, 255, 255, 0.04)' 
-                        : 'rgba(244, 63, 94, 0.1)',
+                        ? 'var(--bg-chat-msg-self)' 
+                        : 'rgba(244, 63, 94, 0.08)',
                       border: msg.isSelf 
                         ? '1px solid var(--border-color)' 
-                        : '1px solid rgba(244, 63, 94, 0.3)',
+                        : '1px solid rgba(244, 63, 94, 0.2)',
                       borderTopLeftRadius: msg.isSelf ? '4px' : '16px',
                       borderBottomRightRadius: msg.isSelf ? '16px' : '4px',
                       color: 'var(--text-primary)',
-                      boxShadow: !msg.isSelf ? '0 0 15px rgba(244, 63, 94, 0.05)' : 'none'
+                      boxShadow: !msg.isSelf ? '0 0 15px rgba(244, 63, 94, 0.03)' : 'none'
                     }}
                   >
                     {!msg.isSelf && <ShieldAlert size={14} style={{ color: 'var(--color-rose)', marginRight: '6px', display: 'inline', verticalAlign: 'middle' }} />}
@@ -209,7 +209,7 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                   const showWrong = isAnswered && isSelected && !choice.isCorrect;
 
                   let cardStyle = {
-                    background: 'rgba(255, 255, 255, 0.02)',
+                    background: 'var(--bg-draggable-item)',
                     borderColor: 'var(--border-color)',
                     color: 'var(--text-primary)'
                   };

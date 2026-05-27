@@ -137,7 +137,8 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                backgroundColor: 'var(--bg-quiz-statement)',
+                border: '1px solid var(--bg-quiz-statement-border)',
                 borderLeft: '4px solid var(--color-cyan)',
                 marginBottom: '32px'
               }}
@@ -160,9 +161,9 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
                   borderRadius: '16px',
                   background: selectedAnswer === true 
                     ? 'var(--color-cyan)' 
-                    : 'rgba(6, 182, 212, 0.1)',
-                  border: `1px solid ${selectedAnswer === true ? 'var(--color-cyan)' : 'rgba(6, 182, 212, 0.3)'}`,
-                  color: selectedAnswer === true ? '#0a0b10' : 'var(--color-cyan)',
+                    : 'var(--color-badge-bg)',
+                  border: `1px solid ${selectedAnswer === true ? 'var(--color-cyan)' : 'var(--color-badge-border)'}`,
+                  color: selectedAnswer === true ? '#0a0b10' : 'var(--color-badge-text)',
                   opacity: isAnswered && selectedAnswer !== true ? 0.5 : 1,
                   boxShadow: selectedAnswer === true ? '0 0 15px var(--color-cyan-glow)' : 'none'
                 }}
@@ -182,9 +183,9 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
                   borderRadius: '16px',
                   background: selectedAnswer === false 
                     ? 'var(--color-cyan)' 
-                    : 'rgba(6, 182, 212, 0.1)',
-                  border: `1px solid ${selectedAnswer === false ? 'var(--color-cyan)' : 'rgba(6, 182, 212, 0.3)'}`,
-                  color: selectedAnswer === false ? '#0a0b10' : 'var(--color-cyan)',
+                    : 'var(--color-badge-bg)',
+                  border: `1px solid ${selectedAnswer === false ? 'var(--color-cyan)' : 'var(--color-badge-border)'}`,
+                  color: selectedAnswer === false ? '#0a0b10' : 'var(--color-badge-text)',
                   opacity: isAnswered && selectedAnswer !== false ? 0.5 : 1,
                   boxShadow: selectedAnswer === false ? '0 0 15px var(--color-cyan-glow)' : 'none'
                 }}
