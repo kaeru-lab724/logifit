@@ -768,103 +768,30 @@ export default function Dashboard({
                         </p>
 
                         {isUnlocked ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} className="fade-in">
-                            <div 
-                              style={{ 
-                                background: 'rgba(139, 92, 246, 0.03)', 
-                                border: '1px solid rgba(139, 92, 246, 0.1)', 
-                                borderRadius: '8px', 
-                                padding: '12px 16px', 
-                                fontSize: '13px',
-                                lineHeight: '1.5'
-                              }}
-                            >
-                              <strong style={{ color: 'var(--color-primary)', display: 'block', marginBottom: '6px' }}>
-                                💡 現実社会での具体的な活かし方:
-                              </strong>
-                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
-                                <div>
-                                  <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>【仕事・学業】</span>
-                                  <p style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '12px' }}>{skill.lifeApplication.work}</p>
-                                </div>
-                                <div>
-                                  <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>【プライベート】</span>
-                                  <p style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '12px' }}>{skill.lifeApplication.private}</p>
-                                </div>
+                          <div 
+                            className="fade-in"
+                            style={{ 
+                              background: 'rgba(139, 92, 246, 0.03)', 
+                              border: '1px solid rgba(139, 92, 246, 0.1)', 
+                              borderRadius: '8px', 
+                              padding: '12px 16px', 
+                              fontSize: '13px',
+                              lineHeight: '1.5'
+                            }}
+                          >
+                            <strong style={{ color: 'var(--color-primary)', display: 'block', marginBottom: '6px' }}>
+                              💡 現実社会での具体的な活かし方:
+                            </strong>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
+                              <div>
+                                <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>【仕事・学業】</span>
+                                <p style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '12px' }}>{skill.lifeApplication.work}</p>
+                              </div>
+                              <div>
+                                <span style={{ color: 'var(--text-primary)', fontWeight: 'bold', fontSize: '12px' }}>【プライベート】</span>
+                                <p style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: '12px' }}>{skill.lifeApplication.private}</p>
                               </div>
                             </div>
-
-                            {skill.recommendedBook && (
-                              <div 
-                                style={{
-                                  background: 'rgba(255, 255, 255, 0.02)',
-                                  border: '1px solid var(--border-color)',
-                                  borderRadius: '12px',
-                                  padding: '16px',
-                                  display: 'flex',
-                                  gap: '16px',
-                                  flexWrap: 'wrap',
-                                  alignItems: 'center'
-                                }}
-                              >
-                                {skill.recommendedBook.imageUrl && (
-                                  <div style={{ flexShrink: 0, width: '90px', display: 'flex', justifyContent: 'center' }}>
-                                    <img 
-                                      src={skill.recommendedBook.imageUrl} 
-                                      alt={skill.recommendedBook.title}
-                                      style={{
-                                        width: '80px',
-                                        height: 'auto',
-                                        borderRadius: '6px',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                                      }}
-                                    />
-                                  </div>
-                                )}
-                                <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                    <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 'bold', letterSpacing: '0.5px' }}>
-                                      💡 さらに思考力を深めるおすすめ図書
-                                    </span>
-                                    <h4 style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0 }}>
-                                      {skill.recommendedBook.title}
-                                    </h4>
-                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                                      著者: {skill.recommendedBook.author}
-                                    </span>
-                                  </div>
-                                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0 }}>
-                                    {skill.recommendedBook.desc}
-                                  </p>
-                                  <div style={{ marginTop: '4px' }}>
-                                    <a 
-                                      href={skill.recommendedBook.affiliateUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      onClick={() => playSound('click')}
-                                      className="btn"
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        padding: '6px 16px',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        borderRadius: '8px',
-                                        background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
-                                        color: '#fff',
-                                        border: 'none',
-                                        textDecoration: 'none',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 8px rgba(6, 182, 212, 0.2)'
-                                      }}
-                                    >
-                                      📖 楽天ブックスで詳細を見る
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
                           </div>
                         ) : (
                           <p style={{ color: 'var(--text-muted)', fontSize: '11px', fontStyle: 'italic' }}>
