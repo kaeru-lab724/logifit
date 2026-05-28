@@ -47,7 +47,11 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? empathyDialoguesBusiness : empathyDialoguesDaily;
     const shuffled = shuffleArray(rawData).slice(0, 5); // 毎回ランダムに5問抽出
-    setQuestions(shuffled);
+    const finalized = shuffled.map(q => ({
+      ...q,
+      choices: shuffleArray(q.choices) // 選択肢自体もシャッフルして「常に2番目が正解」を防止
+    }));
+    setQuestions(finalized);
     setCurrentIdx(0);
     setSelectedIdx(null);
     setIsAnswered(false);
@@ -71,7 +75,14 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
   const startTraining = () => {
     playSound('click');
     setShowTutorial(false);
-    loadQuestion(0, shuffleArray(mode === 'business' ? empathyDialoguesBusiness : empathyDialoguesDaily).slice(0, 5));
+    const rawData = mode === 'business' ? empathyDialoguesBusiness : empathyDialoguesDaily;
+    const shuffled = shuffleArray(rawData).slice(0, 5);
+    const finalized = shuffled.map(q => ({
+      ...q,
+      choices: shuffleArray(q.choices)
+    }));
+    setQuestions(finalized);
+    loadQuestion(0, finalized);
   };
 
   const loadQuestion = (idx, qList = questions) => {
