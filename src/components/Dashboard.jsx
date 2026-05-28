@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Award, 
   Brain, 
@@ -14,6 +14,8 @@ import {
   Sword
 } from 'lucide-react';
 import RakutenWidget from './common/RakutenWidget';
+import { decodeState, calculateFriction } from '../data/spellHelper';
+import { diagnosticTypes } from '../data/diagnosticData';
 
 export default function Dashboard({
   isNewUser,
@@ -39,7 +41,11 @@ export default function Dashboard({
   badgeDetails,
   skillsData
 }) {
-  const [showToast, setShowToast] = React.useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [opponentSpell, setOpponentSpell] = useState('');
+  const [matchResult, setMatchResult] = useState(null);
+  const [matchError, setMatchError] = useState('');
+  const [showBugDetails, setShowBugDetails] = useState(false);
 
   const onCopyClick = () => {
     handleCopySpell(currentSpell);
@@ -57,14 +63,42 @@ export default function Dashboard({
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
 
+  const handleCheckFriction = (e) => {
+    e.preventDefault();
+    setMatchError('');
+    setMatchResult(null);
+
+    if (!currentSpell) {
+      setMatchError('まずあなた自身の診断を完了するか、じゅもんを入力してください。');
+      return;
+    }
+
+    try {
+      const stateA = decodeState(currentSpell);
+      const stateB = decodeState(opponentSpell);
+      const result = calculateFriction(stateA, stateB);
+      setMatchResult(result);
+      playSound('success');
+    } catch (err) {
+      playSound('incorrect');
+      setMatchError(err.message || '相手のじゅもんの解析に失敗しました。');
+    }
+  };
+
+  // Find detailed type data
+  const currentType = gameState.diagnosticTypeId 
+    ? diagnosticTypes[gameState.diagnosticTypeId] 
+    : (gameState.diagnosticType || null);
+
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="fade-in">
       {isNewUser ? (
         /* ========================================================
-           ① 新規未受診フェーズ（診断プッシュのみ、他のUIは隠す）
+           ① 新規未受診フェーズ（診断ファースト誘導）
            ======================================================== */
         <>
-          {/* 新規向けHero（3分診断を最大プッシュ） */}
+          {/* 新規向けHero（自分・他者スキャンを最大プッシュ） */}
           <div 
             className="glass-panel"
             style={{
@@ -76,16 +110,17 @@ export default function Dashboard({
               overflow: 'hidden'
             }}
           >
+            <div className="scan-bg-glow"></div>
             <div style={{ marginBottom: "16px" }}>
               <span className="game-badge" style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#06b6d4", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold" }}>
                 🧠 BRAIN SCANNER
               </span>
             </div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '36px', letterSpacing: '-0.5px', marginBottom: '16px', marginTop: 0 }}>
-              まず、アタマのレントゲンで思考の偏りをスキャン。
+            <h1 className="text-glow" style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '34px', letterSpacing: '-0.5px', marginBottom: '16px', marginTop: 0 }}>
+              アタマのレントゲンで思考の「偏り」をスキャン。
             </h1>
             <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '15px', marginBottom: '32px', maxWidth: '640px', margin: '0 auto 32px auto' }}>
-              LogiFit（ロジフィット）は、アタマのレントゲン（診断）であなたの思考のクセや弱点を見つけ、ゲーム感覚で脳内OSをデバッグする総合思考トレーニングジムです。まずは3分間の診断から始めましょう。
+              LogiFit（ロジフィット）は、アタマのレントゲン（診断）であなたの思考のクセ（愛すべきバグ）を暴き、ゲーム感覚で脳内OSをデバッグする総合思考ジムです。まずは3分間の診断から始めましょう。
             </p>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
               <button 
@@ -203,113 +238,244 @@ export default function Dashboard({
         </>
       ) : (
         /* ========================================================
-           ② 診断完了後フェーズ（シングルフォーカス / フルアンロック）
+           ② 診断完了後フェーズ（バグ詳細 ＆ 摩擦係数チェッカー）
            ======================================================== */
         <>
-          {/* Hero section */}
-          <div 
-            className="glass-panel"
-            style={{
-              padding: '40px 32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '24px',
-              background: 'var(--hero-bg)',
-              borderLeft: `4px solid ${isFullUnlocked ? 'var(--color-primary)' : 'var(--color-cyan)'}`
-            }}
-          >
-            <div style={{ flex: '1 1 450px', textAlign: 'left' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '11px', color: 'var(--color-badge-text)', fontWeight: 'bold', background: 'var(--color-badge-bg)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-badge-border)' }}>
-                  診断されたアタマのタイプ
-                </span>
-                <strong style={{ fontSize: '16px', color: 'var(--text-primary)', textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
-                  {gameState.diagnosticType ? `${gameState.diagnosticType.emoji} ${gameState.diagnosticType.name}` : charClass.title}
-                </strong>
-                {isFullUnlocked && (
-                  <button
-                    onClick={() => handleShareToX(`🧠 論理思考の筋トレ「LogiFit」で脳内OSをデバッグ中！\n私の脳内タイプ：【${gameState.diagnosticType ? gameState.diagnosticType.name : charClass.title}】 (Lv. ${gameState.level})\n\nあなたの脳の「摩擦係数」はどれくらい？測定してみよう！\n#LogiFit #ロジフィット #論理的思考`)}
-                    className="btn btn-secondary"
-                    style={{
-                      padding: '4px 10px',
-                      fontSize: '11px',
-                      borderRadius: '6px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      cursor: 'pointer',
-                      border: '1px solid var(--border-color)',
-                      background: 'rgba(255,255,255,0.02)'
-                    }}
-                    title="Xでシェア"
-                  >
-                    <span>𝕏 シェア</span>
-                  </button>
+          {/* Two-Column Diagnostic Dashboard Dashboard layout */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', lgTemplateColumns: '1.2fr 1fr', gap: '24px' }} className="diagnostic-dashboard-grid">
+            
+            {/* Column 1: Your Brain Bug Card */}
+            <div 
+              className="glass-panel"
+              style={{
+                padding: '32px 24px',
+                borderLeft: `4px solid ${isFullUnlocked ? 'var(--color-primary)' : 'var(--color-cyan)'}`,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                background: 'var(--hero-bg)'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--color-badge-text)', fontWeight: 'bold', background: 'var(--color-badge-bg)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-badge-border)' }}>
+                    あなたの愛すべき脳内バグ
+                  </span>
+                  {currentType && (
+                    <span style={{ fontSize: '11px', color: 'var(--color-cyan)', fontWeight: 'bold', background: 'rgba(6, 182, 212, 0.05)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-cyan-glow)' }}>
+                      レベル {gameState.level}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '48px' }}>{currentType?.emoji || "🐸"}</span>
+                  <div>
+                    <h2 className="text-glow" style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+                      {currentType?.name || charClass.title}
+                    </h2>
+                    <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '13px', margin: '2px 0 0 0' }}>
+                      {currentType?.tagline || '思考のデバッグジムへようこそ'}
+                    </p>
+                  </div>
+                </div>
+
+                <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
+                  {currentType?.description || charClass.desc}
+                </p>
+
+                {/* アコーディオン: 取扱説明書 (トリセツ) & 3大バグ */}
+                {currentType && (
+                  <div style={{ marginBottom: '24px' }}>
+                    <button
+                      onClick={() => { playSound('click'); setShowBugDetails(!showBugDetails); }}
+                      className="btn btn-secondary"
+                      style={{
+                        width: '100%',
+                        padding: '10px 16px',
+                        fontSize: '13px',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: showBugDetails ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.01)',
+                        border: '1px solid rgba(255,255,255,0.06)'
+                      }}
+                    >
+                      <span>{showBugDetails ? '▼ 取扱説明書と脳内バグを閉じる' : '▶ あなたの取扱説明書と脳内バグを見る'}</span>
+                      <Sparkles size={14} style={{ color: 'var(--color-cyan)' }} />
+                    </button>
+
+                    {showBugDetails && (
+                      <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left', animation: 'fadeIn 0.3s ease' }}>
+                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
+                          <span style={{ fontSize: '12px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>💼 仕事でのバグ</span>
+                          <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.workBug}</p>
+                        </div>
+                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
+                          <span style={{ fontSize: '12px', color: '#f43f5e', fontWeight: 'bold' }}>🏡 私生活でのバグ</span>
+                          <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.privateBug}</p>
+                        </div>
+                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
+                          <span style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 'bold' }}>⚡ ふとした瞬間のクセ</span>
+                          <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.dailyHabit}</p>
+                        </div>
+                        <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '14px', borderRadius: '8px' }}>
+                          <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>📋 取扱説明書</span>
+                          <span style={{ display: 'block', fontSize: '11px', color: '#f43f5e', fontWeight: 'bold' }}>● 地雷ポイント</span>
+                          <p style={{ margin: '2px 0 8px 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.jealousPoint}</p>
+                          <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold' }}>● デバッグ呪文</span>
+                          <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.debugSpell}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '28px', letterSpacing: '-0.5px', marginBottom: '8px', marginTop: 0 }}>
-                {gameState.diagnosticType ? gameState.diagnosticType.tagline : '思考の基礎体力を、ここから。'}
-              </h1>
-              <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '16px' }}>
-                {gameState.diagnosticType ? gameState.diagnosticType.description : charClass.desc}
-              </p>
-              
-              {!isFullUnlocked && (
-                <div 
-                  style={{ 
-                    background: 'rgba(6, 182, 212, 0.05)', 
-                    border: '1px solid rgba(6, 182, 212, 0.15)', 
-                    padding: '12px 16px', 
-                    borderRadius: '8px', 
-                    fontSize: '13px', 
-                    color: 'var(--color-cyan)',
-                    lineHeight: '1.4',
-                    marginBottom: '24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  <Sparkles size={16} />
-                  <span><strong>デバッグ開始：</strong>まずはあなたの診断で最もスコアが低かったカテゴリ（ハイライト表示中）のゲームをクリアして、すべての思考ルームを解放しましょう！</span>
+              <div>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <button 
+                    onClick={() => { 
+                      playSound('click'); 
+                      document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
+                    }} 
+                    className="btn btn-primary"
+                    style={{
+                      flex: 1,
+                      background: isFullUnlocked 
+                        ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
+                        : 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                      boxShadow: isFullUnlocked 
+                        ? '0 4px 15px var(--color-primary-glow)' 
+                        : '0 4px 15px rgba(6, 182, 212, 0.3)',
+                      fontSize: '13.5px',
+                      padding: '10px 18px'
+                    }}
+                  >
+                    🎯 {isFullUnlocked ? 'デバッグを再開する' : '最初の練習（デバッグ）へ'}
+                  </button>
+                  <button 
+                    onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
+                    className="btn btn-secondary"
+                    style={{ flex: 0.8, fontSize: '13px', padding: '10px 14px' }}
+                  >
+                    再スキャン/他者スキャン
+                  </button>
                 </div>
-              )}
-
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <button 
-                  onClick={() => { 
-                    playSound('click'); 
-                    document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
-                  }} 
-                  className="btn btn-primary"
-                  style={{
-                    background: isFullUnlocked 
-                      ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
-                      : 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
-                    boxShadow: isFullUnlocked 
-                      ? '0 4px 15px var(--color-primary-glow)' 
-                      : '0 4px 15px rgba(6, 182, 212, 0.3)'
-                  }}
-                >
-                  🎯 {isFullUnlocked ? 'トレーニングを再開する' : 'デバッグ（最初の練習）へ'}
-                </button>
-                <button 
-                  onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
-                  className="btn btn-secondary"
-                  style={{
-                    border: '1px solid rgba(6, 182, 212, 0.3)',
-                    background: 'rgba(6, 182, 212, 0.03)',
-                    color: 'var(--color-cyan)'
-                  }}
-                >
-                  🧠 思考診断を受け直す
-                </button>
               </div>
             </div>
 
+            {/* Column 2: Friction Coefficient Matcher */}
+            <div 
+              className="glass-panel" 
+              style={{ 
+                padding: '32px 24px', 
+                borderLeft: '4px solid var(--color-cyan)',
+                background: 'rgba(6, 182, 212, 0.01)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div>
+                <div style={{ marginBottom: '16px' }}>
+                  <span className="game-badge" style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#06b6d4", padding: "4px 12px", borderRadius: "12px", fontSize: "11px", fontWeight: "bold" }}>
+                    ⚡ BI-DIRECTIONAL FRICTION CHECKER
+                  </span>
+                </div>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+                  脳内摩擦係数（相性）チェック
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '12.5px', lineHeight: '1.5', marginBottom: '24px' }}>
+                  あなたと相手の「ふっかつのじゅもん」を噛み合わせ、思考ギアの摩擦係数（0〜100%）と取扱説明書を算出します。
+                </p>
+
+                <form onSubmit={handleCheckFriction} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                  {/* Your Spell Box */}
+                  <div>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>▼ あなたのじゅもん（コピーして相手に渡せます）</span>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input 
+                        type="text" 
+                        readOnly 
+                        value={currentSpell} 
+                        style={{ flex: 1, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px 12px', color: 'var(--text-secondary)', fontSize: '12px', outline: 'none' }}
+                      />
+                      <button 
+                        type="button" 
+                        onClick={onCopyClick}
+                        className="btn btn-secondary" 
+                        style={{ padding: '8px 12px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        title="じゅもんをコピー"
+                      >
+                        <Copy size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Opponent Spell Box */}
+                  <div>
+                    <span style={{ fontSize: '11px', color: 'var(--text-primary)', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>▼ 相手のじゅもんを入力</span>
+                    <input 
+                      type="text" 
+                      value={opponentSpell} 
+                      onChange={(e) => setOpponentSpell(e.target.value)}
+                      placeholder="相手のひらがな12文字を入力"
+                      style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px 12px', color: '#fff', fontSize: '12px', outline: 'none' }}
+                    />
+                  </div>
+
+                  <button type="submit" className="btn btn-primary" style={{ width: '100%', background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)', padding: '10px 0', fontSize: '13.5px', borderRadius: '8px' }}>
+                    ⚡ 摩擦係数を測定する
+                  </button>
+                </form>
+
+                {matchError && <p style={{ color: 'var(--color-rose)', fontSize: '12px', textAlign: 'center', margin: '0 0 16px 0' }}>❌ {matchError}</p>}
+              </div>
+
+              {/* Match Result Display */}
+              {matchResult && (
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(6, 182, 212, 0.15)', padding: '20px', borderRadius: '12px', animation: 'fadeIn 0.3s ease', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>計測結果：{matchResult.pairName}</span>
+                    <span style={{ fontSize: '20px', color: '#ff4d4d', fontWeight: 'bold', textShadow: '0 0 8px rgba(255, 77, 77, 0.4)' }}>
+                      摩擦係数 {matchResult.friction}%
+                    </span>
+                  </div>
+                  
+                  {/* Friction meter bar */}
+                  <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '16px' }}>
+                    <div 
+                      style={{ 
+                        height: '100%', 
+                        width: `${matchResult.friction}%`, 
+                        background: 'linear-gradient(90deg, #10b981 0%, #ff9f0a 50%, #ff4d4d 100%)',
+                        borderRadius: '4px',
+                        transition: 'width 0.5s ease'
+                      }}
+                    />
+                  </div>
+
+                  <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.6', margin: '0 0 16px 0' }}>
+                    {matchResult.description}
+                  </p>
+
+                  <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
+                    <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>💡 二人のデバッグアドバイス</span>
+                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{matchResult.advice}</p>
+                  </div>
+
+                  <button 
+                    onClick={() => handleShareToX(`⚡ 二人の「脳内摩擦係数」をスキャンしました！\n結果：【${matchResult.pairName}】\n激突度：【${matchResult.friction}%】\n\n診断＆相性チェックはこちら👇\n#脳内摩擦係数 #アたまのレントゲン #LogiFit`)}
+                    className="btn btn-secondary"
+                    style={{ width: '100%', fontSize: '12px', gap: '6px', background: 'white', color: 'black', fontWeight: 'bold' }}
+                  >
+                    𝕏 にこの摩擦係数をシェアする
+                  </button>
+                </div>
+              )}
+            </div>
             {/* Radar Chart Panel */}
             <div 
               className="glass-panel"

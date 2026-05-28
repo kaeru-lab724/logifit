@@ -43,7 +43,8 @@ const DEFAULT_STATE = {
   },
   badges: [false, false, false, false, false],
   diagnosticScores: null,
-  diagnosticType: null
+  diagnosticType: null,
+  diagnosticTypeId: "balancedThinker"
 };
 
 // クラス進化（肩書き）の判定
@@ -386,7 +387,8 @@ export default function App() {
       const updatedState = {
         ...prev,
         diagnosticScores: scores,
-        diagnosticType: type
+        diagnosticType: type,
+        diagnosticTypeId: type.id
       };
       localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
       return updatedState;
@@ -413,7 +415,7 @@ export default function App() {
             logicalValidity: Math.round((gameState.diagnosticScores.L / 105) * 100),
             logicTree: Math.round((gameState.diagnosticScores.R / 105) * 100),
             fallacy: Math.round((gameState.diagnosticScores.C / 105) * 100),
-            empathyDialogue: 0
+            empathyDialogue: Math.round((gameState.diagnosticScores.E / 105) * 100)
           }
         : {
             factsOpinions: 0,
@@ -424,16 +426,19 @@ export default function App() {
           }
       );
 
-  // 最もスコアの低かった部屋の特定（Emotionalはゲームが無いので除外）
+  // 最もスコアの低かった部屋の特定
   let primaryDebugCategory = 'logical';
   if (gameState.diagnosticScores) {
-    const { L, C, R } = gameState.diagnosticScores;
-    if (L <= C && L <= R) {
+    const { L, C, R, E = 0 } = gameState.diagnosticScores;
+    const minVal = Math.min(L, C, R, E);
+    if (minVal === L) {
       primaryDebugCategory = 'logical';
-    } else if (C <= L && C <= R) {
+    } else if (minVal === C) {
       primaryDebugCategory = 'critical';
-    } else {
+    } else if (minVal === R) {
       primaryDebugCategory = 'radical';
+    } else {
+      primaryDebugCategory = 'emotional';
     }
   }
 

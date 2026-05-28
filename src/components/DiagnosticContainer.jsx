@@ -3,6 +3,7 @@ import { diagnosticQuestions, determineDiagnosticType } from "../data/diagnostic
 
 export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) {
   const [step, setStep] = useState("start"); // start, quiz, analyzing, result
+  const [targetType, setTargetType] = useState("self"); // self, spouse, boss, friend
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [scores, setScores] = useState({ L: 0, C: 0, R: 0, E: 0 });
@@ -16,6 +17,31 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) 
     "⚡ 感情パルスのゆらぎを受信中...",
     "📄 思考パターンの診断書を書き出し中..."
   ];
+
+  // Dynamic pronoun filter for 'Other Scanner' mode
+  const getFilteredText = (text) => {
+    if (targetType === "self") return text;
+    
+    const label = {
+      spouse: "あの人（パートナー）",
+      boss: "あの人（上司/部下）",
+      friend: "あの人（友達）"
+    }[targetType] || "あの人";
+
+    return text
+      .replace(/あなたの脳内での最初のリアクションは？/g, "あの人が最初に見せそうなリアクションは？")
+      .replace(/あなたの対応は？/g, "あの人の対応は？")
+      .replace(/あなたの脳内は？/g, "あの人の脳内はどうなっていそう？")
+      .replace(/あなたならどう議論を進める？/g, "あの人ならどう議論を進めそう？")
+      .replace(/あなたの行動は？/g, "あの人の行動は？")
+      .replace(/あなたの反応は？/g, "あの人の反応は？")
+      .replace(/あなたを劇的に変える/g, "あの人を劇的に変える")
+      .replace(/どうする？/g, "あの人はどうする？")
+      .replace(/私/g, label)
+      .replace(/自分/g, label)
+      .replace(/僕/g, label)
+      .replace(/俺/g, label);
+  };
 
   // Effect for analyzing phase animation
   useEffect(() => {
@@ -92,10 +118,11 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) 
       return "█".repeat(filled) + "░".repeat(10 - filled);
     };
 
-    const shareText = `【LogiFit 思考バランス診断結果】
-アタマのレントゲンを撮ってみました！
-
-脳内タイプ：${resultType.name} ${resultType.emoji}
+    let shareText = "";
+    if (targetType === "self") {
+      shareText = `【LogiFit 思考のレントゲン診断】
+私の愛すべき脳内バグは…
+🧠 ${resultType.name} ${resultType.emoji}
 ～ ${resultType.tagline} ～
 
 📊 思考バランス：
@@ -104,15 +131,30 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) 
 ・ラディカル　　：${bar(pR)} ${pR}%
 ・エモーショナル：${bar(pE)} ${pE}%
 
-#LogiFit思考診断 #アタマのレントゲン
+#LogiFit思考診断 #愛すべき脳内バグ #アたまのレントゲン
 https://www.logifit.site/`;
+    } else {
+      const targetLabel = {
+        spouse: "パートナー",
+        boss: "上司/部下",
+        friend: "友達"
+      }[targetType] || "あの人";
+
+      shareText = `【LogiFit 他者脳内スキャン】
+${targetLabel}の脳内バグをレントゲンスキャンしました！
+🧠 タイプ：${resultType.name} ${resultType.emoji}
+～ ${resultType.tagline} ～
+
+あの人の攻略トリセツ＆デバッグ呪文はこちら👇
+#脳内摩擦係数 #取扱説明書 #アたまのレントゲン #LogiFit
+https://www.logifit.site/`;
+    }
 
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
     window.open(twitterUrl, "_blank");
   };
 
   // SVG Radar Chart Data calculation
-  // Radar graph center is (200, 160) inside a 400x320 SVG viewport to prevent label clipping
   const centerX = 200;
   const centerY = 160;
   const maxRadius = 100;
@@ -181,8 +223,42 @@ https://www.logifit.site/`;
             <div className="scan-laser-line"></div>
           </div>
 
+          {/* Target selector cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", maxWidth: "480px", margin: "0 auto 32px auto" }}>
+            {[
+              { id: "self", label: "自分をレントゲン", emoji: "🧠" },
+              { id: "spouse", label: "パートナーをスキャン", emoji: "💑" },
+              { id: "boss", label: "上司/部下をスキャン", emoji: "👔" },
+              { id: "friend", label: "友達をスキャン", emoji: "🎒" }
+            ].map((t) => (
+              <button
+                key={t.id}
+                className="btn"
+                onClick={() => setTargetType(t.id)}
+                style={{
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  background: targetType === t.id ? "rgba(6, 182, 212, 0.15)" : "rgba(255,255,255,0.02)",
+                  border: targetType === t.id ? "2px solid var(--color-cyan)" : "1px solid rgba(255,255,255,0.06)",
+                  color: targetType === t.id ? "var(--color-cyan)" : "var(--text-secondary)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <span style={{ fontSize: "24px" }}>{t.emoji}</span>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
           <button className="btn btn-primary" onClick={handleStart} style={{ fontSize: "16px", padding: "14px 36px" }}>
-            レントゲン検査をはじめる（全7問）
+            {targetType === "self" ? "レントゲン検査をはじめる" : "あの人をスキャンする"}（全7問）
           </button>
         </div>
       )}
@@ -214,7 +290,7 @@ https://www.logifit.site/`;
           {/* Scenario text */}
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "24px", borderRadius: "12px", marginBottom: "28px" }}>
             <p style={{ fontSize: "18px", color: "var(--text-primary)", lineHeight: "1.6", fontWeight: "500" }}>
-              {diagnosticQuestions[currentQuestionIndex].scenario}
+              {getFilteredText(diagnosticQuestions[currentQuestionIndex].scenario)}
             </p>
           </div>
 
@@ -241,7 +317,7 @@ https://www.logifit.site/`;
                   <span style={{ color: "var(--color-primary)", fontWeight: "bold" }}>
                     {String.fromCharCode(65 + idx)}.
                   </span>
-                  <span style={{ color: "var(--text-primary)" }}>{choice.text}</span>
+                  <span style={{ color: "var(--text-primary)" }}>{getFilteredText(choice.text)}</span>
                 </div>
               </button>
             ))}
@@ -343,38 +419,55 @@ https://www.logifit.site/`;
               </div>
 
               {/* Character Details & Strengths/Weaknesses */}
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, width: "100%" }}>
                 <p style={{ fontSize: "15px", lineHeight: "1.7", color: "var(--text-secondary)", marginBottom: "24px" }}>
                   {resultType.description}
                 </p>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", smTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "24px" }} className="diagnostic-traits-grid">
-                  {/* Strengths */}
-                  <div style={{ background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.1)", padding: "16px", borderRadius: "12px" }}>
-                    <h4 style={{ color: "#10b981", fontSize: "14px", fontWeight: "bold", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
-                      ✨ あなたの強み
+                {/* 3大バグの表示 */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "28px" }}>
+                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px", borderRadius: "12px", textAlign: "left" }}>
+                    <h4 style={{ color: "var(--color-cyan)", fontSize: "14px", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      💼 {targetType === "self" ? "仕事でのバグ" : "あの人の仕事でのバグ"}
                     </h4>
-                    <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
-                      {resultType.strengths.map((str, index) => (
-                        <li key={index} style={{ fontSize: "13px", color: "var(--text-primary)", marginBottom: "6px", display: "flex", gap: "6px", alignItems: "center" }}>
-                          <span style={{ color: "#10b981" }}>✔</span> {str}
-                        </li>
-                      ))}
-                    </ul>
+                    <p style={{ fontSize: "13.5px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
+                      {resultType.workBug}
+                    </p>
+                  </div>
+                  
+                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px", borderRadius: "12px", textAlign: "left" }}>
+                    <h4 style={{ color: "#f43f5e", fontSize: "14px", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      🏡 {targetType === "self" ? "私生活でのバグ" : "あの人の私生活でのバグ"}
+                    </h4>
+                    <p style={{ fontSize: "13.5px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
+                      {resultType.privateBug}
+                    </p>
                   </div>
 
-                  {/* Weaknesses */}
-                  <div style={{ background: "rgba(244, 63, 94, 0.03)", border: "1px solid rgba(244, 63, 94, 0.1)", padding: "16px", borderRadius: "12px" }}>
-                    <h4 style={{ color: "#f43f5e", fontSize: "14px", fontWeight: "bold", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
-                      ⚠️ 思考のバグ（弱点）
+                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px", borderRadius: "12px", textAlign: "left" }}>
+                    <h4 style={{ color: "#f59e0b", fontSize: "14px", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      ⚡ {targetType === "self" ? "ふとした瞬間のクセ" : "あの人のふとした瞬間のクセ"}
                     </h4>
-                    <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
-                      {resultType.weaknesses.map((weak, index) => (
-                        <li key={index} style={{ fontSize: "13px", color: "var(--text-primary)", marginBottom: "6px", display: "flex", gap: "6px", alignItems: "center" }}>
-                          <span style={{ color: "#f43f5e" }}>⚡</span> {weak}
-                        </li>
-                      ))}
-                    </ul>
+                    <p style={{ fontSize: "13.5px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
+                      {resultType.dailyHabit}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 取扱説明書（トリセツ）の表示 */}
+                <div style={{ background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.15)", padding: "24px", borderRadius: "12px", marginBottom: "28px", textAlign: "left" }}>
+                  <h4 style={{ color: "#10b981", fontSize: "15px", fontWeight: "bold", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    📋 {targetType === "self" ? "あなたの取扱説明書" : "あの人の取扱説明書"}
+                  </h4>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <div>
+                      <span style={{ color: "#f43f5e", fontWeight: "bold", fontSize: "13px" }}>● 地雷ポイント（フリーズワード）</span>
+                      <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{resultType.torisetsu.jealousPoint}</p>
+                    </div>
+                    <div>
+                      <span style={{ color: "#10b981", fontWeight: "bold", fontSize: "13px" }}>● デバッグ呪文（対処法）</span>
+                      <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{resultType.torisetsu.debugSpell}</p>
+                    </div>
                   </div>
                 </div>
 
@@ -382,18 +475,18 @@ https://www.logifit.site/`;
                 <button 
                   className="btn btn-primary" 
                   onClick={handleShare}
-                  style={{ width: "100%", background: "white", color: "black", border: "1px solid transparent", boxShadow: "0 4px 15px rgba(255,255,255,0.1)", fontSize: "15px", gap: "8px" }}
+                  style={{ width: "100%", background: "white", color: "black", border: "1px solid transparent", boxShadow: "0 4px 15px rgba(255,255,255,0.1)", fontSize: "15px", gap: "8px", padding: "14px 20px" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
-                  X（旧Twitter）にレントゲン写真をポストする
+                  {targetType === "self" ? "レントゲン写真をXにポストする" : "あの人のトリセツをXにポストする"}
                 </button>
               </div>
             </div>
           </div>
 
-          {/* 脳内デバッグロードマップ（学習ロードマップ） */}
+          {/* 脳内デバッグロードマップ */}
           <div className="glass-panel" style={{ padding: "32px", border: "1px solid var(--color-cyan-glow)", background: "rgba(6, 182, 212, 0.01)" }}>
             <h3 style={{ fontSize: "18px", color: "var(--color-cyan)", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
               🧠 脳内デバッグ・学習ロードマップ
@@ -433,9 +526,6 @@ https://www.logifit.site/`;
                   <button className="btn btn-secondary" onClick={() => onSelectGame('fallacy')} style={{ padding: "8px 16px", fontSize: "12px", borderRadius: "8px" }}>
                     🎯 基礎：論理的誤謬の特定
                   </button>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(244, 63, 94, 0.05)", border: "1px solid rgba(244, 63, 94, 0.1)", padding: "6px 12px", borderRadius: "8px" }}>
-                    ⚔️ 応用：LogiFit: Fallacy Hunter (Coming Soon)
-                  </span>
                 </div>
               </div>
 
@@ -451,9 +541,6 @@ https://www.logifit.site/`;
                   <button className="btn btn-secondary" onClick={() => onSelectGame('logicTree')} style={{ padding: "8px 16px", fontSize: "12px", borderRadius: "8px" }}>
                     🎯 基礎：ロジックツリー
                   </button>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(245, 158, 11, 0.05)", border: "1px solid rgba(245, 158, 11, 0.1)", padding: "6px 12px", borderRadius: "8px" }}>
-                    🛡️ 応用：LogiFit: Tree Quest (Coming Soon)
-                  </span>
                 </div>
               </div>
 
@@ -466,9 +553,9 @@ https://www.logifit.site/`;
                   </span>
                 </div>
                 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(139, 92, 246, 0.05)", border: "1px solid rgba(139, 92, 246, 0.1)", padding: "6px 12px", borderRadius: "8px" }}>
-                    🤝 応用：EQ・共感対話シミュレーター (Coming Soon)
-                  </span>
+                  <button className="btn btn-secondary" onClick={() => onSelectGame('empathyDialogue')} style={{ padding: "8px 16px", fontSize: "12px", borderRadius: "8px" }}>
+                    🎯 基礎：共感対話トレーニング
+                  </button>
                 </div>
               </div>
             </div>
@@ -477,12 +564,6 @@ https://www.logifit.site/`;
               <button 
                 className="btn btn-primary" 
                 onClick={() => {
-                  const gameNames = {
-                    factsOpinions: '事実 vs 意見',
-                    logicalValidity: '論理の妥当性',
-                    logicTree: 'ロジックツリー',
-                    fallacy: '論理的誤謬の特定'
-                  };
                   onSelectGame(resultType.recommendedGame);
                 }}
                 style={{ flex: 1, minWidth: "220px" }}
