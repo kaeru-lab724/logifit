@@ -299,12 +299,12 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
 
             {isAnswered && (
               <div 
-                className="fade-in"
+                className={`fade-in ${currentQuestion.choices[selectedChoiceIdx].isCorrect ? 'correct-flash' : 'incorrect-shake'}`}
                 style={{ 
                   padding: '20px', 
                   borderRadius: '12px', 
                   backgroundColor: currentQuestion.choices[selectedChoiceIdx].isCorrect ? 'rgba(16, 185, 129, 0.08)' : 'rgba(244, 63, 94, 0.08)',
-                  border: `1px solid ${currentQuestion.choices[selectedChoiceIdx].isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)'}`,
+                  border: `1px solid ${currentQuestion.choices[selectedChoiceIdx].isCorrect ? 'var(--color-emerald)' : 'var(--color-rose)'}`,
                   marginBottom: '24px'
                 }}
               >
@@ -373,8 +373,13 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                 onClick={() => {
                   playSound('click');
                   const finalPercent = Math.round((score / questions.length) * 100);
+                  let rank = "【脳のフリーズを検知 ⚠️】要リハビリ！";
+                  if (finalPercent === 100) rank = "【論理マスター 🏆】";
+                  else if (finalPercent >= 80) rank = "【優秀なデバッガー 🎯】";
+                  else if (finalPercent >= 60) rank = "【一般脳 🧠】デバッグの余地あり";
+
                   const modeText = mode === 'business' ? 'ビジネス編' : '日常編・入門';
-                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：論理的誤謬の特定 (${modeText})\nスコア：${finalPercent}% (${score} / ${questions.length} 問正解)\n\n議論やSNSの詭弁（誤謬）を見破る批判思考力を鍛えよう！\n#LogiFit #ロジフィット #論理的思考`;
+                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：論理的誤謬の特定 (${modeText})\nスコア：${finalPercent}% (${score} / ${questions.length} 問正解)\n評価：${rank}\n\n議論やSNSの詭弁（誤謬）を見破る批判思考力を鍛えよう！\n#LogiFit #ロジフィット #論理的思考`;
                   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://www.logifit.site/')}`;
                   window.open(shareUrl, '_blank', 'noopener,noreferrer');
                 }}

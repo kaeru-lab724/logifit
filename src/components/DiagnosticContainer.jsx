@@ -99,9 +99,9 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) 
 ～ ${resultType.tagline} ～
 
 📊 思考バランス：
-・ロジカル　　：${bar(pL)} ${pL}%
-・クリティカル：${bar(pC)} ${pC}%
-・ラディカル　：${bar(pR)} ${pR}%
+・ロジカル　　　：${bar(pL)} ${pL}%
+・クリティカル　：${bar(pC)} ${pC}%
+・ラディカル　　：${bar(pR)} ${pR}%
 ・エモーショナル：${bar(pE)} ${pE}%
 
 #LogiFit思考診断 #アタマのレントゲン

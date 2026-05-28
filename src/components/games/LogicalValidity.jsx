@@ -250,12 +250,12 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
 
             {isAnswered && (
               <div 
-                className="fade-in"
+                className={`fade-in ${selectedAnswer === currentQuestion.isValid ? 'correct-flash' : 'incorrect-shake'}`}
                 style={{ 
                   padding: '20px', 
                   borderRadius: '12px', 
                   backgroundColor: selectedAnswer === currentQuestion.isValid ? 'rgba(16, 185, 129, 0.08)' : 'rgba(244, 63, 94, 0.08)',
-                  border: `1px solid ${selectedAnswer === currentQuestion.isValid ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)'}`,
+                  border: `1px solid ${selectedAnswer === currentQuestion.isValid ? 'var(--color-emerald)' : 'var(--color-rose)'}`,
                   marginBottom: '24px'
                 }}
               >
@@ -324,8 +324,13 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
                 onClick={() => {
                   playSound('click');
                   const finalPercent = Math.round((score / questions.length) * 100);
+                  let rank = "【脳のフリーズを検知 ⚠️】要リハビリ！";
+                  if (finalPercent === 100) rank = "【論理マスター 🏆】";
+                  else if (finalPercent >= 80) rank = "【優秀なデバッガー 🎯】";
+                  else if (finalPercent >= 60) rank = "【一般脳 🧠】デバッグの余地あり";
+
                   const modeText = mode === 'business' ? 'ビジネス編' : '日常編・入門';
-                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：論理の妥当性 (${modeText})\nスコア：${finalPercent}% (${score} / ${questions.length} 問正解)\n\n前提から導き出される結論の妥当性を見分けられますか？\n#LogiFit #ロジフィット #論理的思考`;
+                  const text = `🎯 思考の筋トレ「LogiFit」でトレーニング完了！\n種目：論理の妥当性 (${modeText})\nスコア：${finalPercent}% (${score} / ${questions.length} 問正解)\n評価：${rank}\n\n前提から導き出される結論の妥当性を見分けられますか？\n#LogiFit #ロジフィット #論理的思考`;
                   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://www.logifit.site/')}`;
                   window.open(shareUrl, '_blank', 'noopener,noreferrer');
                 }}

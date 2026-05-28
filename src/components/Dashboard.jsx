@@ -39,6 +39,17 @@ export default function Dashboard({
   badgeDetails,
   skillsData
 }) {
+  const [showToast, setShowToast] = React.useState(false);
+
+  const onCopyClick = () => {
+    handleCopySpell(currentSpell);
+    setShowToast(true);
+    const timer = setTimeout(() => {
+      setShowToast(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  };
+
   const handleShareToX = (text) => {
     playSound('click');
     const appUrl = 'https://www.logifit.site/';
@@ -635,7 +646,7 @@ export default function Dashboard({
                     データをコピペ保存できます（短い12文字のひらがなコードです）。
                   </p>
                   <div 
-                    onClick={() => handleCopySpell(currentSpell)}
+                    onClick={onCopyClick}
                     style={{ 
                       background: 'rgba(0, 0, 0, 0.2)', 
                       border: '1px solid var(--border-color)', 
@@ -866,6 +877,12 @@ export default function Dashboard({
             </div>
           )}
         </>
+      )}
+      {showToast && (
+        <div className="copy-toast">
+          <Sparkles size={16} style={{ color: 'var(--color-primary)' }} />
+          <span>じゅもんをクリップボードにコピーしました！</span>
+        </div>
       )}
     </div>
   );
