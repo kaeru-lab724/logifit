@@ -1044,7 +1044,7 @@ export const skillsData = [
       author: 'ハンス・ロスリング、オーラ・ロスリング、アンナ・ロスリング・ロンランド',
       desc: 'データや客観的な事実に基づき、世界を正しく見る習慣を養う世界的ベストセラー。偏見を排し、ファクトを見抜く眼を鍛えます。',
       imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/0259/9784822289607.jpg?_ex=120x120',
-      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F15740259%2F&link_type=hybrid_html'
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F15459461%2F&link_type=hybrid_html'
     }
   },
   {
@@ -1061,7 +1061,7 @@ export const skillsData = [
       author: '照屋華子、岡田恵子',
       desc: '論理思考の定番教科書。情報の重複・漏れ（MECE）や、結論と根拠を繋ぐ「So What? / Why So?」の技術を体系的に解説。',
       imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/0038/9784492554036.jpg?_ex=120x120',
-      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F11080038%2F&link_type=hybrid_html'
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F239712%2F&link_type=hybrid_html'
     }
   },
   {
@@ -1078,7 +1078,7 @@ export const skillsData = [
       author: '安宅和人',
       desc: '知的生産の圧倒的バイブル。何が本当の課題（イシュー）かを見極め、ロジックツリーを用いて構造化する問題解決の決定版。',
       imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/5876/9784296115876.jpg?_ex=120x120',
-      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17355876%2F&link_type=hybrid_html'
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17983696%2F&link_type=hybrid_html'
     }
   },
   {
@@ -1095,7 +1095,7 @@ export const skillsData = [
       author: '苅谷剛彦',
       desc: '常識や他人の前提を疑い、自分の頭で立体的に考えるクリティカルシンキングの極致。メディアの主張に惑わされないための必読書。',
       imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/5312/9784062923125.jpg?_ex=120x120',
-      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F13285312%2F&link_type=hybrid_html'
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/18d5a65e.e1c0f416.18d5a65f.933cb3c8/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F1301297%2F&link_type=hybrid_html'
     }
   }
 ];
