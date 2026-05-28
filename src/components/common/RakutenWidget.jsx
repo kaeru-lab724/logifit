@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function RakutenWidget({ size, ts }) {
+export default function RakutenWidget({ size = '300x160', ts = '1716892518451' }) {
   const [width, height] = size.split('x');
 
   // iframe内のHTMLコンテンツを構築

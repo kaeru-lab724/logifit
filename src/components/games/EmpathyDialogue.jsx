@@ -520,7 +520,7 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
             </div>
 
             {/* 広告ウィジェット */}
-            <RakutenWidget />
+            <RakutenWidget size="300x160" ts="1716892518451" />
           </div>
         )}
       </div>
