@@ -39,7 +39,9 @@ const DEFAULT_STATE = {
     logicTree: 0,
     fallacy: 0
   },
-  badges: [false, false, false, false, false]
+  badges: [false, false, false, false, false],
+  diagnosticScores: null,
+  diagnosticType: null
 };
 
 // クラス進化（肩書き）の判定
@@ -115,6 +117,7 @@ export default function App() {
   const [activeGame, setActiveGame] = useState(null);
   const [mode, setMode] = useState('daily');
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('logifit_color_theme') || 'dark';
   });
@@ -154,7 +157,14 @@ export default function App() {
         delete parsed.calendar;
         delete parsed.lastLogin;
       }
-      return parsed;
+      return {
+        ...DEFAULT_STATE,
+        ...parsed,
+        scores: {
+          ...DEFAULT_STATE.scores,
+          ...(parsed.scores || {})
+        }
+      };
     }
     
     // 古い形式のスコアデータがある場合のマイグレーション
@@ -283,6 +293,15 @@ export default function App() {
         }, 800);
       }
 
+      // 初回クリア検知とアンロック演出トリガー
+      const isFirstClear = prev.xp === 0 && newXp > 0 && prev.diagnosticScores !== null;
+      if (isFirstClear) {
+        setTimeout(() => {
+          playSound('success');
+          setShowUnlockModal(true);
+        }, 800);
+      }
+
       return updatedState;
     });
 
@@ -310,8 +329,17 @@ export default function App() {
       playSound('click');
       const restoredState = decodeState(spellInput);
 
-      setGameState(restoredState);
-      localStorage.setItem('logifit_save_data', JSON.stringify(restoredState));
+      const normalizedState = {
+        ...DEFAULT_STATE,
+        ...restoredState,
+        scores: {
+          ...DEFAULT_STATE.scores,
+          ...(restoredState.scores || {})
+        }
+      };
+
+      setGameState(normalizedState);
+      localStorage.setItem('logifit_save_data', JSON.stringify(normalizedState));
       
       setSpellSuccess(true);
       setSpellInput('');
@@ -343,12 +371,168 @@ export default function App() {
     alert('ふっかつのじゅもんをクリップボードにコピーしました！');
   };
 
+  // 診断結果の保存ハンドラー
+  const handleSaveDiagnostic = (scores, type) => {
+    playSound('success');
+    setGameState(prev => {
+      const updatedState = {
+        ...prev,
+        diagnosticScores: scores,
+        diagnosticType: type
+      };
+      localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
+      return updatedState;
+    });
+  };
+
   const charClass = getCharacterClass(gameState.scores, gameState.level);
   const recGameKey = getRecommendedGameKey(gameState.scores);
   const isAllCompleted = Object.values(gameState.scores).every(s => s >= 100);
-  const isNewUser = Object.values(gameState.scores).every(s => s === 0) && gameState.xp === 0;
+  
+  // 診断結果がありかつXPが0なら未アンロック状態（シングルフォーカス）
+  const isNewUser = gameState.diagnosticScores === null && gameState.xp === 0;
+  const isFullUnlocked = gameState.xp > 0;
+  
   const currentSpell = encodeState(gameState);
   const [activeTab, setActiveTab] = useState('training');
+
+  // レーダーチャート用のスコア変換
+  const displayScores = (gameState.xp > 0)
+    ? gameState.scores
+    : (gameState.diagnosticScores
+        ? {
+            factsOpinions: Math.round((gameState.diagnosticScores.L / 105) * 100),
+            logicalValidity: Math.round((gameState.diagnosticScores.L / 105) * 100),
+            logicTree: Math.round((gameState.diagnosticScores.R / 105) * 100),
+            fallacy: Math.round((gameState.diagnosticScores.C / 105) * 100)
+          }
+        : {
+            factsOpinions: 0,
+            logicalValidity: 0,
+            logicTree: 0,
+            fallacy: 0
+          }
+      );
+
+  // 最もスコアの低かった部屋の特定（Emotionalはゲームが無いので除外）
+  let primaryDebugCategory = 'logical';
+  if (gameState.diagnosticScores) {
+    const { L, C, R } = gameState.diagnosticScores;
+    if (L <= C && L <= R) {
+      primaryDebugCategory = 'logical';
+    } else if (C <= L && C <= R) {
+      primaryDebugCategory = 'critical';
+    } else {
+      primaryDebugCategory = 'radical';
+    }
+  }
+
+  // 部屋とゲームデータの定義
+  const rooms = [
+    {
+      id: 'logical',
+      title: 'ロジカル思考ルーム',
+      borderColor: 'var(--color-cyan)',
+      textColor: 'var(--color-cyan)',
+      badgeColor: 'rgba(6, 182, 212, 0.1)',
+      description: '客観的な「事実」を整理し、破綻のない筋道を組み立てるトレーニング部屋。',
+      games: [
+        {
+          id: 'factsOpinions',
+          scoreKey: 'factsOpinions',
+          moduleNum: 'MODULE 01',
+          name: '事実 vs 意見',
+          desc: mode === 'daily' 
+            ? '身近な会話やニュースから主観的な「意見」と客観的な「事実」を切り分ける入門トレーニング。'
+            : '提案書やデータ分析で、個人の「解釈」と客観的な「事実」を正しく選別する実戦トレーニング。',
+          difficulty: '初級'
+        },
+        {
+          id: 'logicalValidity',
+          scoreKey: 'logicalValidity',
+          moduleNum: 'MODULE 02',
+          name: '論理の妥当性',
+          desc: mode === 'daily' 
+            ? '日常の議論や会話のやり取りから、三段論法などの推論が正しい道筋を通っているかを検証。'
+            : 'ビジネスの提案や主張に対して、前提から結論への論理展開に飛躍がないかを厳密にチェック。',
+          difficulty: '中級'
+        }
+      ]
+    },
+    {
+      id: 'critical',
+      title: 'クリティカル思考ルーム',
+      borderColor: 'var(--color-rose)',
+      textColor: 'var(--color-rose)',
+      badgeColor: 'rgba(244, 63, 94, 0.1)',
+      description: '前提やバイアスを疑い、屁理屈や議論の歪みを見抜くトレーニング部屋。',
+      games: [
+        {
+          id: 'fallacy',
+          scoreKey: 'fallacy',
+          moduleNum: 'MODULE 03',
+          name: '論理的誤謬の特定',
+          desc: mode === 'daily' 
+            ? '会話の中に潜む「ストローマン（藁人形論法）」や「対人攻撃」などのへりくつを検知・特定する。'
+            : 'ビジネス交渉やメディアの主張に隠された論点のすり替えや、都合の良い相関関係の罠を見抜く。',
+          difficulty: '上級'
+        }
+      ],
+      spinoffs: [
+        {
+          icon: <Sword size={16} />,
+          color: 'var(--color-rose)',
+          name: 'LogiFit: Fallacy Hunter',
+          desc: '対話に潜む誤謬（へりくつ）を制限時間内に討伐する、批判思考バトルアクション。'
+        }
+      ]
+    },
+    {
+      id: 'radical',
+      title: 'ラディカル思考ルーム',
+      borderColor: 'var(--color-amber)',
+      textColor: 'var(--color-amber)',
+      badgeColor: 'rgba(245, 158, 11, 0.1)',
+      description: '課題の本質を見極め、MECEにモレなくダブりなく分解して根本原因を探るトレーニング部屋。',
+      games: [
+        {
+          id: 'logicTree',
+          scoreKey: 'logicTree',
+          moduleNum: 'MODULE 04',
+          name: 'ロジックツリー',
+          desc: mode === 'daily' 
+            ? '身近な課題（「健康を維持する」など）を要素に分解し、最適なアクションマップを作成する。'
+            : '新規事業の売上低迷など、ビジネスの重要課題をMECEに分解し、真のボトルネックを特定する。',
+          difficulty: '中級'
+        }
+      ],
+      spinoffs: [
+        {
+          icon: <Sword size={16} />,
+          color: 'var(--color-amber)',
+          name: 'LogiFit: Tree Quest',
+          desc: '複雑な課題のダンジョンをロジックツリーの枝を伸ばして攻略する、構造化アドベンチャー。'
+        }
+      ]
+    },
+    {
+      id: 'emotional',
+      title: 'エモーショナル思考ルーム',
+      borderColor: 'var(--color-primary)',
+      textColor: 'var(--color-primary)',
+      badgeColor: 'rgba(139, 92, 246, 0.1)',
+      description: '感情の機微を捉え、他者と共感しながら建設的な意思決定を行うための部屋。',
+      games: [],
+      spinoffs: [
+        {
+          icon: <Sword size={16} />,
+          color: 'var(--color-primary)',
+          name: 'EQ・共感対話シミュレーター',
+          desc: '正論だけでは動かない「人の心」に寄り添い、信頼関係を築く対話シミュレーションゲーム。'
+        }
+      ]
+    }
+  ];
 
   const badgeDetails = [
     { title: 'ファクト調査官', desc: '「事実 vs 意見」で80%以上', color: 'var(--color-cyan)', colorRgb: '6, 182, 212' },
@@ -553,6 +737,7 @@ export default function App() {
               playSound('click');
               setActiveGame(gameKey);
             }} 
+            onSaveDiagnostic={handleSaveDiagnostic}
           />
         )}
 
