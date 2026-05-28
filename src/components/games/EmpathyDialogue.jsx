@@ -503,7 +503,7 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
             </div>
 
             {/* 操作アクション */}
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '32px', flexWrap: 'wrap' }}>
               <button onClick={handleReset} className="btn btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <RotateCcw size={16} />
                 もう一度プレイ
@@ -513,14 +513,15 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-primary"
+                className="btn btn-secondary"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
                   background: 'linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%)',
                   boxShadow: '0 4px 15px rgba(29, 161, 242, 0.3)',
-                  color: 'white'
+                  color: 'white',
+                  border: 'none'
                 }}
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -528,6 +529,17 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
                 </svg>
                 Xで称号をポスト
               </a>
+
+              <button 
+                onClick={() => onFinish('empathyDialogue', Math.round((score / questions.length) * 100))} 
+                className="btn btn-primary" 
+                style={{ 
+                  background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', 
+                  boxShadow: '0 4px 15px var(--color-primary-glow)' 
+                }}
+              >
+                ダッシュボードへ戻る
+              </button>
             </div>
 
             {/* 広告ウィジェット */}
