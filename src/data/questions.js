@@ -1038,6 +1038,13 @@ export const skillsData = [
     lifeApplication: {
       work: '他人の報告から「推測や意見」と「検証可能な事実」を分け、正確な現状把握やトラブルシューティングに活かせます。',
       private: 'SNSの情報や広告の誇大表現に惑わされず、冷静かつ合理的な選択ができるようになります。'
+    },
+    recommendedBook: {
+      title: 'FACTFULNESS（ファクトフルネス）',
+      author: 'ハンス・ロスリング、オーラ・ロスリング、アンナ・ロスリング・ロンランド',
+      desc: 'データや客観的な事実に基づき、世界を正しく見る習慣を養う世界的ベストセラー。偏見を排し、ファクトを見抜く眼を鍛えます。',
+      imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/0259/9784822289607.jpg?_ex=120x120',
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/3f826359.ba8e8334.3f82635a.2a275460/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F15740259%2F&link_type=hybrid_html'
     }
   },
   {
@@ -1048,6 +1055,13 @@ export const skillsData = [
     lifeApplication: {
       work: '「〜だから〜になるはず」という仮説に論理的破綻がないかを検証し、質の高い意思決定やプレゼン構成に活かせます。',
       private: '「こうあるべき」「こうに違いない」といった過度な思い込みや非論理的な不安から解放されます。'
+    },
+    recommendedBook: {
+      title: 'ロジカル・シンキング',
+      author: '照屋華子、岡田恵子',
+      desc: '論理思考の定番教科書。情報の重複・漏れ（MECE）や、結論と根拠を繋ぐ「So What? / Why So?」の技術を体系的に解説。',
+      imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/0038/9784492554036.jpg?_ex=120x120',
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/3f826359.ba8e8334.3f82635a.2a275460/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F11080038%2F&link_type=hybrid_html'
     }
   },
   {
@@ -1058,6 +1072,13 @@ export const skillsData = [
     lifeApplication: {
       work: '業務プロセスの改善や、新しいビジネスアイデアを考える際、モレなく網羅的なアプローチで実行プランを作れます。',
       private: '「やりたいこと」や「抱えている悩み」を整理し、何から手をつけるべきかのアクションプランをクリアにできます。'
+    },
+    recommendedBook: {
+      title: 'イシューからはじめよ',
+      author: '安宅和人',
+      desc: '知的生産の圧倒的バイブル。何が本当の課題（イシュー）かを見極め、ロジックツリーを用いて構造化する問題解決の決定版。',
+      imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/5876/9784296115876.jpg?_ex=120x120',
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/3f826359.ba8e8334.3f82635a.2a275460/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17355876%2F&link_type=hybrid_html'
     }
   },
   {
@@ -1068,6 +1089,13 @@ export const skillsData = [
     lifeApplication: {
       work: '会議で他者の意見にある矛盾点や論理的飛躍を優しく指摘し、生産的で誤りのない議論へ導くことができます。',
       private: '口の上手い説得や詐欺的な論法、感情的な言葉によるマインドコントロールを瞬時に防御できます。'
+    },
+    recommendedBook: {
+      title: '知的複眼思考法',
+      author: '苅谷剛彦',
+      desc: '常識や他人の前提を疑い、自分の頭で立体的に考えるクリティカルシンキングの極致。メディアの主張に惑わされないための必読書。',
+      imageUrl: 'https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/5312/9784062923125.jpg?_ex=120x120',
+      affiliateUrl: 'https://hb.afl.rakuten.co.jp/ichiba/3f826359.ba8e8334.3f82635a.2a275460/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F13285312%2F&link_type=hybrid_html'
     }
   }
 ];
