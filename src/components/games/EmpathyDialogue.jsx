@@ -96,6 +96,7 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
     const match = question.scenario.match(/^([^：]+)：(.+)$/);
     const speaker = match ? match[1] : '対話相手';
     const text = match ? match[2] : question.scenario;
+    const displayText = (text.startsWith('「') && text.endsWith('」')) ? text : `「${text}」`;
 
     setTimeout(() => {
       setTyping(false);
@@ -103,7 +104,7 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
         {
           sender: 'them',
           speaker,
-          text: `「${text}」`,
+          text: displayText,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
