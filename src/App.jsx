@@ -6,6 +6,7 @@ import FactsOpinions from './components/games/FactsOpinions';
 import LogicalValidity from './components/games/LogicalValidity';
 import LogicTreeAssembler from './components/games/LogicTreeAssembler';
 import FallacyDetective from './components/games/FallacyDetective';
+import EmpathyDialogue from './components/games/EmpathyDialogue';
 import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import Dashboard from './components/Dashboard';
@@ -37,7 +38,8 @@ const DEFAULT_STATE = {
     factsOpinions: 0,
     logicalValidity: 0,
     logicTree: 0,
-    fallacy: 0
+    fallacy: 0,
+    empathyDialogue: 0
   },
   badges: [false, false, false, false, false],
   diagnosticScores: null,
@@ -46,16 +48,22 @@ const DEFAULT_STATE = {
 
 // クラス進化（肩書き）の判定
 const getCharacterClass = (scores, level) => {
-  const { factsOpinions: fo, logicalValidity: lv, logicTree: lt, fallacy: fa } = scores;
-  const avg = (fo + lv + lt + fa) / 4;
+  const { factsOpinions: fo, logicalValidity: lv, logicTree: lt, fallacy: fa, empathyDialogue: ed = 0 } = scores;
+  const avg = (fo + lv + lt + fa + ed) / 5;
   
   if (avg === 0) return { title: '思考の初心者', desc: 'まだ思考の筋トレを始めていません。いずれかのトレーニングに挑戦しましょう！' };
+  
+  // 新しい最高称号：共感と論理の両立
+  if (fo >= 80 && lv >= 80 && lt >= 80 && fa >= 80 && ed >= 80) {
+    return { title: 'ロジカル＆エモーショナル賢者 (超越者)', desc: '鋭い論理的分析力と、豊かな共感対話力を兼ね備えた、知性と感性のハイブリッド。対立を調和へ導きます。' };
+  }
   if (avg >= 95) return { title: '超越した論理知性 (超人類)', desc: 'すべての論理領域で極限に達した、未来の思考者。隙のない完璧なロジックを展開します。' };
   if (fo >= 80 && lv >= 80 && lt >= 80 && fa >= 80) return { title: '万能 of ロジシャン', desc: '分析・推論・構造化・批判思考のすべてを高い水準で兼ね備えた、論理のオールラウンダー。' };
   
   // 特定分野が突出している場合
-  const maxScore = Math.max(fo, lv, lt, fa);
+  const maxScore = Math.max(fo, lv, lt, fa, ed);
   if (maxScore >= 75) {
+    if (maxScore === ed) return { title: '心に寄り添う共感のメンター', desc: '正論による論破ではなく、相手の感情に優しくチューナーを合わせ、深い信頼関係を築く対話の達人。' };
     if (maxScore === fo && fo >= maxScore - 5) return { title: 'データ主義の科学的探偵', desc: '主観や推測を排除し、冷徹な客観的「事実」のみを証拠として積み上げる分析のスペシャリスト。' };
     if (maxScore === lv && lv >= maxScore - 5) return { title: '論理の絶対守護者 (司法官)', desc: '寸の狂いもない三段論法と推論規則を駆使し、議論に正しい道筋を示すロジックの使い手。' };
     if (maxScore === lt && lt >= maxScore - 5) return { title: '思考の構造化アーキテクト', desc: '複雑に絡み合った課題をMECEに分解し、一目で全体像と原因を整理してしまう構造化の達人。' };
@@ -68,7 +76,7 @@ const getCharacterClass = (scores, level) => {
 
 // 自動推奨ゲームのキー選定
 const getRecommendedGameKey = (scores) => {
-  const keys = ['factsOpinions', 'logicalValidity', 'logicTree', 'fallacy'];
+  const keys = ['factsOpinions', 'logicalValidity', 'logicTree', 'fallacy', 'empathyDialogue'];
   
   // 1. 未プレイ（0%）を優先
   for (const key of keys) {
@@ -404,13 +412,15 @@ export default function App() {
             factsOpinions: Math.round((gameState.diagnosticScores.L / 105) * 100),
             logicalValidity: Math.round((gameState.diagnosticScores.L / 105) * 100),
             logicTree: Math.round((gameState.diagnosticScores.R / 105) * 100),
-            fallacy: Math.round((gameState.diagnosticScores.C / 105) * 100)
+            fallacy: Math.round((gameState.diagnosticScores.C / 105) * 100),
+            empathyDialogue: 0
           }
         : {
             factsOpinions: 0,
             logicalValidity: 0,
             logicTree: 0,
-            fallacy: 0
+            fallacy: 0,
+            empathyDialogue: 0
           }
       );
 
@@ -522,7 +532,18 @@ export default function App() {
       textColor: 'var(--color-primary)',
       badgeColor: 'rgba(139, 92, 246, 0.1)',
       description: '感情の機微を捉え、他者と共感しながら建設的な意思決定を行うための部屋。',
-      games: [],
+      games: [
+        {
+          id: 'empathyDialogue',
+          scoreKey: 'empathyDialogue',
+          moduleNum: 'MODULE 05',
+          name: '共感対話トレーニング',
+          desc: mode === 'daily'
+            ? '日常の不満や悩みの相談に対し、正論で論破せず、感情に寄り添う返答を選ぶトレーニング。'
+            : '職場の後輩や部下、同僚の相談に対して、信頼関係を築くアクティブリスニング（傾聴）を学ぶ。',
+          difficulty: '中級'
+        }
+      ],
       spinoffs: [
         {
           icon: <Sword size={16} />,
@@ -724,6 +745,15 @@ export default function App() {
         )}
         {activeGame === 'fallacy' && (
           <FallacyDetective 
+            onFinish={handleGameFinish} 
+            playSound={playSound} 
+            muted={muted} 
+            toggleMute={toggleMute} 
+            mode={mode}
+          />
+        )}
+        {activeGame === 'empathyDialogue' && (
+          <EmpathyDialogue 
             onFinish={handleGameFinish} 
             playSound={playSound} 
             muted={muted} 

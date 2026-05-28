@@ -379,6 +379,37 @@ export default function Dashboard({
                 {displayScores.logicTree > 0 && <circle cx="160" cy={150 + 80 * (displayScores.logicTree / 100)} r="4" fill="var(--color-amber)" />}
                 {displayScores.fallacy > 0 && <circle cx={160 - 80 * (displayScores.fallacy / 100)} cy="150" r="4" fill="var(--color-rose)" />}
               </svg>
+              <div 
+                style={{ 
+                  width: '100%', 
+                  marginTop: '20px', 
+                  paddingTop: '16px', 
+                  borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Sparkles size={14} />
+                    EQ共感対話力
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    {displayScores.empathyDialogue || 0}%
+                  </span>
+                </div>
+                <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
+                  <div 
+                    style={{ 
+                      height: '100%', 
+                      width: `${displayScores.empathyDialogue || 0}%`, 
+                      background: 'linear-gradient(90deg, var(--color-primary) 0%, #a78bfa 100%)',
+                      borderRadius: '4px',
+                      boxShadow: '0 0 8px var(--color-primary-glow)',
+                      transition: 'all 0.5s ease'
+                    }} 
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

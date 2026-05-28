@@ -23,7 +23,7 @@ const CHARS = [
 
 /**
  * ユーザーの進捗ステータスを12文字のひらがなの「じゅもん」にエンコードします。
- * データの総ビット数: 61ビット (データ) + 11ビット (チェックサム) = 72ビット
+ * データの総ビット数: 59ビット (データ) + 11ビット (チェックサム) = 70ビット (残り2ビットは未使用)
  * 72ビット / 6ビット = 12文字
  */
 export function encodeState(state) {
@@ -35,27 +35,32 @@ export function encodeState(state) {
     value |= BigInt(state.level & 0x7F) << offset;
     offset += 7n;
 
-    // 2. XP (17 bits: 0 - 131,071)
-    value |= BigInt(state.xp & 0x1FFFF) << offset;
-    offset += 17n;
+    // 2. XP (9 bits: level-internal XP 0 - 499)
+    const savedXp = (state.xp !== undefined ? state.xp : 0) % 500;
+    value |= BigInt(savedXp & 0x1FF) << offset;
+    offset += 9n;
 
     // 3. Score: factsOpinions (7 bits: 0 - 127)
-    value |= BigInt(state.scores.factsOpinions & 0x7F) << offset;
+    value |= BigInt((state.scores.factsOpinions || 0) & 0x7F) << offset;
     offset += 7n;
 
     // 4. Score: logicalValidity (7 bits: 0 - 127)
-    value |= BigInt(state.scores.logicalValidity & 0x7F) << offset;
+    value |= BigInt((state.scores.logicalValidity || 0) & 0x7F) << offset;
     offset += 7n;
 
     // 5. Score: logicTree (7 bits: 0 - 127)
-    value |= BigInt(state.scores.logicTree & 0x7F) << offset;
+    value |= BigInt((state.scores.logicTree || 0) & 0x7F) << offset;
     offset += 7n;
 
     // 6. Score: fallacy (7 bits: 0 - 127)
-    value |= BigInt(state.scores.fallacy & 0x7F) << offset;
+    value |= BigInt((state.scores.fallacy || 0) & 0x7F) << offset;
     offset += 7n;
 
-    // 7. Badges (8 bits for unlock state flags)
+    // 7. Score: empathyDialogue (7 bits: 0 - 127)
+    value |= BigInt((state.scores.empathyDialogue || 0) & 0x7F) << offset;
+    offset += 7n;
+
+    // 8. Badges (8 bits for unlock state flags)
     let badgeBits = 0;
     if (state.badges && Array.isArray(state.badges)) {
       state.badges.forEach((b, i) => {
@@ -63,9 +68,9 @@ export function encodeState(state) {
       });
     }
     value |= BigInt(badgeBits & 0xFF) << offset;
-    offset += 8n; // 合計 61 ビットのデータ
+    offset += 8n; // 合計 59 ビットのデータ
 
-    // 8. Checksum (11 bits) - 誤入力検知用
+    // 9. Checksum (11 bits) - 誤入力検知用
     let checksum = 0n;
     let t = value;
     while (t > 0n) {
@@ -75,7 +80,7 @@ export function encodeState(state) {
     checksum &= 0x7FFn;
 
     value |= checksum << offset;
-    offset += 11n; // 合計 72 ビット
+    offset += 11n; // 合計 70 ビット (残り2ビットは未使用)
 
     // 6ビットずつひらがなに変換 (12文字)
     let spell = "";
@@ -120,8 +125,8 @@ export function decodeState(spell) {
   const level = Number((value >> offset) & 0x7Fn);
   offset += 7n;
 
-  const xp = Number((value >> offset) & 0x1FFFFn);
-  offset += 17n;
+  const savedXp = Number((value >> offset) & 0x1FFn);
+  offset += 9n;
 
   const factsOpinions = Number((value >> offset) & 0x7Fn);
   offset += 7n;
@@ -135,14 +140,17 @@ export function decodeState(spell) {
   const fallacy = Number((value >> offset) & 0x7Fn);
   offset += 7n;
 
+  const empathyDialogue = Number((value >> offset) & 0x7Fn);
+  offset += 7n;
+
   const badgeBits = Number((value >> offset) & 0xFFn);
   offset += 8n;
 
   const checksum = Number((value >> offset) & 0x7FFn);
 
   // チェックサム検証
-  // 61ビット分のデータ値からチェックサムを計算
-  const dataValue = value & ((1n << 61n) - 1n);
+  // 59ビット分のデータ値からチェックサムを計算
+  const dataValue = value & ((1n << 59n) - 1n);
   let calculatedChecksum = 0n;
   let t = dataValue;
   while (t > 0n) {
@@ -161,6 +169,9 @@ export function decodeState(spell) {
     badges.push((badgeBits & (1 << i)) !== 0);
   }
 
+  // XPの復元: (level - 1) * 500 + savedXp
+  const xp = Math.max(0, (level - 1) * 500) + savedXp;
+
   return {
     level,
     xp,
@@ -168,9 +179,10 @@ export function decodeState(spell) {
       factsOpinions,
       logicalValidity,
       logicTree,
-      fallacy
+      fallacy,
+      empathyDialogue
     },
     badges,
-    calendar: Array(35).fill(false) // カレンダーは不要になったが互換性のためダミー値
+    calendar: Array(35).fill(false) // 互換性のためのダミー値
   };
 }
