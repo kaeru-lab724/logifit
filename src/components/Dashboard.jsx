@@ -69,7 +69,7 @@ export default function Dashboard({
     setMatchResult(null);
 
     if (!currentSpell) {
-      setMatchError('まずあなた自身の診断を完了するか、じゅもんを入力してください。');
+      setMatchError('まずあなた自身の診断を完了するか、ブレインコードを入力してください。');
       return;
     }
 
@@ -81,7 +81,7 @@ export default function Dashboard({
       playSound('success');
     } catch (err) {
       playSound('incorrect');
-      setMatchError(err.message || '相手のじゅもんの解析に失敗しました。');
+      setMatchError(err.message || '相手のブレインコードの解析に失敗しました。');
     }
   };
 
@@ -209,14 +209,14 @@ export default function Dashboard({
             <div className="glass-panel" style={{ padding: '20px' }}>
               <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
                 <KeyRound size={16} style={{ color: 'var(--color-primary)' }} />
-                ふっかつのじゅもんを唱えてデータを復元
+                ブレインコードをインポートしてデータを復元
               </h3>
               <form onSubmit={handleRestoreSpell} style={{ display: 'flex', gap: '8px' }}>
                 <input 
                   type="text" 
                   value={spellInput}
                   onChange={(e) => setSpellInput(e.target.value)}
-                  placeholder="ひらがな12文字を入力"
+                  placeholder="英数字12文字を入力"
                   style={{
                     flex: 1,
                     background: 'rgba(255, 255, 255, 0.03)',
@@ -229,7 +229,7 @@ export default function Dashboard({
                   }}
                 />
                 <button type="submit" className="btn btn-primary" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px' }}>
-                  復活
+                  インポート
                 </button>
               </form>
               {spellError && <p style={{ color: 'var(--color-rose)', fontSize: '11px', marginTop: '6px', textAlign: 'center' }}>❌ {spellError}</p>}
@@ -324,7 +324,7 @@ export default function Dashboard({
                           <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>📋 取扱説明書</span>
                           <span style={{ display: 'block', fontSize: '11px', color: '#f43f5e', fontWeight: 'bold' }}>● 地雷ポイント</span>
                           <p style={{ margin: '2px 0 8px 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.jealousPoint}</p>
-                          <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold' }}>● デバッグ呪文</span>
+                          <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold' }}>● デバッグコマンド</span>
                           <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.debugSpell}</p>
                         </div>
                       </div>
@@ -388,13 +388,13 @@ export default function Dashboard({
                   脳内摩擦係数（相性）チェック
                 </h2>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '12.5px', lineHeight: '1.5', marginBottom: '24px' }}>
-                  あなたと相手の「ふっかつのじゅもん」を噛み合わせ、思考ギアの摩擦係数（0〜100%）と取扱説明書を算出します。
+                  あなたと相手の「ブレインコード」を噛み合わせ、思考ギアの摩擦係数（0〜100%）と取扱説明書を算出します。
                 </p>
 
                 <form onSubmit={handleCheckFriction} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                   {/* Your Spell Box */}
                   <div>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>▼ あなたのじゅもん（コピーして相手に渡せます）</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>▼ あなたのブレインコード（コピーして相手に共有）</span>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input 
                         type="text" 
@@ -407,7 +407,7 @@ export default function Dashboard({
                         onClick={onCopyClick}
                         className="btn btn-secondary" 
                         style={{ padding: '8px 12px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        title="じゅもんをコピー"
+                        title="ブレインコードをコピー"
                       >
                         <Copy size={14} />
                       </button>
@@ -416,12 +416,12 @@ export default function Dashboard({
 
                   {/* Opponent Spell Box */}
                   <div>
-                    <span style={{ fontSize: '11px', color: 'var(--text-primary)', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>▼ 相手のじゅもんを入力</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-primary)', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>▼ 相手のブレインコードを入力</span>
                     <input 
                       type="text" 
                       value={opponentSpell} 
                       onChange={(e) => setOpponentSpell(e.target.value)}
-                      placeholder="相手のひらがな12文字を入力"
+                      placeholder="相手の英数字12文字を入力"
                       style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px 12px', color: '#fff', fontSize: '12px', outline: 'none' }}
                     />
                   </div>
@@ -467,11 +467,11 @@ export default function Dashboard({
                   </div>
 
                   <button 
-                    onClick={() => handleShareToX(`⚡ 二人の「脳内摩擦係数」をスキャンしました！\n結果：【${matchResult.pairName}】\n激突度：【${matchResult.friction}%】\n\n診断＆相性チェックはこちら👇\n#脳内摩擦係数 #アたまのレントゲン #LogiFit`)}
+                    onClick={() => handleShareToX(`⚡ 二人の「脳内摩擦係数」をスキャンしました！\n結果：【${matchResult.pairName}】\n激突度：【${matchResult.friction}%】\n\n診断＆相性チェックはこちら👇\n#脳内摩擦係数 #アたまのレントゲン #ブレインコード #LogiFit`)}
                     className="btn btn-secondary"
                     style={{ width: '100%', fontSize: '12px', gap: '6px', background: 'white', color: 'black', fontWeight: 'bold' }}
                   >
-                    𝕏 にこの摩擦係数をシェアする
+                    𝕏 に同期結果をシェアする
                   </button>
                 </div>
               )}
@@ -833,14 +833,14 @@ export default function Dashboard({
 
               {/* Sidebar */}
               <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* Hiragana Spell Backup Box */}
+                {/* Alphanumeric Brain Code Backup Box */}
                 <div className="glass-panel" style={{ padding: '20px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <KeyRound size={18} style={{ color: 'var(--color-primary)' }} />
-                    ふっかつのじゅもん
+                    ブレインコード（同期・復元）
                   </h3>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.4', marginBottom: '16px' }}>
-                    データをコピペ保存できます（短い12文字のひらがなコードです）。
+                    データを他の端末と同期・復元できます（英数字12文字のコードです）。
                   </p>
                   <div 
                     onClick={onCopyClick}
@@ -869,14 +869,14 @@ export default function Dashboard({
                   </div>
                   <form onSubmit={handleRestoreSpell} style={{ marginTop: '20px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
                     <label style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
-                      じゅもんを唱えて復活する:
+                      コードを入力して復元・同期する:
                     </label>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input 
                         type="text" 
                         value={spellInput}
                         onChange={(e) => setSpellInput(e.target.value)}
-                        placeholder="ひらがな12文字を入力"
+                        placeholder="英数字12文字を入力"
                         style={{
                           flex: 1,
                           background: 'rgba(255, 255, 255, 0.03)',
@@ -889,11 +889,11 @@ export default function Dashboard({
                         }}
                       />
                       <button type="submit" className="btn btn-primary" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px' }}>
-                        復活
+                        同期
                       </button>
                     </div>
                     {spellError && <p style={{ color: 'var(--color-rose)', fontSize: '11px', marginTop: '6px' }}>❌ {spellError}</p>}
-                    {spellSuccess && <p style={{ color: 'var(--color-emerald)', fontSize: '11px', marginTop: '6px' }}>✨ じゅもんが　みごとに　きまった！</p>}
+                    {spellSuccess && <p style={{ color: 'var(--color-emerald)', fontSize: '11px', marginTop: '6px' }}>✨ コードが正常に同期されました！</p>}
                   </form>
                 </div>
 
@@ -1078,7 +1078,7 @@ export default function Dashboard({
       {showToast && (
         <div className="copy-toast">
           <Sparkles size={16} style={{ color: 'var(--color-primary)' }} />
-          <span>じゅもんをクリップボードにコピーしました！</span>
+          <span>ブレインコードをクリップボードにコピーしました！</span>
         </div>
       )}
     </div>

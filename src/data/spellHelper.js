@@ -19,6 +19,13 @@ const CHARS = [
   'ぱ', 'ぴ', 'ぷ', 'ぽ'
 ];
 
+// URL-safe Base64 character set for new Brain Codes (6 bits per character, 64 chars total)
+const BASE64_CHARS = [
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'
+];
+
 // Type ID to Numeric mapping for spell encoding (4 bits: 0 - 15)
 const TYPE_TO_NUM = {
   frogAnalyst: 0,
@@ -51,8 +58,8 @@ const NUM_TO_TYPE = [
 ];
 
 /**
- * ユーザーの進捗ステータスを12文字のひらがなの「じゅもん」にエンコードします。
- * 新データ総ビット数: 61ビット (データ) + 11ビット (チェックサム) = 72ビット
+ * ユーザーの進捗ステータスを12文字の英数字の「ブレインコード」にエンコードします。
+ * データ総ビット数: 61ビット (データ) + 11ビット (チェックサム) = 72ビット
  * 72ビット / 6ビット = 12文字
  */
 export function encodeState(state) {
@@ -99,7 +106,7 @@ export function encodeState(state) {
     value |= BigInt(badgeBits & 0x3F) << offset;
     offset += 6n;
 
-    // 9. Diagnostic Type ID (4 bits: 0 - 15) [NEW]
+    // 9. Diagnostic Type ID (4 bits: 0 - 15)
     const typeId = state.diagnosticTypeId !== undefined 
       ? (TYPE_TO_NUM[state.diagnosticTypeId] || 0) 
       : 0;
@@ -118,12 +125,12 @@ export function encodeState(state) {
     value |= checksum << offset;
     offset += 11n; // 合計 72 ビット
 
-    // 6ビットずつひらがなに変換 (12文字)
+    // 6ビットずつ英数字に変換 (12文字)
     let spell = "";
     let temp = value;
     for (let i = 0; i < 12; i++) {
       const idx = Number(temp & 63n);
-      spell += CHARS[idx];
+      spell += BASE64_CHARS[idx];
       temp >>= 6n;
     }
 
@@ -135,23 +142,35 @@ export function encodeState(state) {
 }
 
 /**
- * ひらがなの「じゅもん」をデコードして、ユーザーの進捗ステータスを復元します。
- * 新形式 (61ビットデータ) と 旧形式 (59ビットデータ) の双方をチェックサムで自動判別します（後方互換性）。
+ * ブレインコード（または旧ひらがなじゅもん）をデコードして、ユーザーの進捗ステータスを復元します。
+ * 新英数字コード形式と旧ひらがな形式の双方をチェックサムで自動判別します（後方互換性）。
  */
 export function decodeState(spell) {
-  const cleanSpell = spell.replace(/[\s　\-_]/g, "");
-
-  if (cleanSpell.length !== 12) {
-    throw new Error("じゅもんの　ながさが　ただしくありません");
+  // 入力された文字列にひらがなが含まれているか判定
+  const hasHiragana = /[\u3040-\u309F\u30A0-\u30FF]/.test(spell);
+  let cleanSpell = "";
+  
+  if (hasHiragana) {
+    // 旧ひらがな呪文：記号や空白を除去
+    cleanSpell = spell.replace(/[\s　\-_]/g, "");
+    if (cleanSpell.length !== 12) {
+      throw new Error("ブレインコードの長さが正しくありません（ひらがな12文字）");
+    }
+  } else {
+    // 新英数字コード：スペースや改行のみ除去（ハイフンやアンダーバーは有効なコード文字のため維持）
+    cleanSpell = spell.replace(/[\s　\r\n\t]/g, "");
+    if (cleanSpell.length !== 12) {
+      throw new Error("ブレインコードの長さが正しくありません（英数字12文字）");
+    }
   }
 
-  // ひらがな文字列から72ビットの数値を復元
+  // 72ビットの数値を復元
   let value = 0n;
   for (let i = 11; i >= 0; i--) {
     const char = cleanSpell[i];
-    const idx = CHARS.indexOf(char);
+    const idx = hasHiragana ? CHARS.indexOf(char) : BASE64_CHARS.indexOf(char);
     if (idx === -1) {
-      throw new Error(`つかえない　もじ「${char}」が　まざっています`);
+      throw new Error(`使用できない文字「${char}」が混ざっています`);
     }
     value = (value << 6n) | BigInt(idx);
   }
@@ -295,7 +314,7 @@ export function decodeState(spell) {
     };
   }
 
-  throw new Error("じゅもんが　ちがいます。もういちど　たしかめてください");
+  throw new Error("ブレインコードの解析に失敗しました。もう一度入力内容を確認してください。");
 }
 
 /**

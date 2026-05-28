@@ -328,7 +328,7 @@ export default function App() {
     }
   };
 
-  // ふっかつのじゅもん復元処理
+  // ブレインコード復元処理
   const handleRestoreSpell = (e) => {
     e.preventDefault();
     setSpellError('');
@@ -355,7 +355,7 @@ export default function App() {
       playSound('correct');
     } catch (err) {
       playSound('incorrect');
-      setSpellError(err.message || 'じゅもんの解析に失敗しました。');
+      setSpellError(err.message || 'ブレインコードの解析に失敗しました。');
     }
   };
 
@@ -377,7 +377,7 @@ export default function App() {
   const handleCopySpell = (spellText) => {
     navigator.clipboard.writeText(spellText);
     playSound('click');
-    alert('ふっかつのじゅもんをクリップボードにコピーしました！');
+    alert('ブレインコードをクリップボードにコピーしました！');
   };
 
   // 診断結果の保存ハンドラー
@@ -833,7 +833,7 @@ export default function App() {
             </div>
 
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.5', marginBottom: '16px' }}>
-              データが「ふっかつのじゅもん」に保存されました！コピーしてメモ帳などに大切に保管してください。
+              データが「ブレインコード」に変換されました！コピーして大切に保管してください。
             </p>
 
             <div className="spell-box">
@@ -986,8 +986,8 @@ function GuideModal({ isOpen, onClose }) {
       icon: <TrendingUp size={48} style={{ color: 'var(--color-emerald)' }} />
     },
     {
-      title: "💾 4. ふっかつのじゅもんで保存",
-      description: "獲得したレベルやXP、バッジ実績はブラウザに自動保存されます。他のPCやスマホでも同じレベルからプレイしたい時は、『ふっかつのじゅもん（パスワード）』をコピーして入力すれば、いつでも続きから再開可能です。",
+      title: "💾 4. ブレインコードで同期・保存",
+      description: "獲得したレベルやXP、バッジ実績はブラウザに自動保存されます。他のPCやスマホでも同じレベルからプレイしたい時は、『ブレインコード（同期キー）』をコピーして入力すれば、いつでも同期・復元が可能です。",
       icon: <KeyRound size={48} style={{ color: 'var(--color-amber)' }} />
     }
   ];

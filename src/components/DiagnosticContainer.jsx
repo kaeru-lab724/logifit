@@ -145,7 +145,7 @@ ${targetLabel}の脳内バグをレントゲンスキャンしました！
 🧠 タイプ：${resultType.name} ${resultType.emoji}
 ～ ${resultType.tagline} ～
 
-あの人の攻略トリセツ＆デバッグ呪文はこちら👇
+あの人の攻略トリセツ＆デバッグコマンドはこちら👇
 #脳内摩擦係数 #取扱説明書 #アたまのレントゲン #LogiFit
 https://www.logifit.site/`;
     }
@@ -465,7 +465,7 @@ https://www.logifit.site/`;
                       <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{resultType.torisetsu.jealousPoint}</p>
                     </div>
                     <div>
-                      <span style={{ color: "#10b981", fontWeight: "bold", fontSize: "13px" }}>● デバッグ呪文（対処法）</span>
+                      <span style={{ color: "#10b981", fontWeight: "bold", fontSize: "13px" }}>● デバッグコマンド（対処法）</span>
                       <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{resultType.torisetsu.debugSpell}</p>
                     </div>
                   </div>

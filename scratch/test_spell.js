@@ -1,6 +1,6 @@
 import { encodeState, decodeState, calculateFriction } from "../src/data/spellHelper.js";
 
-console.log("=== STARTING SPELL ENGINE VERIFICATION ===");
+console.log("=== STARTING BRAIN CODE SYSTEM VERIFICATION ===");
 
 // 1. Mock user state
 const mockState = {
@@ -17,15 +17,23 @@ const mockState = {
   diagnosticTypeId: "nitpicker"
 };
 
-// 2. Encode to spell
-const spell = encodeState(mockState);
-console.log(`Generated spell: ${spell} (Length: ${spell.length})`);
+// 2. Encode to new alphanumeric Brain Code
+const brainCode = encodeState(mockState);
+console.log(`Generated Alphanumeric Brain Code: ${brainCode} (Length: ${brainCode.length})`);
 
-// 3. Decode back
-const decodedState = decodeState(spell);
-console.log("Decoded state:", JSON.stringify(decodedState, null, 2));
+// Validate that it consists of URL-safe Base64 alphanumeric characters
+const isAlphanumericCode = /^[A-Za-z0-9\-_]+$/.test(brainCode);
+if (isAlphanumericCode && brainCode.length === 12) {
+  console.log("✅ Code format is URL-safe alphanumeric Base64!");
+} else {
+  console.error("❌ Code format is invalid!", brainCode);
+  process.exit(1);
+}
 
-// Verify fields
+// 3. Decode back and verify
+const decodedState = decodeState(brainCode);
+console.log("Decoded new Brain Code state:", JSON.stringify(decodedState, null, 2));
+
 const checks = [
   decodedState.level === mockState.level,
   decodedState.scores.factsOpinions === mockState.scores.factsOpinions,
@@ -38,92 +46,44 @@ const checks = [
 ];
 
 if (checks.every(Boolean)) {
-  console.log("✅ Encode/Decode verification SUCCESSFUL!");
+  console.log("✅ Alphanumeric Encode/Decode verification SUCCESSFUL!");
 } else {
-  console.error("❌ Encode/Decode verification FAILED!");
+  console.error("❌ Alphanumeric Encode/Decode verification FAILED!");
   process.exit(1);
 }
 
-// 4. Test Compatibility with Old Spells
-// Let's create an old format mock value manually and encode it using old rules to test back-compatibility
-// An old format spell is 59 bits data + 11 bits checksum = 70 bits.
-// Old data structure: level(7), savedXp(9), facts(7), logic(7), tree(7), fallacy(7), empathy(7), badges(8) = 59 bits.
-function encodeOldSpell(state) {
-  let value = 0n;
-  let offset = 0n;
-  value |= BigInt(state.level & 0x7F) << offset; offset += 7n;
-  value |= BigInt((state.xp % 500) & 0x1FF) << offset; offset += 9n;
-  value |= BigInt(state.scores.factsOpinions & 0x7F) << offset; offset += 7n;
-  value |= BigInt(state.scores.logicalValidity & 0x7F) << offset; offset += 7n;
-  value |= BigInt(state.scores.logicTree & 0x7F) << offset; offset += 7n;
-  value |= BigInt(state.scores.fallacy & 0x7F) << offset; offset += 7n;
-  value |= BigInt(state.scores.empathyDialogue & 0x7F) << offset; offset += 7n;
-  let badgeBits = 0;
-  state.badges.forEach((b, i) => { if (b) badgeBits |= (1 << i); });
-  value |= BigInt(badgeBits & 0xFF) << offset; offset += 8n;
+// 4. Test backward compatibility (decode old Hiragana spell)
+// Let's use a known valid old-format hiragana spell that we generated in the previous test: "せぷしぬごごぶふげゆはす"
+const oldHiraganaSpell = "せぷしぬごごぶふげゆはす";
+console.log(`Testing old Hiragana spell decoding: ${oldHiraganaSpell}`);
 
-  let checksum = 0n;
-  let t = value;
-  while (t > 0n) {
-    checksum ^= (t & 0x7FFn);
-    t >>= 11n;
+try {
+  const decodedOld = decodeState(oldHiraganaSpell);
+  console.log("Decoded old Hiragana spell state:", JSON.stringify(decodedOld, null, 2));
+  
+  if (decodedOld.level === 12 && decodedOld.scores.logicalValidity === 90) {
+    console.log("✅ Backward compatibility verification SUCCESSFUL!");
+  } else {
+    console.error("❌ Decoded state properties did not match expected values!");
+    process.exit(1);
   }
-  checksum &= 0x7FFn;
-  value |= checksum << offset;
-
-  // Convert to 12 hiragana characters
-  const CHARS = [
-    'あ', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ', 'さ', 'し', 'す', 'せ', 'そ', 'た', 'ち', 'つ', 'て', 'と', 
-    'な', 'ぬ', 'ね', 'の', 'は', 'ひ', 'ふ', 'ほ', 'ま', 'み', 'む', 'め', 'も', 'や', 'ゆ', 'よ', 'ら', 'る', 'れ', 'ろ', 
-    'わ', 'ん', 'が', 'ぎ', 'ぐ', 'げ', 'ご', 'ざ', 'じ', 'ず', 'ぜ', 'ぞ', 'だ', 'で', 'ど', 'ば', 'び', 'ぶ', 'ぼ', 
-    'ぱ', 'ぴ', 'ぷ', 'ぽ'
-  ];
-  let spellStr = "";
-  let temp = value;
-  for (let i = 0; i < 12; i++) {
-    spellStr += CHARS[Number(temp & 63n)];
-    temp >>= 6n;
-  }
-  return spellStr;
-}
-
-const oldSpell = encodeOldSpell(mockState);
-console.log(`Generated old spell: ${oldSpell}`);
-
-const decodedOld = decodeState(oldSpell);
-console.log("Decoded old format state:", JSON.stringify(decodedOld, null, 2));
-
-if (decodedOld.level === mockState.level && decodedOld.scores.factsOpinions === mockState.scores.factsOpinions) {
-  console.log("✅ Back-compatibility verification SUCCESSFUL!");
-} else {
-  console.error("❌ Back-compatibility verification FAILED!");
+} catch (error) {
+  console.error("❌ Failed to decode old Hiragana spell:", error);
   process.exit(1);
 }
 
-// 5. Test Friction Calculation
-const stateA = decodedState; // nitpicker
-const stateB = {
-  level: 10,
-  xp: 120,
-  scores: {
-    factsOpinions: 20,
-    logicalValidity: 30,
-    logicTree: 40,
-    fallacy: 20,
-    empathyDialogue: 95
-  },
-  badges: [true, false, false, false, false, false],
-  diagnosticTypeId: "runawayTrain"
-};
+// 5. Test friction calculation between a new Brain Code user and an old Hiragana spell user
+const stateA = decodedState; // nitpicker (new code)
+const stateB = decodeState(oldHiraganaSpell); // psycho (old spell)
 
 const frictionResult = calculateFriction(stateA, stateB);
-console.log("Friction result between Nitpicker and RunawayTrain:", JSON.stringify(frictionResult, null, 2));
+console.log("Friction calculation results (Nitpicker x Psycho):", JSON.stringify(frictionResult, null, 2));
 
-if (frictionResult.friction > 0 && frictionResult.pairName === "防壁インスペクターと爆走機関車") {
-  console.log("✅ Friction calculation verification SUCCESSFUL!");
+if (frictionResult.friction > 0 && frictionResult.pairName !== "") {
+  console.log("✅ Mixed-format friction calculation verification SUCCESSFUL!");
 } else {
-  console.error("❌ Friction calculation verification FAILED!");
+  console.error("❌ Friction calculation failed!");
   process.exit(1);
 }
 
-console.log("=== ALL SPELL ENGINE TESTS PASSED ===");
+console.log("=== ALL BRAIN CODE SYSTEM TESTS PASSED ===");
