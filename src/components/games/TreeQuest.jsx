@@ -440,45 +440,48 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
           </p>
 
           {/* 3. ツリーアリーナ（バトルスクリーン） */}
-          <div className="tree-arena">
-            <div className="grid-overlay" />
-            
-            {/* スキャンビーム */}
-            {isScanning && <div className="scanner-beam" />}
-
-            {/* SVG 接続用ネオンライン */}
-            <svg 
-              style={{ 
-                position: 'absolute', 
-                top: 0, left: 0, 
-                width: '100%', height: '100%', 
-                pointerEvents: 'none', 
-                zIndex: 2 
-              }}
-            >
-              {/* Root から Sub1 への接続線 */}
-              <path 
-                d="M 270 190 Q 340 190, 340 115 T 410 115"
-                className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
-              />
-              {/* Root から Sub2 への接続線 */}
-              <path 
-                d="M 270 190 Q 340 190, 340 265 T 410 265"
-                className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
-              />
-              {/* Theme から Root への接続線 */}
-              <path 
-                d="M 120 190 H 150"
-                className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
-              />
-            </svg>
-
-            {/* ノードの配置 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '30px', width: '100%', justifyContent: 'space-between', zIndex: 5, padding: '0 20px' }}>
+          <div style={{ width: '100%', overflowX: 'auto', marginBottom: '24px' }}>
+            <div className="tree-arena" style={{ width: '780px', height: '340px', position: 'relative', flexShrink: 0, margin: '0 auto', display: 'block', padding: 0 }}>
+              <div className="grid-overlay" />
               
+              {/* スキャンビーム */}
+              {isScanning && <div className="scanner-beam" />}
+
+              {/* SVG 接続用ネオンライン */}
+              <svg 
+                style={{ 
+                  position: 'absolute', 
+                  top: 0, left: 0, 
+                  width: '100%', height: '100%', 
+                  pointerEvents: 'none', 
+                  zIndex: 2 
+                }}
+              >
+                {/* Theme から Root への接続線 */}
+                <path 
+                  d="M 160 170 L 250 170"
+                  className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
+                />
+                {/* Root から Sub1 への接続線 */}
+                <path 
+                  d="M 490 170 C 505 170, 505 80, 520 80"
+                  className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
+                />
+                {/* Root から Sub2 への接続線 */}
+                <path 
+                  d="M 490 170 C 505 170, 505 260, 520 260"
+                  className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
+                />
+              </svg>
+
               {/* 大テーマ (固定ノード) */}
               <div 
                 style={{ 
+                  position: 'absolute',
+                  left: '20px',
+                  top: '140px',
+                  width: '140px',
+                  height: '60px',
                   background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%)', 
                   border: '1px solid var(--color-amber)',
                   padding: '12px 14px',
@@ -487,15 +490,19 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   color: 'var(--color-amber)',
                   fontSize: '13px',
                   boxShadow: '0 0 12px rgba(245, 158, 11, 0.15)',
-                  width: '140px',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxSizing: 'border-box',
+                  zIndex: 5
                 }}
               >
                 {currentStage.theme}
               </div>
 
               {/* 第1階層スロット (Root) */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+              <div style={{ position: 'absolute', left: '250px', top: '120px', width: '240px', height: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 5 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>
                     {currentStage.correctStructure.slots[0].label}
@@ -519,6 +526,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, 'root')}
                   className={`slot-box ${placedItems['root'] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'fail' : ''}`}
+                  style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
                 >
                   {placedItems['root'] ? (
                     <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
@@ -531,43 +539,78 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
               </div>
 
               {/* 第2階層スロット (Sub1 / Sub2) */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {currentStage.correctStructure.slots.slice(1).map((slot, idx) => (
-                  <div key={slot.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>
-                        {slot.label}
-                      </span>
-                      <button 
-                        onClick={() => setActiveHintSlot(activeHintSlot === slot.id ? null : slot.id)}
-                        style={{ background: 'none', border: 'none', color: 'var(--color-amber)', cursor: 'pointer', display: 'flex', padding: 0 }}
-                      >
-                        <HelpCircle size={12} />
-                      </button>
-                    </div>
+              {/* Sub1 (上) */}
+              <div style={{ position: 'absolute', left: '520px', top: '30px', width: '240px', height: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>
+                    {currentStage.correctStructure.slots[1].label}
+                  </span>
+                  <button 
+                    onClick={() => setActiveHintSlot(activeHintSlot === currentStage.correctStructure.slots[1].id ? null : currentStage.correctStructure.slots[1].id)}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-amber)', cursor: 'pointer', display: 'flex', padding: 0 }}
+                  >
+                    <HelpCircle size={12} />
+                  </button>
+                </div>
 
-                    {activeHintSlot === slot.id && (
-                      <div className="fade-in" style={{ position: 'absolute', bottom: '75px', background: '#0f172a', border: '1px solid var(--color-amber)', borderRadius: '8px', padding: '10px 14px', fontSize: '11.5px', color: 'var(--text-primary)', width: '220px', zIndex: 200, boxShadow: '0 4px 20px rgba(0,0,0,0.7)', lineHeight: '1.4' }}>
-                        💡 {slot.hint}
-                      </div>
-                    )}
-
-                    <div 
-                      onClick={() => handleSlotClick(slot.id)}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => handleDrop(e, slot.id)}
-                      className={`slot-box ${placedItems[slot.id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'fail' : ''}`}
-                    >
-                      {placedItems[slot.id] ? (
-                        <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                          {currentStage.options.find(o => o.id === placedItems[slot.id])?.text}
-                        </span>
-                      ) : (
-                        <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
-                      )}
-                    </div>
+                {activeHintSlot === currentStage.correctStructure.slots[1].id && (
+                  <div className="fade-in" style={{ position: 'absolute', bottom: '75px', background: '#0f172a', border: '1px solid var(--color-amber)', borderRadius: '8px', padding: '10px 14px', fontSize: '11.5px', color: 'var(--text-primary)', width: '220px', zIndex: 200, boxShadow: '0 4px 20px rgba(0,0,0,0.7)', lineHeight: '1.4' }}>
+                    💡 {currentStage.correctStructure.slots[1].hint}
                   </div>
-                ))}
+                )}
+
+                <div 
+                  onClick={() => handleSlotClick(currentStage.correctStructure.slots[1].id)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, currentStage.correctStructure.slots[1].id)}
+                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[1].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'fail' : ''}`}
+                  style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
+                >
+                  {placedItems[currentStage.correctStructure.slots[1].id] ? (
+                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                      {currentStage.options.find(o => o.id === placedItems[currentStage.correctStructure.slots[1].id])?.text}
+                    </span>
+                  ) : (
+                    <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Sub2 (下) */}
+              <div style={{ position: 'absolute', left: '520px', top: '210px', width: '240px', height: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold' }}>
+                    {currentStage.correctStructure.slots[2].label}
+                  </span>
+                  <button 
+                    onClick={() => setActiveHintSlot(activeHintSlot === currentStage.correctStructure.slots[2].id ? null : currentStage.correctStructure.slots[2].id)}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-amber)', cursor: 'pointer', display: 'flex', padding: 0 }}
+                  >
+                    <HelpCircle size={12} />
+                  </button>
+                </div>
+
+                {activeHintSlot === currentStage.correctStructure.slots[2].id && (
+                  <div className="fade-in" style={{ position: 'absolute', bottom: '75px', background: '#0f172a', border: '1px solid var(--color-amber)', borderRadius: '8px', padding: '10px 14px', fontSize: '11.5px', color: 'var(--text-primary)', width: '220px', zIndex: 200, boxShadow: '0 4px 20px rgba(0,0,0,0.7)', lineHeight: '1.4' }}>
+                    💡 {currentStage.correctStructure.slots[2].hint}
+                  </div>
+                )}
+
+                <div 
+                  onClick={() => handleSlotClick(currentStage.correctStructure.slots[2].id)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, currentStage.correctStructure.slots[2].id)}
+                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[2].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'fail' : ''}`}
+                  style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
+                >
+                  {placedItems[currentStage.correctStructure.slots[2].id] ? (
+                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                      {currentStage.options.find(o => o.id === placedItems[currentStage.correctStructure.slots[2].id])?.text}
+                    </span>
+                  ) : (
+                    <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                  )}
+                </div>
               </div>
 
             </div>
