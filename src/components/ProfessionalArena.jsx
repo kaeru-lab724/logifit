@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ChevronLeft, 
   Sword, 
@@ -6,8 +6,11 @@ import {
   Brain,
   Lock
 } from 'lucide-react';
+import FallacyHunter from './games/FallacyHunter';
 
-export default function ProfessionalArena({ playSound, onBack }) {
+export default function ProfessionalArena({ gameState, onFinish, playSound, onBack, muted, toggleMute }) {
+  const [activeArenaGame, setActiveArenaGame] = useState(null);
+
   const games = [
     {
       id: 'fallacyHunter',
@@ -17,7 +20,8 @@ export default function ProfessionalArena({ playSound, onBack }) {
       difficulty: 'プロフェッショナル',
       color: 'var(--color-rose)',
       bgColor: 'var(--color-rose-soft)',
-      icon: <Sword size={24} style={{ color: 'var(--color-rose)' }} />
+      icon: <Sword size={24} style={{ color: 'var(--color-rose)' }} />,
+      isLocked: false
     },
     {
       id: 'treeQuest',
@@ -27,7 +31,8 @@ export default function ProfessionalArena({ playSound, onBack }) {
       difficulty: 'プロフェッショナル',
       color: 'var(--color-amber)',
       bgColor: 'var(--color-amber-soft)',
-      icon: <Sword size={24} style={{ color: 'var(--color-amber)' }} />
+      icon: <Sword size={24} style={{ color: 'var(--color-amber)' }} />,
+      isLocked: true
     },
     {
       id: 'eqSimulator',
@@ -37,9 +42,28 @@ export default function ProfessionalArena({ playSound, onBack }) {
       difficulty: 'プロフェッショナル',
       color: 'var(--color-primary)',
       bgColor: 'var(--color-primary-soft)',
-      icon: <Sword size={24} style={{ color: 'var(--color-primary)' }} />
+      icon: <Sword size={24} style={{ color: 'var(--color-primary)' }} />,
+      isLocked: true
     }
   ];
+
+  if (activeArenaGame === 'fallacyHunter') {
+    return (
+      <FallacyHunter 
+        onFinish={(score) => {
+          onFinish('fallacyHunter', score, false);
+          setActiveArenaGame(null);
+        }}
+        playSound={playSound}
+        muted={muted}
+        toggleMute={toggleMute}
+        onBack={() => {
+          playSound('click');
+          setActiveArenaGame(null);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="game-container fade-in" style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 16px' }}>
@@ -87,7 +111,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
         </h1>
         <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '14.5px', marginBottom: '0', maxWidth: '680px', margin: '0 auto' }}>
           日常・ビジネスの枠を超え、より高度で複雑な課題解決や対人スキルのデバッグに挑むプロフェッショナル用ステージです。
-          実戦的なスピンオフゲームを通じて、極限の思考回路をアンロックしましょう。
+          実戦的なスピンオフゲームを通じて、極限 of 思考回路をアンロックしましょう。
         </p>
       </div>
 
@@ -100,72 +124,103 @@ export default function ProfessionalArena({ playSound, onBack }) {
           marginBottom: '48px'
         }}
       >
-        {games.map((game) => (
-          <div 
-            key={game.id}
-            className="glass-panel"
-            style={{
-              padding: '28px',
-              background: 'var(--glass-bg)',
-              border: '1px solid var(--border-color)',
-              borderTop: `4px solid ${game.color}`,
-              borderRadius: '16px',
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '280px',
-              transition: 'all 0.3s ease',
-              opacity: 0.85
-            }}
-          >
-            <div>
-              {/* アイコン & モジュール番号 */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <div style={{ padding: '8px', background: game.bgColor, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {game.icon}
+        {games.map((game) => {
+          const score = gameState?.scores?.[game.id] || 0;
+          const isLocked = game.isLocked;
+
+          return (
+            <div 
+              key={game.id}
+              className={`glass-panel ${!isLocked ? 'hover-lift' : ''}`}
+              onClick={() => {
+                if (isLocked) {
+                  playSound('incorrect');
+                  return;
+                }
+                playSound('click');
+                setActiveArenaGame(game.id);
+              }}
+              style={{
+                padding: '28px',
+                background: 'var(--glass-bg)',
+                border: '1px solid var(--border-color)',
+                borderTop: `4px solid ${game.color}`,
+                borderRadius: '16px',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                minHeight: '280px',
+                transition: 'all 0.3s ease',
+                opacity: isLocked ? 0.75 : 1,
+                cursor: isLocked ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <div>
+                {/* アイコン & モジュール番号 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <div style={{ padding: '8px', background: game.bgColor, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {game.icon}
+                  </div>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', fontFamily: 'var(--font-display)', letterSpacing: '1px' }}>
+                    {game.moduleNum}
+                  </span>
                 </div>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', fontFamily: 'var(--font-display)', letterSpacing: '1px' }}>
-                  {game.moduleNum}
-                </span>
+
+                {/* ゲームタイトル */}
+                <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 10px 0', fontFamily: 'var(--font-display)' }}>
+                  {game.name}
+                </h3>
+
+                {/* 紹介文 */}
+                <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', margin: '0 0 20px 0' }}>
+                  {game.desc}
+                </p>
               </div>
 
-              {/* ゲームタイトル */}
-              <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 10px 0', fontFamily: 'var(--font-display)' }}>
-                {game.name}
-              </h3>
-
-              {/* 紹介文 */}
-              <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', margin: '0 0 20px 0' }}>
-                {game.desc}
-              </p>
+              {/* statusバッジ（Coming Soon / ベストスコア） */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>難易度: {game.difficulty}</span>
+                {isLocked ? (
+                  <span 
+                    style={{ 
+                      fontSize: '10px', 
+                      color: game.color, 
+                      fontWeight: 'bold', 
+                      background: game.bgColor, 
+                      padding: '4px 10px', 
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      border: '1px solid var(--border-color)'
+                    }}
+                  >
+                    <Lock size={10} />
+                    Coming Soon
+                  </span>
+                ) : (
+                  <span 
+                    style={{ 
+                      fontSize: '11.5px', 
+                      color: game.color, 
+                      fontWeight: 'bold', 
+                      background: game.bgColor, 
+                      padding: '4px 10px', 
+                      borderRadius: '6px',
+                      border: `1px solid ${game.color}`
+                    }}
+                  >
+                    ベスト: {score}%
+                  </span>
+                )}
+              </div>
             </div>
-
-            {/* statusバッジ（Coming Soon） */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>難易度: {game.difficulty}</span>
-              <span 
-                style={{ 
-                  fontSize: '10px', 
-                  color: game.color, 
-                  fontWeight: 'bold', 
-                  background: game.bgColor, 
-                  padding: '4px 10px', 
-                  borderRadius: '6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  border: '1px solid var(--border-color)'
-                }}
-              >
-                <Lock size={10} />
-                Coming Soon
-              </span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
     </div>
   );
 }
+

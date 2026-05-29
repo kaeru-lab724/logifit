@@ -798,8 +798,12 @@ export default function App() {
 
         {activeGame === 'professionalArena' && (
           <ProfessionalArena 
+            gameState={gameState}
+            onFinish={handleGameFinish}
             playSound={playSound}
             onBack={() => setActiveGame(null)}
+            muted={muted}
+            toggleMute={toggleMute}
           />
         )}
 
