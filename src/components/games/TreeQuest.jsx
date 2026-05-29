@@ -14,6 +14,7 @@ import {
   Activity,
   Play
 } from 'lucide-react';
+import RecoveryGearSection from '../common/RecoveryGearSection';
 
 // 上級ロジックツリー課題（ダンジョンステージ）
 const dungeonStages = [
@@ -763,6 +764,9 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
               ダンジョンに再挑戦
             </button>
           </div>
+
+          {/* 推奨デバッガー装備 */}
+          <RecoveryGearSection />
         </div>
       )}
 
@@ -811,6 +815,9 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
               <ArrowRight size={16} style={{ marginLeft: '6px' }} />
             </button>
           </div>
+
+          {/* 推奨デバッガー装備 */}
+          <RecoveryGearSection />
         </div>
       )}
 

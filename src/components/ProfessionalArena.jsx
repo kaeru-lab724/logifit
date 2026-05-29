@@ -9,6 +9,7 @@ import {
 import FallacyHunter from './games/FallacyHunter';
 import TreeQuest from './games/TreeQuest';
 import EqSimulator from './games/EqSimulator';
+import RecoveryGearSection from './common/RecoveryGearSection';
 
 export default function ProfessionalArena({ gameState, onFinish, playSound, onBack, muted, toggleMute }) {
   const [activeArenaGame, setActiveArenaGame] = useState(null);
@@ -257,6 +258,9 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
           );
         })}
       </div>
+
+      {/* 推奨デバッガー装備（アフィリエイト） */}
+      <RecoveryGearSection />
 
     </div>
   );

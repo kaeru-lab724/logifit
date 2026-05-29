@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   Play
 } from 'lucide-react';
+import RecoveryGearSection from '../common/RecoveryGearSection';
 
 // シナリオの対話分岐ツリー定義
 const scenarios = [
@@ -858,6 +859,9 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
               同じ相手と再対話
             </button>
           </div>
+
+          {/* 推奨デバッガー装備 */}
+          <RecoveryGearSection />
         </div>
       )}
 
@@ -903,6 +907,9 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
               <ArrowRight size={16} style={{ marginLeft: '6px' }} />
             </button>
           </div>
+
+          {/* 推奨デバッガー装備 */}
+          <RecoveryGearSection />
         </div>
       )}
 
