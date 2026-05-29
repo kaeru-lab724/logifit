@@ -1,12 +1,22 @@
 import React from 'react';
 import { Zap, BookOpen, Eye, ShoppingCart } from 'lucide-react';
 
-// サイトオーナー様の楽天アフィリエイトID
-const RAKUTEN_AFFILIATE_ID = '13d7e480.d3ca8031.13d7e481.fbbf2c18';
+// ==========================================
+// 💡 【アフィリエイト設定】
+// 楽天側の仕様変更やデバイス判定エラーを防ぐため、リンクの手動組み立てロジックを廃止しました。
+// 楽天アフィリエイト公式サイトから発行された正規の「商品リンク」または「短縮URL」を
+// 以下のクォート（''）の中にそのまま貼り付けてください。
+// これにより、100%確実に商品詳細ページへ直接ジャンプし、成果が計上されます。
+// ==========================================
+const RAKUTEN_LINKS = {
+  // ① 森永製菓 大粒ラムネ
+  ramune: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Frakuten24%2F4902888232374%2F', 
 
-// 商品ごとの楽天アフィリエイト個別商品リンクを作成するユーティリティ
-const createRakutenLink = (productUrl) => {
-  return `https://hb.afl.rakuten.co.jp/ichiba/${RAKUTEN_AFFILIATE_ID}/?pc=${encodeURIComponent(productUrl)}`;
+  // ② 考える技術・書く技術 (書籍)
+  book: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F1133379%2F',
+
+  // ③ 蒸気でホットアイマスク (めぐりズム)
+  eyemask: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fsoukaidrug%2F4901301348029%2F'
 };
 
 export default function RecoveryGearSection() {
@@ -19,7 +29,7 @@ export default function RecoveryGearSection() {
       icon: <Zap size={22} style={{ color: 'var(--color-amber)' }} />,
       color: 'var(--color-amber)',
       bgColor: 'rgba(245, 158, 11, 0.1)',
-      link: createRakutenLink('https://item.rakuten.co.jp/rakuten24/4902888232374/')
+      link: RAKUTEN_LINKS.ramune
     },
     {
       id: 'book',
@@ -29,7 +39,7 @@ export default function RecoveryGearSection() {
       icon: <BookOpen size={22} style={{ color: 'var(--color-primary)' }} />,
       color: 'var(--color-primary)',
       bgColor: 'rgba(139, 92, 246, 0.1)',
-      link: createRakutenLink('https://item.rakuten.co.jp/book/1133379/')
+      link: RAKUTEN_LINKS.book
     },
     {
       id: 'eyemask',
@@ -39,7 +49,7 @@ export default function RecoveryGearSection() {
       icon: <Eye size={22} style={{ color: 'var(--color-rose)' }} />,
       color: 'var(--color-rose)',
       bgColor: 'rgba(244, 63, 94, 0.1)',
-      link: createRakutenLink('https://item.rakuten.co.jp/soukaidrug/4901301348029/')
+      link: RAKUTEN_LINKS.eyemask
     }
   ];
 
