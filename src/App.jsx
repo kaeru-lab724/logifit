@@ -10,6 +10,7 @@ import EmpathyDialogue from './components/games/EmpathyDialogue';
 import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import Dashboard from './components/Dashboard';
+import ProfessionalArena from './components/ProfessionalArena';
 import { 
   Award, 
   Brain, 
@@ -533,14 +534,6 @@ export default function App() {
             : 'ビジネス交渉やメディアの主張に隠された論点のすり替えや、都合の良い相関関係の罠を見抜く。',
           difficulty: '上級'
         }
-      ],
-      spinoffs: [
-        {
-          icon: <Sword size={16} />,
-          color: 'var(--color-rose)',
-          name: 'LogiFit: Fallacy Hunter',
-          desc: '対話に潜む誤謬（へりくつ）を制限時間内に討伐する、批判思考バトルアクション。'
-        }
       ]
     },
     {
@@ -561,14 +554,6 @@ export default function App() {
             : '新規事業の売上低迷など、ビジネスの重要課題をMECEに分解し、真のボトルネックを特定する。',
           difficulty: '中級'
         }
-      ],
-      spinoffs: [
-        {
-          icon: <Sword size={16} />,
-          color: 'var(--color-amber)',
-          name: 'LogiFit: Tree Quest',
-          desc: '複雑な課題のダンジョンをロジックツリーの枝を伸ばして攻略する、構造化アドベンチャー。'
-        }
       ]
     },
     {
@@ -588,14 +573,6 @@ export default function App() {
             ? '日常の不満や悩みの相談に対し、正論で論破せず、感情に寄り添う返答を選ぶトレーニング。'
             : '職場の後輩や部下、同僚の相談に対して、信頼関係を築くアクティブリスニング（傾聴）を学ぶ。',
           difficulty: '中級'
-        }
-      ],
-      spinoffs: [
-        {
-          icon: <Sword size={16} />,
-          color: 'var(--color-primary)',
-          name: 'EQ・共感対話シミュレーター',
-          desc: '正論だけでは動かない「人の心」に寄り添い、信頼関係を築く対話シミュレーションゲーム。'
         }
       ]
     }
@@ -816,6 +793,13 @@ export default function App() {
             onSaveDiagnostic={handleSaveDiagnostic}
             myBrainCode={currentSpell}
             onUnlockType={handleUnlockType}
+          />
+        )}
+
+        {activeGame === 'professionalArena' && (
+          <ProfessionalArena 
+            playSound={playSound}
+            onBack={() => setActiveGame(null)}
           />
         )}
 

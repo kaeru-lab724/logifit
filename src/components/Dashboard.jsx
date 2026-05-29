@@ -592,43 +592,103 @@ export default function Dashboard({
                                 </div>
                               );
                             })}
-
-                            {/* Spinoff Cards */}
-                            {room.spinoffs && room.spinoffs.map((spinoff, idx) => (
-                              <div 
-                                key={idx}
-                                style={{ 
-                                  background: 'rgba(255, 255, 255, 0.01)', 
-                                  border: '1px solid var(--border-color)', 
-                                  borderRadius: '12px', 
-                                  padding: '20px', 
-                                  position: 'relative',
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  justifyContent: 'space-between',
-                                  opacity: isRoomUnlocked ? 1 : 0.6
-                                }}
-                              >
-                                <div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                                    {spinoff.icon}
-                                    <strong style={{ fontSize: '13px', color: spinoff.color }}>{spinoff.name}</strong>
-                                  </div>
-                                  <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4', margin: '0 0 16px 0' }}>
-                                    {spinoff.desc}
-                                  </p>
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <span style={{ fontSize: '9px', color: spinoff.color, fontWeight: 'bold', background: `${room.badgeColor}`, padding: '2px 6px', borderRadius: '4px' }}>
-                                    Coming Soon
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
+                            {/* Spinoff Cards (Moved to Professional Arena) */}
                           </div>
                         </div>
                       );
                     })}
+                  </div>
+
+                  {/* プロフェッショナル（上級）ステージへの扉バナー */}
+                  <div style={{ marginTop: '32px' }}>
+                    {gameState.level >= 5 ? (
+                      /* アンロック状態 */
+                      <div 
+                        onClick={() => { playSound('success'); setActiveGame('professionalArena'); }}
+                        className="glass-panel hover-lift"
+                        style={{
+                          padding: '24px 32px',
+                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(20, 22, 37, 0.6) 100%)',
+                          border: '1px solid var(--color-primary)',
+                          borderLeft: '5px solid var(--color-primary)',
+                          borderRadius: '16px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: '20px',
+                          boxShadow: '0 0 15px rgba(139, 92, 246, 0.15)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <span style={{ fontSize: '32px' }}>⚔️</span>
+                          <div style={{ textAlign: 'left' }}>
+                            <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 'bold', letterSpacing: '1px' }}>
+                              UNLOCKED SPECIAL GATE
+                            </span>
+                            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0 0 0', fontFamily: 'var(--font-display)' }}>
+                              プロフェッショナル・アリーナへ挑戦
+                            </h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '4px', margin: 0 }}>
+                              応用実践ゲーム『Fallacy Hunter』等の上級者向けコンテンツが解放されました。
+                            </p>
+                          </div>
+                        </div>
+                        <button className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '13px', background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', boxShadow: '0 4px 12px var(--color-primary-glow)' }}>
+                          アリーナに入る
+                        </button>
+                      </div>
+                    ) : (
+                      /* ロック状態 */
+                      <div 
+                        onClick={() => playSound('incorrect')}
+                        className="glass-panel"
+                        style={{
+                          padding: '24px 32px',
+                          background: 'rgba(255,255,255,0.002)',
+                          border: '1px solid rgba(255,255,255,0.03)',
+                          borderLeft: '5px solid rgba(255,255,255,0.06)',
+                          borderRadius: '16px',
+                          opacity: 0.5,
+                          cursor: 'not-allowed',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: '20px'
+                        }}
+                        title="レベル5に到達すると解放されます"
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <span style={{ fontSize: '32px', filter: 'grayscale(100%)' }}>🔒</span>
+                          <div style={{ textAlign: 'left' }}>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '1px' }}>
+                              LOCKED GATE
+                            </span>
+                            <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-secondary)', margin: '4px 0 0 0', fontFamily: 'var(--font-display)' }}>
+                              プロフェッショナル・アリーナ
+                            </h3>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px', margin: 0 }}>
+                              アンロック条件：レベル5に到達する（現在のレベル: {gameState.level}）
+                            </p>
+                          </div>
+                        </div>
+                        <div 
+                          style={{ 
+                            padding: '10px 20px', 
+                            fontSize: '13px', 
+                            background: 'rgba(255,255,255,0.02)', 
+                            border: '1px solid var(--border-color)', 
+                            color: 'var(--text-muted)', 
+                            borderRadius: '12px',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          ロック中
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
