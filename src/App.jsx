@@ -1083,18 +1083,16 @@ function GuideModal({ isOpen, onClose }) {
           &times;
         </button>
 
-        {/* Icon Frame */}
         <div 
           style={{
             width: '90px',
             height: '90px',
             borderRadius: '24px',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: 'var(--bg-inner-box)',
+            border: '1px solid var(--border-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: 'inset 0 0 15px rgba(255,255,255,0.01)',
             marginBottom: '8px'
           }}
         >

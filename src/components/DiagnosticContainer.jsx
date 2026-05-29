@@ -367,7 +367,7 @@ https://www.logifit.site/`;
               {Math.round(((currentQuestionIndex) / 7) * 100)}% Complete
             </span>
           </div>
-          <div style={{ height: "6px", width: "100%", background: "rgba(255,255,255,0.05)", borderRadius: "3px", marginBottom: "32px", overflow: "hidden" }}>
+          <div style={{ height: "6px", width: "100%", background: "var(--bg-inner-box)", borderRadius: "3px", marginBottom: "32px", overflow: "hidden" }}>
             <div 
               style={{ 
                 height: "100%", 
@@ -380,7 +380,7 @@ https://www.logifit.site/`;
           </div>
 
           {/* Scenario text */}
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "24px", borderRadius: "12px", marginBottom: "28px" }}>
+          <div style={{ background: "var(--bg-inner-box)", border: "1px solid var(--border-color)", padding: "24px", borderRadius: "12px", marginBottom: "28px" }}>
             <p style={{ fontSize: "18px", color: "var(--text-primary)", lineHeight: "1.6", fontWeight: "500" }}>
               {selectedQuestions[currentQuestionIndex] ? getFilteredText(selectedQuestions[currentQuestionIndex].scenario) : ""}
             </p>
@@ -399,8 +399,6 @@ https://www.logifit.site/`;
                   padding: "16px 20px", 
                   fontSize: "15px", 
                   lineHeight: "1.5",
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.06)",
                   borderRadius: "12px",
                   fontWeight: "normal"
                 }}
@@ -768,7 +766,7 @@ https://www.logifit.site/`;
               <div style={{ borderLeft: "4px solid var(--color-cyan)", paddingLeft: "16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
                   <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>1. ロジカル思考（事実と論理の整理）</strong>
-                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "var(--bg-inner-box)", padding: "2px 8px", borderRadius: "10px" }}>
                     スコア: {getPercentage(scores.L)}% {getPercentage(scores.L) < 40 && <span style={{ color: "#06b6d4", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
                   </span>
                 </div>
@@ -786,7 +784,7 @@ https://www.logifit.site/`;
               <div style={{ borderLeft: "4px solid var(--color-rose)", paddingLeft: "16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
                   <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>2. クリティカル思考（前提とバイアスの検証）</strong>
-                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "var(--bg-inner-box)", padding: "2px 8px", borderRadius: "10px" }}>
                     スコア: {getPercentage(scores.C)}% {getPercentage(scores.C) < 40 && <span style={{ color: "var(--color-rose)", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
                   </span>
                 </div>
@@ -801,7 +799,7 @@ https://www.logifit.site/`;
               <div style={{ borderLeft: "4px solid var(--color-amber)", paddingLeft: "16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
                   <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>3. ラディカル思考（本質と目的の深掘り）</strong>
-                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "var(--bg-inner-box)", padding: "2px 8px", borderRadius: "10px" }}>
                     スコア: {getPercentage(scores.R)}% {getPercentage(scores.R) < 40 && <span style={{ color: "var(--color-amber)", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
                   </span>
                 </div>
@@ -816,7 +814,7 @@ https://www.logifit.site/`;
               <div style={{ borderLeft: "4px solid var(--color-primary)", paddingLeft: "16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
                   <strong style={{ fontSize: "15px", color: "var(--text-primary)" }}>4. エモーショナル（直感と感情の調和）</strong>
-                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "2px 8px", borderRadius: "10px" }}>
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", background: "var(--bg-inner-box)", padding: "2px 8px", borderRadius: "10px" }}>
                     スコア: {getPercentage(scores.E)}% {getPercentage(scores.E) < 40 && <span style={{ color: "var(--color-primary)", fontWeight: "bold" }}>⚠️ 要デバッグ</span>}
                   </span>
                 </div>

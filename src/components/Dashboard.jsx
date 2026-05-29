@@ -150,7 +150,6 @@ export default function Dashboard({
             className="glass-panel"
             style={{
               padding: '32px 24px',
-              background: 'rgba(255, 255, 255, 0.01)',
               border: '1px solid var(--border-color)',
               borderRadius: '16px',
               textAlign: 'center',
@@ -171,8 +170,8 @@ export default function Dashboard({
               }}
             >
               {/* Step 1 */}
-              <div style={{ flex: '1 1 250px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-cyan) 0%, #0891b2 100%)', color: '#0a0b10', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
+              <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-cyan) 0%, #0891b2 100%)', color: 'var(--bg-dark)', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
                   STEP 01
                 </div>
                 <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -184,7 +183,7 @@ export default function Dashboard({
               </div>
 
               {/* Step 2 */}
-              <div style={{ flex: '1 1 250px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
+              <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
                   STEP 02
                 </div>
@@ -197,7 +196,7 @@ export default function Dashboard({
               </div>
 
               {/* Step 3 */}
-              <div style={{ flex: '1 1 250px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
+              <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
                   STEP 03
                 </div>
@@ -226,11 +225,11 @@ export default function Dashboard({
                   placeholder="英数字12文字を入力"
                   style={{
                     flex: 1,
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'var(--bg-inner-box)',
                     border: '1px solid var(--border-color)',
                     borderRadius: '8px',
                     padding: '8px 12px',
-                    color: '#fff',
+                    color: 'var(--text-primary)',
                     outline: 'none',
                     fontSize: '13px'
                   }}
@@ -412,7 +411,7 @@ export default function Dashboard({
                       fontWeight: 'bold',
                       background: activeTab === tab.id 
                         ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
-                        : 'rgba(255, 255, 255, 0.02)',
+                        : 'var(--bg-inner-box)',
                       color: activeTab === tab.id ? '#fff' : 'var(--text-secondary)',
                       border: activeTab === tab.id ? 'none' : '1px solid var(--border-color)',
                       boxShadow: activeTab === tab.id ? '0 0 12px var(--color-primary-glow)' : 'none',
@@ -472,9 +471,9 @@ export default function Dashboard({
                           className="glass-panel"
                           style={{
                             padding: '24px',
-                            border: `1px solid ${isRoomUnlocked ? 'var(--border-color)' : 'rgba(255,255,255,0.03)'}`,
+                            border: `1px solid var(--border-color)`,
                             borderLeft: `5px solid ${room.borderColor}`,
-                            background: isRoomUnlocked ? 'rgba(255, 255, 255, 0.01)' : 'rgba(255, 255, 255, 0.002)',
+                            background: isRoomUnlocked ? 'var(--glass-bg)' : 'var(--bg-badge-locked)',
                             borderRadius: '16px',
                             opacity: isRoomUnlocked ? 1 : 0.45,
                             transition: 'all 0.3s ease',
@@ -551,7 +550,6 @@ export default function Dashboard({
                                     padding: '20px', 
                                     cursor: isRoomUnlocked ? 'pointer' : 'not-allowed',
                                     border: '1px solid var(--border-color)',
-                                    background: 'rgba(255, 255, 255, 0.02)',
                                     borderRadius: '12px',
                                     transition: 'all 0.2s ease',
                                     position: 'relative'
@@ -583,7 +581,7 @@ export default function Dashboard({
                                   }}>
                                     {game.desc}
                                   </p>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '10px' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
                                     <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>難易度: {game.difficulty}</span>
                                     <span style={{ fontSize: '12px', color: room.textColor, fontWeight: 'bold' }}>
                                       ベスト: {score}%
@@ -608,7 +606,7 @@ export default function Dashboard({
                         className="glass-panel hover-lift"
                         style={{
                           padding: '24px 32px',
-                          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(20, 22, 37, 0.6) 100%)',
+                          background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--glass-bg) 100%)',
                           border: '1px solid var(--color-primary)',
                           borderLeft: '5px solid var(--color-primary)',
                           borderRadius: '16px',
@@ -646,9 +644,9 @@ export default function Dashboard({
                         className="glass-panel"
                         style={{
                           padding: '24px 32px',
-                          background: 'rgba(255,255,255,0.002)',
-                          border: '1px solid rgba(255,255,255,0.03)',
-                          borderLeft: '5px solid rgba(255,255,255,0.06)',
+                          background: 'var(--bg-badge-locked)',
+                          border: '1px solid var(--border-color)',
+                          borderLeft: '5px solid var(--border-color)',
                           borderRadius: '16px',
                           opacity: 0.5,
                           cursor: 'not-allowed',
@@ -678,7 +676,7 @@ export default function Dashboard({
                           style={{ 
                             padding: '10px 20px', 
                             fontSize: '13px', 
-                            background: 'rgba(255,255,255,0.02)', 
+                            background: 'var(--bg-inner-box)', 
                             border: '1px solid var(--border-color)', 
                             color: 'var(--text-muted)', 
                             borderRadius: '12px',
@@ -734,7 +732,7 @@ export default function Dashboard({
                               </h3>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '220px' }}>
-                              <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                              <div style={{ flex: 1, height: '6px', background: 'var(--bg-inner-box)', borderRadius: '3px', overflow: 'hidden' }}>
                                 <div 
                                   style={{ 
                                     height: '100%', 
@@ -801,7 +799,7 @@ export default function Dashboard({
                       <Brain size={20} style={{ color: 'var(--color-primary)' }} />
                       脳内バグ図鑑
                     </h2>
-                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
                       アンロック進捗: {(gameState.unlockedTypes || ["balancedThinker"]).length} / 12
                     </span>
                   </div>
@@ -823,10 +821,10 @@ export default function Dashboard({
                           style={{
                             padding: '20px',
                             background: isUnlocked 
-                              ? (isSelected ? 'rgba(139, 92, 246, 0.03)' : 'rgba(255, 255, 255, 0.01)')
-                              : 'rgba(255,255,255,0.002)',
-                            border: `1px solid ${isUnlocked ? (isSelected ? 'var(--color-primary)' : 'var(--border-color)') : 'rgba(255,255,255,0.03)'}`,
-                            borderLeft: isUnlocked ? `4px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-cyan)'}` : '4px solid rgba(255,255,255,0.06)',
+                              ? (isSelected ? 'rgba(139, 92, 246, 0.08)' : 'var(--glass-bg)')
+                              : 'var(--bg-badge-locked)',
+                            border: `1px solid ${isUnlocked ? (isSelected ? 'var(--color-primary)' : 'var(--border-color)') : 'var(--border-color)'}`,
+                            borderLeft: isUnlocked ? `4px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-cyan)'}` : '4px solid var(--border-color)',
                             opacity: isUnlocked ? 1 : 0.45,
                             borderRadius: '12px',
                             transition: 'all 0.3s ease',
@@ -876,19 +874,19 @@ export default function Dashboard({
                               }}
                               onClick={(e) => e.stopPropagation()} // 親のクリックイベントを防ぐ
                             >
-                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '10px 12px', borderRadius: '8px' }}>
+                              <div style={{ background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '10px 12px', borderRadius: '8px' }}>
                                 <span style={{ fontSize: '11px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>💼 仕事でのバグ</span>
                                 <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.workBug}</p>
                               </div>
-                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '10px 12px', borderRadius: '8px' }}>
+                              <div style={{ background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '10px 12px', borderRadius: '8px' }}>
                                 <span style={{ fontSize: '11px', color: '#f43f5e', fontWeight: 'bold' }}>🏡 私生活でのバグ</span>
                                 <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.privateBug}</p>
                               </div>
-                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '10px 12px', borderRadius: '8px' }}>
+                              <div style={{ background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '10px 12px', borderRadius: '8px' }}>
                                 <span style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 'bold' }}>⚡ ふとした瞬間のクセ</span>
                                 <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.dailyHabit}</p>
                               </div>
-                              <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '10px 12px', borderRadius: '8px' }}>
+                              <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid var(--border-color)', padding: '10px 12px', borderRadius: '8px' }}>
                                 <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold', marginBottom: '4px' }}>📋 取扱説明書</span>
                                 <span style={{ display: 'block', fontSize: '10px', color: '#f43f5e', fontWeight: 'bold' }}>● 地雷ポイント</span>
                                 <p style={{ margin: '2px 0 6px 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.torisetsu.jealousPoint}</p>
@@ -896,7 +894,7 @@ export default function Dashboard({
                                 <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.torisetsu.debugSpell}</p>
                               </div>
                               {type.recommendedGame && (
-                                <div style={{ background: 'rgba(139, 92, 246, 0.03)', border: '1px solid rgba(139, 92, 246, 0.1)', padding: '10px 12px', borderRadius: '8px' }}>
+                                <div style={{ background: 'rgba(139, 92, 246, 0.05)', border: '1px solid var(--border-color)', padding: '10px 12px', borderRadius: '8px' }}>
                                   <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 'bold' }}>🎯 推奨デバッグトレーニング</span>
                                   <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.recommendedReason}</p>
                                 </div>
@@ -990,7 +988,7 @@ export default function Dashboard({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'rgba(255, 255, 255, 0.01)',
+                background: 'var(--glass-bg)',
                 border: '1px solid var(--border-color)',
                 borderRadius: '16px',
                 minWidth: '320px'
@@ -1000,12 +998,12 @@ export default function Dashboard({
                 {isFullUnlocked ? '思考力パラメーター' : '診断結果スキャンマップ'}
               </div>
               <svg width="320" height="300" style={{ overflow: 'visible' }}>
-                <polygon points="160,70 240,150 160,230 80,150" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                <polygon points="160,102 208,150 160,198 112,150" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-                <polygon points="160,126 184,150 160,174 136,150" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                <polygon points="160,70 240,150 160,230 80,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
+                <polygon points="160,102 208,150 160,198 112,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
+                <polygon points="160,126 184,150 160,174 136,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
 
-                <line x1="160" y1="70" x2="160" y2="230" stroke="rgba(255,255,255,0.08)" strokeDasharray="3,3" />
-                <line x1="80" y1="150" x2="240" y2="150" stroke="rgba(255,255,255,0.08)" strokeDasharray="3,3" />
+                <line x1="160" y1="70" x2="160" y2="230" stroke="var(--border-color)" strokeDasharray="3,3" />
+                <line x1="80" y1="150" x2="240" y2="150" stroke="var(--border-color)" strokeDasharray="3,3" />
 
                 {/* Labels */}
                 <text x="160" y="44" textAnchor="middle" fill="var(--color-cyan)" fontSize="11" fontWeight="bold">
@@ -1240,11 +1238,11 @@ export default function Dashboard({
                     placeholder="英数字12文字を入力"
                     style={{
                       flex: 1,
-                      background: 'rgba(255, 255, 255, 0.03)',
+                      background: 'var(--bg-inner-box)',
                       border: '1px solid var(--border-color)',
                       borderRadius: '8px',
                       padding: '8px 12px',
-                      color: '#fff',
+                      color: 'var(--text-primary)',
                       outline: 'none',
                       fontSize: '13px'
                     }}
@@ -1375,7 +1373,7 @@ export default function Dashboard({
                 flexDirection: 'column', 
                 alignItems: 'center', 
                 justifyContent: 'center',
-                background: 'rgba(255, 255, 255, 0.01)',
+                background: 'var(--glass-bg)',
                 border: '1px solid var(--border-color)',
                 borderRadius: '16px'
               }}

@@ -16,7 +16,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
       desc: '対話に潜む誤謬（へりくつ）を制限時間内に討伐する、批判思考バトルアクションゲーム。',
       difficulty: 'プロフェッショナル',
       color: 'var(--color-rose)',
-      bgColor: 'rgba(244, 63, 94, 0.1)',
+      bgColor: 'var(--color-rose-soft)',
       icon: <Sword size={24} style={{ color: 'var(--color-rose)' }} />
     },
     {
@@ -26,7 +26,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
       desc: '複雑な課題のダンジョンを、ロジックツリーの枝を美しく伸ばして攻略する、構造化アドベンチャーゲーム。',
       difficulty: 'プロフェッショナル',
       color: 'var(--color-amber)',
-      bgColor: 'rgba(245, 158, 11, 0.1)',
+      bgColor: 'var(--color-amber-soft)',
       icon: <Sword size={24} style={{ color: 'var(--color-amber)' }} />
     },
     {
@@ -36,7 +36,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
       desc: '正論だけでは動かない「人の心」に寄り添い、信頼関係を築く対話シミュレーションゲーム。',
       difficulty: 'プロフェッショナル',
       color: 'var(--color-primary)',
-      bgColor: 'rgba(139, 92, 246, 0.1)',
+      bgColor: 'var(--color-primary-soft)',
       icon: <Sword size={24} style={{ color: 'var(--color-primary)' }} />
     }
   ];
@@ -69,7 +69,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
         style={{
           padding: '40px 32px',
           textAlign: 'center',
-          background: 'linear-gradient(135deg, rgba(20, 22, 37, 0.6) 0%, rgba(10, 11, 16, 0.9) 100%)',
+          background: 'var(--hero-bg)',
           borderLeft: '4px solid var(--color-primary)',
           position: 'relative',
           overflow: 'hidden',
@@ -78,7 +78,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
         }}
       >
         <div style={{ marginBottom: "16px" }}>
-          <span className="game-badge" style={{ background: "rgba(139, 92, 246, 0.1)", border: "1px solid rgba(139, 92, 246, 0.2)", color: "var(--color-primary)", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold", letterSpacing: '1px' }}>
+          <span className="game-badge" style={{ background: "var(--color-badge-bg)", border: "1px solid var(--color-badge-border)", color: "var(--color-badge-text)", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold", letterSpacing: '1px' }}>
             ⚔️ PROFESSIONAL STAGE
           </span>
         </div>
@@ -106,16 +106,17 @@ export default function ProfessionalArena({ playSound, onBack }) {
             className="glass-panel"
             style={{
               padding: '28px',
+              background: 'var(--glass-bg)',
               border: '1px solid var(--border-color)',
               borderTop: `4px solid ${game.color}`,
-              background: 'rgba(255, 255, 255, 0.01)',
               borderRadius: '16px',
               position: 'relative',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
               minHeight: '280px',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              opacity: 0.85
             }}
           >
             <div>
@@ -141,7 +142,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
             </div>
 
             {/* statusバッジ（Coming Soon） */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
               <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>難易度: {game.difficulty}</span>
               <span 
                 style={{ 
@@ -154,7 +155,7 @@ export default function ProfessionalArena({ playSound, onBack }) {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
-                  border: `1px solid ${game.color}20`
+                  border: '1px solid var(--border-color)'
                 }}
               >
                 <Lock size={10} />
