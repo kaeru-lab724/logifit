@@ -12,7 +12,8 @@ import {
   Smile,
   ShieldAlert,
   Zap,
-  ChevronLeft
+  ChevronLeft,
+  Play
 } from 'lucide-react';
 
 // シナリオの対話分岐ツリー定義
