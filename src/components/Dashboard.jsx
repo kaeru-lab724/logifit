@@ -616,7 +616,7 @@ export default function Dashboard({
                           alignItems: 'center',
                           flexWrap: 'wrap',
                           gap: '20px',
-                          boxShadow: '0 0 15px rgba(139, 92, 246, 0.15)'
+                          boxShadow: 'var(--glass-shadow)'
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

@@ -778,6 +778,28 @@ body.light-theme svg line[stroke="rgba(255,255,255,0.08)"] {
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
 }
 
+/* Card & Banner Hover Lift animation */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 12px 30px var(--color-primary-glow) !important;
+}
+
+body.light-theme .hover-lift:hover {
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15) !important;
+}
+
+/* 親カードホバー時に内包するボタンも連動してホバー演出 */
+.hover-lift:hover .btn-primary {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+}
+
 
 
 
