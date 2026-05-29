@@ -57,7 +57,7 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) 
             const finalType = determineDiagnosticType(finalScores);
             setResultType(finalType);
             setStep("result");
-            if (onSaveDiagnostic) {
+            if (onSaveDiagnostic && targetType === "self") {
               onSaveDiagnostic(finalScores, finalType);
             }
             return prev;
@@ -359,9 +359,9 @@ https://www.logifit.site/`;
             </div>
 
             {/* Layout: Chart Left, Explanation Right (Flex container for larger screens) */}
-            <div style={{ display: "flex", flexDirection: "column", mdDirection: "row", gap: "40px", alignItems: "center" }} className="diagnostic-result-layout">
+            <div style={{ alignItems: "center" }} className="diagnostic-result-layout">
               {/* Radar Chart SVG */}
-              <div style={{ flexShrink: 0, position: "relative", width: "100%", maxWidth: "380px", aspectRatio: "380 / 304" }}>
+              <div style={{ flexShrink: 0, position: "relative", width: "100%", maxWidth: "300px", aspectRatio: "380 / 304" }}>
                 <svg viewBox="0 0 400 320" style={{ width: "100%", height: "100%", overflow: "visible" }}>
                   {/* Outer boundaries (hishigata) */}
                   {[25, 50, 75, 100].map((val) => {
@@ -425,7 +425,7 @@ https://www.logifit.site/`;
                 </p>
 
                 {/* 3大バグの表示 */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "28px" }}>
+                <div className="diagnostic-traits-grid" style={{ marginBottom: "28px" }}>
                   <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px", borderRadius: "12px", textAlign: "left" }}>
                     <h4 style={{ color: "var(--color-cyan)", fontSize: "14px", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
                       💼 {targetType === "self" ? "仕事でのバグ" : "あの人の仕事でのバグ"}
@@ -459,7 +459,7 @@ https://www.logifit.site/`;
                   <h4 style={{ color: "#10b981", fontSize: "15px", fontWeight: "bold", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
                     📋 {targetType === "self" ? "あなたの取扱説明書" : "あの人の取扱説明書"}
                   </h4>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div className="diagnostic-torisetsu-grid">
                     <div>
                       <span style={{ color: "#f43f5e", fontWeight: "bold", fontSize: "13px" }}>● 地雷ポイント（フリーズワード）</span>
                       <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{resultType.torisetsu.jealousPoint}</p>

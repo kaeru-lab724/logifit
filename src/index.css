@@ -570,11 +570,37 @@ body.light-theme svg line[stroke="rgba(255,255,255,0.08)"] {
 }
 
 /* Responsive Helper overrides for Layout */
+.diagnostic-result-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: center;
+  width: 100%;
+}
+
+.diagnostic-traits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.diagnostic-torisetsu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
 @media (min-width: 768px) {
   .diagnostic-result-layout {
     flex-direction: row !important;
+    align-items: flex-start !important;
   }
   .diagnostic-traits-grid {
+    grid-template-columns: 1fr 1fr 1fr !important;
+  }
+  .diagnostic-torisetsu-grid {
     grid-template-columns: 1fr 1fr !important;
   }
 }
