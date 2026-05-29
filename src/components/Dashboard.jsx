@@ -39,13 +39,15 @@ export default function Dashboard({
   currentSpell,
   setShowGuideModal,
   badgeDetails,
-  skillsData
+  skillsData,
+  onUnlockType
 }) {
   const [showToast, setShowToast] = useState(false);
   const [opponentSpell, setOpponentSpell] = useState('');
   const [matchResult, setMatchResult] = useState(null);
   const [matchError, setMatchError] = useState('');
   const [showBugDetails, setShowBugDetails] = useState(false);
+  const [selectedBugId, setSelectedBugId] = useState(null);
 
   const onCopyClick = () => {
     handleCopySpell(currentSpell);
@@ -79,6 +81,11 @@ export default function Dashboard({
       const result = calculateFriction(stateA, stateB);
       setMatchResult(result);
       playSound('success');
+
+      // 相手のバグタイプをアンロック
+      if (onUnlockType && result && result.typeB) {
+        onUnlockType(result.typeB);
+      }
     } catch (err) {
       playSound('incorrect');
       setMatchError(err.message || '相手のブレインコードの解析に失敗しました。');
@@ -375,15 +382,17 @@ export default function Dashboard({
                 borderBottom: '1px solid var(--border-color)',
                 paddingBottom: '12px',
                 marginBottom: '8px',
-                marginTop: '16px'
+                marginTop: '16px',
+                flexWrap: 'wrap'
               }}
             >
               {[
                 { id: 'training', label: '🎯 トレーニングルーム', count: null },
                 { id: 'encyclopedia', label: '📖 思考スキル図鑑', count: Object.values(gameState.scores).filter(s => s >= 80).length },
+                { id: 'bugEncyclopedia', label: '👾 脳内バグ図鑑', count: `${(gameState.unlockedTypes || ["balancedThinker"]).length}/12` },
                 { id: 'achievements', label: '🏆 獲得実績', count: gameState.badges.filter(Boolean).length }
               ].map(tab => {
-                const isTabLocked = !isFullUnlocked && tab.id !== 'training';
+                const isTabLocked = !isFullUnlocked && tab.id !== 'training' && tab.id !== 'bugEncyclopedia';
                 return (
                   <button
                     key={tab.id}
@@ -397,9 +406,9 @@ export default function Dashboard({
                     }}
                     className={`btn ${activeTab === tab.id ? 'btn-primary' : 'btn-secondary'}`}
                     style={{
-                      padding: '10px 20px',
+                      padding: '10px 18px',
                       borderRadius: '12px',
-                      fontSize: '14px',
+                      fontSize: '13.5px',
                       fontWeight: 'bold',
                       background: activeTab === tab.id 
                         ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
@@ -417,7 +426,7 @@ export default function Dashboard({
                     title={isTabLocked ? "最初のゲームクリアで解放されます" : tab.label}
                   >
                     <span>{isTabLocked ? `🔒 ${tab.label}` : tab.label}</span>
-                    {!isTabLocked && tab.count !== null && (
+                    {tab.count !== null && (
                       <span 
                         style={{ 
                           fontSize: '11px', 
@@ -705,6 +714,124 @@ export default function Dashboard({
                             <p style={{ color: 'var(--text-muted)', fontSize: '11px', fontStyle: 'italic' }}>
                               ※このスキルトレーニングで80%以上のベストスコアを獲得すると、解説書がアンロックされます。
                             </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === 'bugEncyclopedia' && (
+              <div className="fade-in" style={{ marginTop: '16px' }}>
+                <section style={{ textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                    <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                      <Brain size={20} style={{ color: 'var(--color-primary)' }} />
+                      脳内バグ図鑑
+                    </h2>
+                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
+                      アンロック進捗: {(gameState.unlockedTypes || ["balancedThinker"]).length} / 12
+                    </span>
+                  </div>
+
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '24px' }}>
+                    診断や他人のスキャン、相性チェック（コード共有）によって見つかった思考バグのタイプがここに記録されます。
+                    他人のブレインコードを入力するか、他者スキャンを行うことで図鑑が埋まっていきます。
+                  </p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                    {Object.values(diagnosticTypes).map((type) => {
+                      const isUnlocked = (gameState.unlockedTypes || ["balancedThinker"]).includes(type.id);
+                      const isSelected = selectedBugId === type.id;
+
+                      return (
+                        <div 
+                          key={type.id}
+                          className="glass-panel"
+                          style={{
+                            padding: '20px',
+                            background: isUnlocked 
+                              ? (isSelected ? 'rgba(139, 92, 246, 0.03)' : 'rgba(255, 255, 255, 0.01)')
+                              : 'rgba(255,255,255,0.002)',
+                            border: `1px solid ${isUnlocked ? (isSelected ? 'var(--color-primary)' : 'var(--border-color)') : 'rgba(255,255,255,0.03)'}`,
+                            borderLeft: isUnlocked ? `4px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-cyan)'}` : '4px solid rgba(255,255,255,0.06)',
+                            opacity: isUnlocked ? 1 : 0.45,
+                            borderRadius: '12px',
+                            transition: 'all 0.3s ease',
+                            cursor: isUnlocked ? 'pointer' : 'default'
+                          }}
+                          onClick={() => {
+                            if (isUnlocked) {
+                              playSound('click');
+                              setSelectedBugId(isSelected ? null : type.id);
+                            }
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                            <span style={{ fontSize: '32px', filter: isUnlocked ? 'none' : 'grayscale(100%) opacity(0.3)' }}>
+                              {isUnlocked ? type.emoji : '🔒'}
+                            </span>
+                            <div>
+                              <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: isUnlocked ? 'var(--text-primary)' : 'var(--text-muted)', margin: 0 }}>
+                                {isUnlocked ? type.name : '未確認の脳内バグ (???)'}
+                              </h3>
+                              {isUnlocked && (
+                                <p style={{ fontSize: '11px', color: 'var(--color-cyan)', fontWeight: 'bold', margin: '2px 0 0 0' }}>
+                                  {type.tagline}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <p style={{ color: 'var(--text-secondary)', fontSize: '12.5px', lineHeight: '1.6', margin: 0 }}>
+                            {isUnlocked 
+                              ? (type.description.length > 80 && !isSelected ? `${type.description.slice(0, 80)}...` : type.description)
+                              : '他人のスキャンやコード入力（相性チェック）を行うとアンロックされます。'
+                            }
+                          </p>
+
+                          {/* アコーディオン詳細情報 */}
+                          {isUnlocked && isSelected && (
+                            <div 
+                              className="fade-in"
+                              style={{ 
+                                marginTop: '16px', 
+                                paddingTop: '16px', 
+                                borderTop: '1px solid rgba(255,255,255,0.06)',
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                gap: '12px' 
+                              }}
+                              onClick={(e) => e.stopPropagation()} // 親のクリックイベントを防ぐ
+                            >
+                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '10px 12px', borderRadius: '8px' }}>
+                                <span style={{ fontSize: '11px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>💼 仕事でのバグ</span>
+                                <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.workBug}</p>
+                              </div>
+                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '10px 12px', borderRadius: '8px' }}>
+                                <span style={{ fontSize: '11px', color: '#f43f5e', fontWeight: 'bold' }}>🏡 私生活でのバグ</span>
+                                <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.privateBug}</p>
+                              </div>
+                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '10px 12px', borderRadius: '8px' }}>
+                                <span style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 'bold' }}>⚡ ふとした瞬間のクセ</span>
+                                <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.dailyHabit}</p>
+                              </div>
+                              <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '10px 12px', borderRadius: '8px' }}>
+                                <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold', marginBottom: '4px' }}>📋 取扱説明書</span>
+                                <span style={{ display: 'block', fontSize: '10px', color: '#f43f5e', fontWeight: 'bold' }}>● 地雷ポイント</span>
+                                <p style={{ margin: '2px 0 6px 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.torisetsu.jealousPoint}</p>
+                                <span style={{ display: 'block', fontSize: '10px', color: '#10b981', fontWeight: 'bold' }}>● デバッグコマンド</span>
+                                <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.torisetsu.debugSpell}</p>
+                              </div>
+                              {type.recommendedGame && (
+                                <div style={{ background: 'rgba(139, 92, 246, 0.03)', border: '1px solid rgba(139, 92, 246, 0.1)', padding: '10px 12px', borderRadius: '8px' }}>
+                                  <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 'bold' }}>🎯 推奨デバッグトレーニング</span>
+                                  <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{type.recommendedReason}</p>
+                                </div>
+                              )}
+                            </div>
                           )}
                         </div>
                       );

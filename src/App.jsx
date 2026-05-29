@@ -44,7 +44,8 @@ const DEFAULT_STATE = {
   badges: [false, false, false, false, false],
   diagnosticScores: null,
   diagnosticType: null,
-  diagnosticTypeId: "balancedThinker"
+  diagnosticTypeId: "balancedThinker",
+  unlockedTypes: ["balancedThinker"]
 };
 
 // クラス進化（肩書き）の判定
@@ -166,13 +167,24 @@ export default function App() {
         delete parsed.calendar;
         delete parsed.lastLogin;
       }
+
+      let initialUnlocked = parsed.unlockedTypes || [];
+      if (initialUnlocked.length === 0) {
+        if (parsed.diagnosticTypeId) {
+          initialUnlocked = [parsed.diagnosticTypeId];
+        } else {
+          initialUnlocked = ["balancedThinker"];
+        }
+      }
+
       return {
         ...DEFAULT_STATE,
         ...parsed,
         scores: {
           ...DEFAULT_STATE.scores,
           ...(parsed.scores || {})
-        }
+        },
+        unlockedTypes: initialUnlocked
       };
     }
     
@@ -328,6 +340,23 @@ export default function App() {
     }
   };
 
+  // 脳内バグタイプのアンロック処理
+  const handleUnlockType = (typeId) => {
+    if (!typeId) return;
+    setGameState(prev => {
+      const currentUnlocked = prev.unlockedTypes || [];
+      if (currentUnlocked.includes(typeId)) return prev;
+      
+      const updatedUnlocked = [...currentUnlocked, typeId];
+      const updatedState = {
+        ...prev,
+        unlockedTypes: updatedUnlocked
+      };
+      localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
+      return updatedState;
+    });
+  };
+
   // ブレインコード復元処理
   const handleRestoreSpell = (e) => {
     e.preventDefault();
@@ -338,13 +367,20 @@ export default function App() {
       playSound('click');
       const restoredState = decodeState(spellInput);
 
+      const mergedUnlocked = Array.from(new Set([
+        ...(gameState.unlockedTypes || []),
+        ...(restoredState.unlockedTypes || []),
+        restoredState.diagnosticTypeId
+      ].filter(Boolean)));
+
       const normalizedState = {
         ...DEFAULT_STATE,
         ...restoredState,
         scores: {
           ...DEFAULT_STATE.scores,
           ...(restoredState.scores || {})
-        }
+        },
+        unlockedTypes: mergedUnlocked
       };
 
       setGameState(normalizedState);
@@ -384,11 +420,16 @@ export default function App() {
   const handleSaveDiagnostic = (scores, type) => {
     playSound('success');
     setGameState(prev => {
+      const currentUnlocked = prev.unlockedTypes || [];
+      const updatedUnlocked = currentUnlocked.includes(type.id)
+        ? currentUnlocked
+        : [...currentUnlocked, type.id];
       const updatedState = {
         ...prev,
         diagnosticScores: scores,
         diagnosticType: type,
-        diagnosticTypeId: type.id
+        diagnosticTypeId: type.id,
+        unlockedTypes: updatedUnlocked
       };
       localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
       return updatedState;
@@ -774,6 +815,7 @@ export default function App() {
             }} 
             onSaveDiagnostic={handleSaveDiagnostic}
             myBrainCode={currentSpell}
+            onUnlockType={handleUnlockType}
           />
         )}
 
@@ -802,6 +844,7 @@ export default function App() {
             setShowGuideModal={setShowGuideModal}
             badgeDetails={badgeDetails}
             skillsData={skillsData}
+            onUnlockType={handleUnlockType}
           />
         )}
       </main>

@@ -3,7 +3,7 @@ import { diagnosticQuestions, determineDiagnosticType } from "../data/diagnostic
 import { encodeState, decodeState, calculateFriction } from "../data/spellHelper";
 import { KeyRound, Sparkles, Copy, Check } from "lucide-react";
 
-export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic, myBrainCode }) {
+export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic, myBrainCode, onUnlockType }) {
   const [step, setStep] = useState("start"); // start, quiz, analyzing, result
   const [targetType, setTargetType] = useState("self"); // self, spouse, boss, friend
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -114,6 +114,12 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic, my
             const finalType = determineDiagnosticType(finalScores);
             setResultType(finalType);
             setStep("result");
+            
+            // 図鑑にタイプをアンロック追加
+            if (onUnlockType) {
+              onUnlockType(finalType.id);
+            }
+            
             if (onSaveDiagnostic && targetType === "self") {
               onSaveDiagnostic(finalScores, finalType);
             }
