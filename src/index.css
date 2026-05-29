@@ -831,6 +831,29 @@ body.light-theme .hover-lift.room-emotional:hover {
   background: linear-gradient(135deg, var(--color-primary-soft) 0%, var(--glass-bg) 50%, var(--color-primary-soft) 100%) !important;
   background-size: 200% 200% !important;
   animation: aurora-glow 8s ease infinite;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease !important;
+}
+
+/* バナー全体ホバー時に、バナー自体が上品に少し浮く（リンクではないためカーソルはdefaultだが、視覚的に反応する） */
+.arena-banner-active:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.2) !important;
+}
+
+body.light-theme .arena-banner-active:hover {
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(139, 92, 246, 0.04) !important;
+}
+
+/* バナー全体ホバー時に、右側のボタンも連動して強調される（アフォーダンス向上） */
+.arena-banner-active:hover .arena-enter-btn {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5) !important;
+  filter: brightness(1.1);
+}
+
+.arena-banner-active:hover .arena-enter-btn .arrow-icon {
+  transform: translateX(3px);
 }
 
 @keyframes aurora-glow {
@@ -865,13 +888,13 @@ body.light-theme .hover-lift.room-emotional:hover {
 }
 
 .arena-enter-btn:hover {
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-2px) scale(1.03) !important;
   box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4) !important;
-  filter: brightness(1.1);
+  filter: brightness(1.1) !important;
 }
 
 .arena-enter-btn:active {
-  transform: translateY(0) scale(1);
+  transform: translateY(0) scale(1) !important;
 }
 
 /* ホバー時にボタン内の矢印がスライドするマイクロインタラクション */
@@ -880,5 +903,6 @@ body.light-theme .hover-lift.room-emotional:hover {
 }
 
 .arena-enter-btn:hover .arrow-icon {
-  transform: translateX(4px);
+  transform: translateX(4px) !important;
 }
+
