@@ -9,14 +9,14 @@ import { Zap, BookOpen, Eye, ShoppingCart } from 'lucide-react';
 // これにより、100%確実に商品詳細ページへ直接ジャンプし、成果が計上されます。
 // ==========================================
 const RAKUTEN_LINKS = {
-  // ① 森永製菓 大粒ラムネ
-  ramune: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Frakuten24%2F4902888232374%2F', 
+  // ① 森永製菓 大粒ラムネ（ユーザー様よりご提供いただいた正規URL）
+  ramune: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F8e1b342950f06cd8213a57b912c01e93%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjEsImFtcCI6ZmFsc2V9', 
 
-  // ② 考える技術・書く技術 (書籍)
-  book: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F1133379%2F',
+  // ② 考える技術・書く技術 (書籍)（ラムネの正規パラメータ ut を移植し、書籍用の個別詳細URLに差し替え）
+  book: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F1133379%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjEsImFtcCI6ZmFsc2V9',
 
-  // ③ 蒸気でホットアイマスク (めぐりズム)
-  eyemask: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fsoukaidrug%2F4901301348029%2F'
+  // ③ 蒸気でホットアイマスク (めぐりズム)（ラムネの正規パラメータ ut を移植し、アイマスク用の個別詳細URLに差し替え）
+  eyemask: 'https://hb.afl.rakuten.co.jp/ichiba/13d7e480.d3ca8031.13d7e481.fbbf2c18/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fsoukaidrug%2F4901301348029%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjEsImFtcCI6ZmFsc2V9'
 };
 
 export default function RecoveryGearSection() {
