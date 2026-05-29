@@ -569,9 +569,16 @@ https://www.logifit.site/`;
                 onClick={() => {
                   onSelectGame(resultType.recommendedGame);
                 }}
-                style={{ flex: 1, minWidth: "220px" }}
+                style={{ flex: 1, minWidth: "200px" }}
               >
                 おすすめトレーニングを開始する
+              </button>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => onSelectGame(null)}
+                style={{ flex: 0.5, minWidth: "120px" }}
+              >
+                ダッシュボードへ戻る
               </button>
               <button 
                 className="btn btn-secondary" 
