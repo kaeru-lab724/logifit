@@ -1056,6 +1056,114 @@ export default function Dashboard({
               </form>
             </div>
 
+            {/* ⑤ カエル分析官 公式連携ウィジェット (Kaeru Analyst Official Widget) */}
+            <div 
+              className="glass-panel"
+              style={{
+                padding: '0',
+                borderLeft: '4px solid var(--color-emerald)',
+                background: 'rgba(16, 185, 129, 0.01)',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden'
+              }}
+            >
+              {/* アイキャッチ画像 */}
+              <div style={{ width: '100%', height: '140px', overflow: 'hidden', position: 'relative' }}>
+                <img 
+                  src="/kaeru_analyst_eyecatch_cropped.png" 
+                  alt="カエル分析官" 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover'
+                  }}
+                  className="kaeru-widget-img"
+                />
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '12px',
+                  background: 'rgba(10, 11, 16, 0.75)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  padding: '4px 10px',
+                  borderRadius: '20px',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  color: 'var(--color-emerald)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  backdropFilter: 'blur(4px)'
+                }}>
+                  <span>🐸 公式関連メディア</span>
+                </div>
+              </div>
+
+              {/* コンテンツ部分 */}
+              <div style={{ padding: '20px' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>
+                  カエル分析官
+                </h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '11px', margin: '0 0 12px 0' }}>
+                  @michellle_sato | note.com/kaeru_lab
+                </p>
+                
+                <p style={{ color: 'var(--text-secondary)', fontSize: '12.5px', lineHeight: '1.6', margin: '0 0 20px 0' }}>
+                  「人は育てられるのに、自分の重要タスクで固まる。」<br />
+                  27年のキャリアを持つ育成プロが、A4バインダー and 太ペンで『先送り』を徹底解剖。50歳からの自己育成ログを配信中。
+                </p>
+
+                {/* アクションボタン */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <a 
+                    href="https://note.com/kaeru_lab" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={() => playSound('click')}
+                    className="btn btn-secondary kaeru-btn-note"
+                    style={{ 
+                      fontSize: '12px', 
+                      padding: '10px', 
+                      borderRadius: '8px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '6px',
+                      textDecoration: 'none',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-color)',
+                      background: 'rgba(255,255,255,0.02)'
+                    }}
+                  >
+                    📝 noteを読む
+                  </a>
+                  <a 
+                    href="https://x.com/michellle_sato" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={() => playSound('click')}
+                    className="btn btn-secondary kaeru-btn-x"
+                    style={{ 
+                      fontSize: '12px', 
+                      padding: '10px', 
+                      borderRadius: '8px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '6px',
+                      textDecoration: 'none',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-color)',
+                      background: 'rgba(255,255,255,0.02)'
+                    }}
+                  >
+                    𝕏 をフォロー
+                  </a>
+                </div>
+              </div>
+            </div>
+
             {/* ④ スポンサー枠 (Sponsored Link) */}
             <div 
               className="glass-panel" 

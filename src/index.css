@@ -741,5 +741,31 @@ body.light-theme svg line[stroke="rgba(255,255,255,0.08)"] {
   }
 }
 
+/* ==========================================================================
+   Kaeru Analyst Official Widget Styles
+   ========================================================================== */
+.kaeru-widget-img {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kaeru-widget-img:hover {
+  transform: scale(1.04);
+}
+
+.kaeru-btn-note:hover {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: var(--color-emerald) !important;
+  color: var(--color-emerald) !important;
+  box-shadow: 0 0 12px var(--color-emerald-glow);
+}
+
+.kaeru-btn-x:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+
 
 
