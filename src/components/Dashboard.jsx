@@ -545,7 +545,7 @@ export default function Dashboard({
                                     playSound('click');
                                     setActiveGame(game.id);
                                   }}
-                                  className={`glass-panel ${isRoomUnlocked ? 'hover-lift' : ''}`}
+                                  className={`glass-panel ${isRoomUnlocked ? 'hover-lift' : ''} room-${room.id}`}
                                   style={{ 
                                     padding: '20px', 
                                     cursor: isRoomUnlocked ? 'pointer' : 'not-allowed',
@@ -602,25 +602,25 @@ export default function Dashboard({
                     {gameState.level >= 5 ? (
                       /* アンロック状態 */
                       <div 
-                        onClick={() => { playSound('success'); setActiveGame('professionalArena'); }}
-                        className="glass-panel hover-lift"
+                        className="glass-panel arena-banner-active"
                         style={{
                           padding: '24px 32px',
                           background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--glass-bg) 100%)',
                           border: '1px solid var(--color-primary)',
                           borderLeft: '5px solid var(--color-primary)',
                           borderRadius: '16px',
-                          cursor: 'pointer',
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',
                           flexWrap: 'wrap',
                           gap: '20px',
-                          boxShadow: 'var(--glass-shadow)'
+                          boxShadow: 'var(--glass-shadow)',
+                          position: 'relative',
+                          overflow: 'hidden'
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                          <span style={{ fontSize: '32px' }}>⚔️</span>
+                          <span className="arena-gate-icon" style={{ fontSize: '32px', display: 'inline-block' }}>⚔️</span>
                           <div style={{ textAlign: 'left' }}>
                             <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 'bold', letterSpacing: '1px' }}>
                               UNLOCKED SPECIAL GATE
@@ -633,8 +633,26 @@ export default function Dashboard({
                             </p>
                           </div>
                         </div>
-                        <button className="btn btn-primary" style={{ padding: '10px 20px', fontSize: '13px', background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', boxShadow: '0 4px 12px var(--color-primary-glow)' }}>
-                          アリーナに入る
+                        <button 
+                          onClick={() => { playSound('success'); setActiveGame('professionalArena'); }}
+                          className="btn btn-primary arena-enter-btn" 
+                          style={{ 
+                            padding: '10px 24px', 
+                            fontSize: '13px', 
+                            background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', 
+                            boxShadow: '0 4px 12px var(--color-primary-glow)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            cursor: 'pointer',
+                            borderRadius: '8px',
+                            border: 'none',
+                            fontWeight: 'bold',
+                            color: '#ffffff'
+                          }}
+                        >
+                          <span>アリーナに入る</span>
+                          <span className="arrow-icon" style={{ display: 'inline-block' }}>→</span>
                         </button>
                       </div>
                     ) : (

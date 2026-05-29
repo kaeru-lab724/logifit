@@ -785,21 +785,100 @@ body.light-theme svg line[stroke="rgba(255,255,255,0.08)"] {
 
 .hover-lift:hover {
   transform: translateY(-4px);
+}
+
+/* 各ルームカード個別のホバー時テーマカラーエフェクト */
+.hover-lift.room-logical:hover {
+  border-color: var(--color-cyan) !important;
+  box-shadow: 0 12px 30px var(--color-cyan-glow) !important;
+}
+.hover-lift.room-critical:hover {
+  border-color: var(--color-rose) !important;
+  box-shadow: 0 12px 30px var(--color-rose-glow) !important;
+}
+.hover-lift.room-radical:hover {
+  border-color: var(--color-amber) !important;
+  box-shadow: 0 12px 30px var(--color-amber-glow) !important;
+}
+.hover-lift.room-emotional:hover {
   border-color: var(--color-primary) !important;
   box-shadow: 0 12px 30px var(--color-primary-glow) !important;
 }
 
-body.light-theme .hover-lift:hover {
+/* ライトモード時のルーム個別ホバーシャドウ */
+body.light-theme .hover-lift.room-logical:hover {
+  box-shadow: 0 12px 30px rgba(6, 182, 212, 0.15) !important;
+}
+body.light-theme .hover-lift.room-critical:hover {
+  box-shadow: 0 12px 30px rgba(244, 63, 94, 0.15) !important;
+}
+body.light-theme .hover-lift.room-radical:hover {
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.15) !important;
+}
+body.light-theme .hover-lift.room-emotional:hover {
   box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15) !important;
 }
 
-/* 親カードホバー時に内包するボタンも連動してホバー演出 */
-.hover-lift:hover .btn-primary {
+/* 親カードホバー時に内包するボタンも連動してホバー演出（エモーショナル等） */
+.hover-lift.room-emotional:hover .btn-primary {
   transform: translateY(-1px);
   filter: brightness(1.1);
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
 }
 
+/* アリーナ扉バナー：オーロラ風ゆったりグラデーションアニメーション */
+.arena-banner-active {
+  background: linear-gradient(135deg, var(--color-primary-soft) 0%, var(--glass-bg) 50%, var(--color-primary-soft) 100%) !important;
+  background-size: 200% 200% !important;
+  animation: aurora-glow 8s ease infinite;
+}
 
+@keyframes aurora-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 
+/* ⚔️ アイコンの呼吸するようなパルス/浮遊アニメーション */
+.arena-gate-icon {
+  animation: icon-float 3s ease-in-out infinite;
+}
 
+@keyframes icon-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.08);
+  }
+}
+
+/* 「アリーナに入る」ボタン単体のアニメーションとホバー効果 */
+.arena-enter-btn {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.arena-enter-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4) !important;
+  filter: brightness(1.1);
+}
+
+.arena-enter-btn:active {
+  transform: translateY(0) scale(1);
+}
+
+/* ホバー時にボタン内の矢印がスライドするマイクロインタラクション */
+.arena-enter-btn .arrow-icon {
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.arena-enter-btn:hover .arrow-icon {
+  transform: translateX(4px);
+}
