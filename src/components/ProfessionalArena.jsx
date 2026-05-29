@@ -7,6 +7,7 @@ import {
   Lock
 } from 'lucide-react';
 import FallacyHunter from './games/FallacyHunter';
+import TreeQuest from './games/TreeQuest';
 
 export default function ProfessionalArena({ gameState, onFinish, playSound, onBack, muted, toggleMute }) {
   const [activeArenaGame, setActiveArenaGame] = useState(null);
@@ -32,7 +33,7 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
       color: 'var(--color-amber)',
       bgColor: 'var(--color-amber-soft)',
       icon: <Sword size={24} style={{ color: 'var(--color-amber)' }} />,
-      isLocked: true
+      isLocked: false
     },
     {
       id: 'eqSimulator',
@@ -52,6 +53,24 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
       <FallacyHunter 
         onFinish={(score) => {
           onFinish('fallacyHunter', score, false);
+          setActiveArenaGame(null);
+        }}
+        playSound={playSound}
+        muted={muted}
+        toggleMute={toggleMute}
+        onBack={() => {
+          playSound('click');
+          setActiveArenaGame(null);
+        }}
+      />
+    );
+  }
+
+  if (activeArenaGame === 'treeQuest') {
+    return (
+      <TreeQuest 
+        onFinish={(score) => {
+          onFinish('treeQuest', score, false);
           setActiveArenaGame(null);
         }}
         playSound={playSound}
