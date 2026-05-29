@@ -457,6 +457,11 @@ export default function Dashboard({
                     }
                   </h2>
 
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', margin: '0' }}>
+                    思考のクセ（弱点）を克服し、脳内OSをデバッグするためのトレーニングゲームです。
+                    出題されるシチュエーションを元に、事実と意見の選別や論理の歪みを特定し、ベストスコア100%を目指して各部屋のクイズに挑戦しましょう。
+                  </p>
+
                   {/* Unified Rooms View */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {rooms.map(room => {
@@ -633,10 +638,15 @@ export default function Dashboard({
               <div className="fade-in" style={{ marginTop: '16px' }}>
                 {/* Skills Encyclopedia */}
                 <section style={{ textAlign: 'left' }}>
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', margin: '0' }}>
                     <BookOpen size={20} style={{ color: 'var(--color-primary)' }} />
                     思考スキル図鑑
                   </h2>
+
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', margin: '12px 0 20px 0' }}>
+                    習得した思考スキルの概念と、それを日常生活や仕事でどう活用すべきかの実践的なアプローチを学べる解説書です。
+                    各スキルのトレーニングでベストスコア80%以上を獲得すると、解説ページがアンロックされます。
+                  </p>
 
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" }}>
                     {skillsData.map((skill) => {
@@ -845,10 +855,15 @@ export default function Dashboard({
               <div className="fade-in" style={{ marginTop: '16px' }}>
                 {/* Achievements Section */}
                 <section style={{ textAlign: 'left' }}>
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', margin: '0' }}>
                     <Award size={20} style={{ color: 'var(--color-primary)' }} />
                     獲得バッジ・実績
                   </h2>
+
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', margin: '12px 0 20px 0' }}>
+                    日々の思考トレーニングの成果やレベルアップ、特定条件の達成に応じて授与される誇るべき実績称号（バッジ）の一覧です。
+                    さらに高いスコアや多様なトレーニングの全制覇を目指して、すべてのバッジをアンロックしましょう！
+                  </p>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
                     {badgeDetails.map((badge, idx) => {
