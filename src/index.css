@@ -712,5 +712,34 @@ body.light-theme svg line[stroke="rgba(255,255,255,0.08)"] {
   }
 }
 
+/* ==========================================================================
+   Dashboard Responsive Grid Layout
+   ========================================================================== */
+.dashboard-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.dashboard-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 992px) {
+  .dashboard-grid-layout {
+    grid-template-columns: 1.6fr 1fr; /* Left main ~61.5% : Right side ~38.5% */
+    gap: 32px;
+    align-items: start;
+  }
+}
+
 
 
