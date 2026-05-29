@@ -14,6 +14,7 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic, my
   const [copiedCode, setCopiedCode] = useState(false);
   const [frictionResult, setFrictionResult] = useState(null);
   const [frictionError, setFrictionError] = useState("");
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
 
   const scanMessages = [
     "🧠 脳内ログをスキャン中...",
@@ -125,7 +126,31 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic, my
     return () => clearInterval(interval);
   }, [step]);
 
+  const shuffleArray = (array) => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
   const handleStart = () => {
+    const bizQs = diagnosticQuestions.filter(q => q.category === "business");
+    const priQs = diagnosticQuestions.filter(q => q.category === "private");
+
+    let subset = [];
+    if (targetType === "boss") {
+      subset = shuffleArray(bizQs).slice(0, 7);
+    } else if (targetType === "spouse" || targetType === "friend") {
+      subset = shuffleArray(priQs).slice(0, 7);
+    } else {
+      const selectedBiz = shuffleArray(bizQs).slice(0, 3);
+      const selectedPri = shuffleArray(priQs).slice(0, 4);
+      subset = shuffleArray([...selectedBiz, ...selectedPri]);
+    }
+
+    setSelectedQuestions(subset);
     setAnswers([]);
     setCurrentQuestionIndex(0);
     setScores({ L: 0, C: 0, R: 0, E: 0 });
@@ -136,7 +161,7 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic, my
     const newAnswers = [...answers, choice.scores];
     setAnswers(newAnswers);
 
-    if (currentQuestionIndex < diagnosticQuestions.length - 1) {
+    if (currentQuestionIndex < selectedQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       // Move to analyzing
@@ -351,13 +376,13 @@ https://www.logifit.site/`;
           {/* Scenario text */}
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "24px", borderRadius: "12px", marginBottom: "28px" }}>
             <p style={{ fontSize: "18px", color: "var(--text-primary)", lineHeight: "1.6", fontWeight: "500" }}>
-              {getFilteredText(diagnosticQuestions[currentQuestionIndex].scenario)}
+              {selectedQuestions[currentQuestionIndex] ? getFilteredText(selectedQuestions[currentQuestionIndex].scenario) : ""}
             </p>
           </div>
 
           {/* Choices list */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {diagnosticQuestions[currentQuestionIndex].choices.map((choice, idx) => (
+            {selectedQuestions[currentQuestionIndex]?.choices.map((choice, idx) => (
               <button 
                 key={idx} 
                 className="btn btn-secondary" 
