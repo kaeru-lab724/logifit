@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { diagnosticQuestions, determineDiagnosticType } from "../data/diagnosticData";
+import { encodeState, decodeState, calculateFriction } from "../data/spellHelper";
+import { KeyRound, Sparkles, Copy, Check } from "lucide-react";
 
-export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) {
+export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic, myBrainCode }) {
   const [step, setStep] = useState("start"); // start, quiz, analyzing, result
   const [targetType, setTargetType] = useState("self"); // self, spouse, boss, friend
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -9,6 +11,9 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) 
   const [scores, setScores] = useState({ L: 0, C: 0, R: 0, E: 0 });
   const [resultType, setResultType] = useState(null);
   const [scanMessageIndex, setScanMessageIndex] = useState(0);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [frictionResult, setFrictionResult] = useState(null);
+  const [frictionError, setFrictionError] = useState("");
 
   const scanMessages = [
     "🧠 脳内ログをスキャン中...",
@@ -41,6 +46,57 @@ export default function DiagnosticContainer({ onSelectGame, onSaveDiagnostic }) 
       .replace(/自分/g, label)
       .replace(/僕/g, label)
       .replace(/俺/g, label);
+  };
+
+  const getOpponentBrainCode = () => {
+    if (!resultType) return "";
+    
+    const pL = getPercentage(scores.L);
+    const pC = getPercentage(scores.C);
+    const pR = getPercentage(scores.R);
+    const pE = getPercentage(scores.E);
+
+    const mockState = {
+      level: 1,
+      xp: 0,
+      scores: {
+        factsOpinions: pL,
+        logicalValidity: pL,
+        logicTree: pR,
+        fallacy: pC,
+        empathyDialogue: pE
+      },
+      badges: [false, false, false, false, false, false],
+      diagnosticTypeId: resultType.id
+    };
+
+    return encodeState(mockState);
+  };
+
+  const handleCopyOpponentCode = (code) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const handleDirectCheckFriction = () => {
+    setFrictionError("");
+    setFrictionResult(null);
+
+    if (!myBrainCode) {
+      setFrictionError("あなた自身のブレインコードが見つかりません。まずダッシュボードで診断を完了させてください。");
+      return;
+    }
+
+    try {
+      const codeOpponent = getOpponentBrainCode();
+      const stateA = decodeState(myBrainCode);
+      const stateB = decodeState(codeOpponent);
+      const result = calculateFriction(stateA, stateB);
+      setFrictionResult(result);
+    } catch (err) {
+      setFrictionError(err.message || "相性の計算に失敗しました。");
+    }
   };
 
   // Effect for analyzing phase animation
@@ -140,12 +196,17 @@ https://www.logifit.site/`;
         friend: "友達"
       }[targetType] || "あの人";
 
+      let frictionSnippet = "";
+      if (frictionResult) {
+        frictionSnippet = `\n⚡ 私との「脳内摩擦係数」は【${frictionResult.friction}%】でした！\n関係性：【${frictionResult.pairName}】\n`;
+      }
+
       shareText = `【LogiFit 他者脳内スキャン】
-${targetLabel}の脳内バグをレントゲンスキャンしました！
+${targetLabel}の脳内バグをスキャンしました！
 🧠 タイプ：${resultType.name} ${resultType.emoji}
 ～ ${resultType.tagline} ～
-
-あの人の攻略トリセツ＆デバッグコマンドはこちら👇
+${frictionSnippet}
+あの人の攻略トリセツと相性はこちら👇
 #脳内摩擦係数 #取扱説明書 #アたまのレントゲン #LogiFit
 https://www.logifit.site/`;
     }
@@ -475,6 +536,159 @@ https://www.logifit.site/`;
                 </div>
               </div>
             </div>
+
+            {/* 下部セクション：取扱説明書（トリセツ） */}
+            <div className="diagnostic-torisetsu-section">
+              <div style={{ background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.15)", padding: "28px", borderRadius: "16px", textAlign: "left" }}>
+                <h4 style={{ color: "#10b981", fontSize: "16px", fontWeight: "bold", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  📋 {targetType === "self" ? "あなたの取扱説明書" : "あの人の取扱説明書"}
+                </h4>
+                <div className="diagnostic-torisetsu-grid">
+                  <div>
+                    <span style={{ color: "#f43f5e", fontWeight: "bold", fontSize: "14px", display: "block", marginBottom: "6px" }}>● 地雷ポイント（フリーズワード）</span>
+                    <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "13.5px", lineHeight: "1.6" }}>{resultType.torisetsu.jealousPoint}</p>
+                  </div>
+                  <div>
+                    <span style={{ color: "#10b981", fontWeight: "bold", fontSize: "14px", display: "block", marginBottom: "6px" }}>● デバッグコマンド（対処法）</span>
+                    <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "13.5px", lineHeight: "1.6" }}>{resultType.torisetsu.debugSpell}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* あの人のブレインコード払い出し ＆ ダイレクト相性チェック (他者スキャン時のみ表示) */}
+            {targetType !== "self" && (
+              <div 
+                style={{ 
+                  display: "flex", 
+                  flexDirection: "column", 
+                  gap: "20px", 
+                  marginTop: "20px" 
+                }}
+              >
+                {/* 相手のブレインコード表示＆コピー */}
+                <div 
+                  className="glass-panel" 
+                  style={{ 
+                    padding: "24px", 
+                    border: "1px solid var(--color-cyan-glow)", 
+                    background: "rgba(6, 182, 212, 0.02)", 
+                    textAlign: "left" 
+                  }}
+                >
+                  <h4 style={{ fontSize: "15px", fontWeight: "bold", color: "var(--text-primary)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <KeyRound size={18} style={{ color: 'var(--color-cyan)' }} />
+                    あの人のブレインコードが生成されました！
+                  </h4>
+                  <p style={{ color: "var(--text-secondary)", fontSize: "12.5px", lineHeight: "1.4", marginBottom: "16px" }}>
+                    このコードをコピーして共有するか、トップページの相性チェッカーに入力して使用できます。
+                  </p>
+                  
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value={getOpponentBrainCode()} 
+                      style={{ 
+                        flex: 1, 
+                        background: 'rgba(255,255,255,0.02)', 
+                        border: '1px solid var(--border-color)', 
+                        borderRadius: '8px', 
+                        padding: '10px 14px', 
+                        color: 'var(--color-cyan)', 
+                        fontFamily: 'var(--font-display)', 
+                        fontSize: '15px', 
+                        fontWeight: 'bold', 
+                        outline: 'none',
+                        letterSpacing: '1px'
+                      }}
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => handleCopyOpponentCode(getOpponentBrainCode())}
+                      className="btn btn-secondary" 
+                      style={{ padding: '8px 16px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', minWidth: '120px' }}
+                    >
+                      {copiedCode ? <Check size={14} style={{ color: "var(--color-emerald)" }} /> : <Copy size={14} />}
+                      <span>{copiedCode ? "コピー完了" : "コードコピー"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 自分とのダイレクト相性チェック */}
+                <div 
+                  className="glass-panel" 
+                  style={{ 
+                    padding: "24px", 
+                    border: "1px solid var(--color-primary)", 
+                    background: "rgba(139, 92, 246, 0.02)", 
+                    textAlign: "left" 
+                  }}
+                >
+                  <h4 style={{ fontSize: "15px", fontWeight: "bold", color: "var(--text-primary)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Sparkles size={18} style={{ color: 'var(--color-primary)' }} />
+                    あなたとの脳内摩擦（相性）を測定する
+                  </h4>
+                  <p style={{ color: "var(--text-secondary)", fontSize: "12.5px", lineHeight: "1.4", marginBottom: "16px" }}>
+                    あなたのブレインコードと噛み合わせて、お互いの思考の摩擦係数をその場で即座に算出します。
+                  </p>
+
+                  {!frictionResult ? (
+                    <button 
+                      type="button" 
+                      onClick={handleDirectCheckFriction}
+                      className="btn btn-primary"
+                      style={{ 
+                        width: '100%', 
+                        background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', 
+                        padding: '12px 0', 
+                        fontSize: '14px', 
+                        borderRadius: '8px' 
+                      }}
+                    >
+                      ⚡ あなたとの摩擦係数をその場で測定する
+                    </button>
+                  ) : (
+                    <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(139, 92, 246, 0.15)', padding: '20px', borderRadius: '12px', animation: 'fadeIn 0.3s ease' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 'bold' }}>関係性：{frictionResult.pairName}</span>
+                        <span style={{ fontSize: '20px', color: '#ff4d4d', fontWeight: 'bold', textShadow: '0 0 8px rgba(255, 77, 77, 0.4)' }}>
+                          摩擦係数 {frictionResult.friction}%
+                        </span>
+                      </div>
+                      
+                      {/* Friction meter bar */}
+                      <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', marginBottom: '16px' }}>
+                        <div 
+                          style={{ 
+                            height: '100%', 
+                            width: `${frictionResult.friction}%`, 
+                            background: 'linear-gradient(90deg, #10b981 0%, #ff9f0a 50%, #ff4d4d 100%)',
+                            borderRadius: '4px',
+                            transition: 'width 0.5s ease'
+                          }}
+                        />
+                      </div>
+
+                      <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.6', margin: '0 0 16px 0' }}>
+                        {frictionResult.description}
+                      </p>
+
+                      <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '12px', borderRadius: '8px' }}>
+                        <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>💡 二人のデバッグアドバイス</span>
+                        <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{frictionResult.advice}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {frictionError && (
+                    <p style={{ color: 'var(--color-rose)', fontSize: '12px', textAlign: 'center', margin: '12px 0 0 0' }}>
+                      ❌ {frictionError}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Post on X Button */}
             <button 

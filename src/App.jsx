@@ -773,6 +773,7 @@ export default function App() {
               setActiveGame(gameKey);
             }} 
             onSaveDiagnostic={handleSaveDiagnostic}
+            myBrainCode={currentSpell}
           />
         )}
 
