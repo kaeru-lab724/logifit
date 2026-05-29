@@ -358,10 +358,10 @@ https://www.logifit.site/`;
               </p>
             </div>
 
-            {/* Layout: Chart Left, Explanation Right (Flex container for larger screens) */}
-            <div style={{ alignItems: "center" }} className="diagnostic-result-layout">
-              {/* Radar Chart SVG */}
-              <div style={{ flexShrink: 0, position: "relative", width: "100%", maxWidth: "300px", aspectRatio: "380 / 304" }}>
+            {/* 上部セクション：レーダーチャート（左）と概要解説文（右）の2カラム構成 */}
+            <div className="diagnostic-main-section">
+              {/* レーダーチャート */}
+              <div className="diagnostic-chart-container">
                 <svg viewBox="0 0 400 320" style={{ width: "100%", height: "100%", overflow: "visible" }}>
                   {/* Outer boundaries (hishigata) */}
                   {[25, 50, 75, 100].map((val) => {
@@ -386,10 +386,6 @@ https://www.logifit.site/`;
                   <text x={centerX + maxRadius + 10} y={centerY + 4} textAnchor="start" fill="#f43f5e" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">クリティカル</text>
                   <text x={centerX} y={centerY + maxRadius + 22} textAnchor="middle" fill="#f59e0b" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">ラディカル</text>
                   <text x={centerX - maxRadius - 10} y={centerY + 4} textAnchor="end" fill="#06b6d4" fontSize="12" fontWeight="bold" fontFamily="var(--font-display)">エモーショナル</text>
-
-                  {/* Inner grid percentage text */}
-                  <text x={centerX + 4} y={centerY - maxRadius * 0.5 + 4} fill="rgba(255,255,255,0.2)" fontSize="9">50%</text>
-                  <text x={centerX + 4} y={centerY - maxRadius + 4} fill="rgba(255,255,255,0.2)" fontSize="9">100%</text>
 
                   {/* The actual data shape */}
                   {coords && (
@@ -418,72 +414,79 @@ https://www.logifit.site/`;
                 </svg>
               </div>
 
-              {/* Character Details & Strengths/Weaknesses */}
-              <div style={{ flex: 1, width: "100%" }}>
-                <p style={{ fontSize: "15px", lineHeight: "1.7", color: "var(--text-secondary)", marginBottom: "24px" }}>
+              {/* 右側：メイン説明文（フォント・行間をPCでより美しく） */}
+              <div className="diagnostic-desc-container">
+                <p style={{ fontSize: "16px", lineHeight: "1.8", color: "var(--text-secondary)", margin: 0, letterSpacing: "0.03em" }}>
                   {resultType.description}
                 </p>
-
-                {/* 3大バグの表示 */}
-                <div className="diagnostic-traits-grid" style={{ marginBottom: "28px" }}>
-                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px", borderRadius: "12px", textAlign: "left" }}>
-                    <h4 style={{ color: "var(--color-cyan)", fontSize: "14px", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
-                      💼 {targetType === "self" ? "仕事でのバグ" : "あの人の仕事でのバグ"}
-                    </h4>
-                    <p style={{ fontSize: "13.5px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
-                      {resultType.workBug}
-                    </p>
-                  </div>
-                  
-                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px", borderRadius: "12px", textAlign: "left" }}>
-                    <h4 style={{ color: "#f43f5e", fontSize: "14px", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
-                      🏡 {targetType === "self" ? "私生活でのバグ" : "あの人の私生活でのバグ"}
-                    </h4>
-                    <p style={{ fontSize: "13.5px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
-                      {resultType.privateBug}
-                    </p>
-                  </div>
-
-                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px", borderRadius: "12px", textAlign: "left" }}>
-                    <h4 style={{ color: "#f59e0b", fontSize: "14px", fontWeight: "bold", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
-                      ⚡ {targetType === "self" ? "ふとした瞬間のクセ" : "あの人のふとした瞬間のクセ"}
-                    </h4>
-                    <p style={{ fontSize: "13.5px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
-                      {resultType.dailyHabit}
-                    </p>
-                  </div>
-                </div>
-
-                {/* 取扱説明書（トリセツ）の表示 */}
-                <div style={{ background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.15)", padding: "24px", borderRadius: "12px", marginBottom: "28px", textAlign: "left" }}>
-                  <h4 style={{ color: "#10b981", fontSize: "15px", fontWeight: "bold", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-                    📋 {targetType === "self" ? "あなたの取扱説明書" : "あの人の取扱説明書"}
-                  </h4>
-                  <div className="diagnostic-torisetsu-grid">
-                    <div>
-                      <span style={{ color: "#f43f5e", fontWeight: "bold", fontSize: "13px" }}>● 地雷ポイント（フリーズワード）</span>
-                      <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{resultType.torisetsu.jealousPoint}</p>
-                    </div>
-                    <div>
-                      <span style={{ color: "#10b981", fontWeight: "bold", fontSize: "13px" }}>● デバッグコマンド（対処法）</span>
-                      <p style={{ margin: "4px 0 0 0", color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{resultType.torisetsu.debugSpell}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Post on X Button */}
-                <button 
-                  className="btn btn-primary" 
-                  onClick={handleShare}
-                  style={{ width: "100%", background: "white", color: "black", border: "1px solid transparent", boxShadow: "0 4px 15px rgba(255,255,255,0.1)", fontSize: "15px", gap: "8px", padding: "14px 20px" }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                  {targetType === "self" ? "レントゲン写真をXにポストする" : "あの人のトリセツをXにポストする"}
-                </button>
               </div>
             </div>
+
+            {/* 中部セクション：3大バグ（横幅いっぱいに3列並列。文字が潰れず非常に読みやすい） */}
+            <div className="diagnostic-traits-section">
+              <h3 style={{ fontSize: "18px", color: "var(--text-primary)", fontWeight: "bold", marginBottom: "20px", textAlign: "left", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "10px" }}>
+                🚫 {targetType === "self" ? "あなたの脳内に潜む3大バグ" : "あの人の脳内に潜む3大バグ"}
+              </h3>
+              <div className="diagnostic-traits-grid">
+                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "24px", borderRadius: "14px", textAlign: "left" }}>
+                  <h4 style={{ color: "var(--color-cyan)", fontSize: "15px", fontWeight: "bold", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    💼 {targetType === "self" ? "仕事でのバグ" : "あの人の仕事でのバグ"}
+                  </h4>
+                  <p style={{ fontSize: "14px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
+                    {resultType.workBug}
+                  </p>
+                </div>
+                
+                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "24px", borderRadius: "14px", textAlign: "left" }}>
+                  <h4 style={{ color: "#f43f5e", fontSize: "15px", fontWeight: "bold", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    🏡 {targetType === "self" ? "私生活でのバグ" : "あの人の私生活でのバグ"}
+                  </h4>
+                  <p style={{ fontSize: "14px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
+                    {resultType.privateBug}
+                  </p>
+                </div>
+
+                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "24px", borderRadius: "14px", textAlign: "left" }}>
+                  <h4 style={{ color: "#f59e0b", fontSize: "15px", fontWeight: "bold", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    ⚡ {targetType === "self" ? "ふとした瞬間のクセ" : "あの人のふとした瞬間のクセ"}
+                  </h4>
+                  <p style={{ fontSize: "14px", lineHeight: "1.6", color: "var(--text-secondary)", margin: 0 }}>
+                    {resultType.dailyHabit}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 下部セクション：取扱説明書（トリセツ） */}
+            <div className="diagnostic-torisetsu-section">
+              <div style={{ background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.15)", padding: "28px", borderRadius: "16px", textAlign: "left" }}>
+                <h4 style={{ color: "#10b981", fontSize: "16px", fontWeight: "bold", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  📋 {targetType === "self" ? "あなたの取扱説明書" : "あの人の取扱説明書"}
+                </h4>
+                <div className="diagnostic-torisetsu-grid">
+                  <div>
+                    <span style={{ color: "#f43f5e", fontWeight: "bold", fontSize: "14px", display: "block", marginBottom: "6px" }}>● 地雷ポイント（フリーズワード）</span>
+                    <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "13.5px", lineHeight: "1.6" }}>{resultType.torisetsu.jealousPoint}</p>
+                  </div>
+                  <div>
+                    <span style={{ color: "#10b981", fontWeight: "bold", fontSize: "14px", display: "block", marginBottom: "6px" }}>● デバッグコマンド（対処法）</span>
+                    <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "13.5px", lineHeight: "1.6" }}>{resultType.torisetsu.debugSpell}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Post on X Button */}
+            <button 
+              className="btn btn-primary" 
+              onClick={handleShare}
+              style={{ width: "100%", background: "white", color: "black", border: "1px solid transparent", boxShadow: "0 4px 15px rgba(255,255,255,0.1)", fontSize: "15px", gap: "8px", padding: "14px 20px", marginTop: "16px" }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              {targetType === "self" ? "レントゲン写真をXにポストする" : "あの人のトリセツをXにポストする"}
+            </button>
           </div>
 
           {/* 脳内デバッグロードマップ */}
