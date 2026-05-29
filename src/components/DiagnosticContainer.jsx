@@ -674,10 +674,30 @@ https://www.logifit.site/`;
                         {frictionResult.description}
                       </p>
 
-                      <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '12px', borderRadius: '8px' }}>
+                      <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
                         <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>💡 二人のデバッグアドバイス</span>
                         <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{frictionResult.advice}</p>
                       </div>
+
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const targetLabel = {
+                            spouse: "パートナー",
+                            boss: "上司/部下",
+                            friend: "友達"
+                          }[targetType] || "あの人";
+
+                          const text = `⚡ ${targetLabel}との「脳内摩擦係数」をスキャンしました！\n結果：【${frictionResult.pairName}】\n摩擦係数：【${frictionResult.friction}%】\n\n診断＆相性チェックはこちら👇\n#脳内摩擦係数 #アたまのレントゲン #ブレインコード #LogiFit`;
+                          const appUrl = 'https://www.logifit.site/';
+                          const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(appUrl)}`;
+                          window.open(shareUrl, '_blank', 'noopener,noreferrer');
+                        }}
+                        className="btn btn-secondary"
+                        style={{ width: '100%', fontSize: '13px', gap: '6px', background: 'white', color: 'black', fontWeight: 'bold' }}
+                      >
+                        𝕏 に相性結果をシェアする
+                      </button>
                     </div>
                   )}
 
