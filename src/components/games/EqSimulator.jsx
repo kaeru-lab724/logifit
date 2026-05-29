@@ -321,6 +321,15 @@ const scenarios = [
   }
 ];
 
+const shuffleArray = (array) => {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
 export default function EqSimulator({ onFinish, playSound, muted, toggleMute, onBack }) {
   // ゲーム進行用ステート
   const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'select' | 'playing' | 'gameover' | 'clear'
@@ -335,6 +344,7 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
   const [isTyping, setIsTyping] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const [selectedChoiceIdx, setSelectedChoiceIdx] = useState(null);
+  const [shuffledChoices, setShuffledChoices] = useState([]);
 
   // 画面エフェクト（正論ダメージ時のフリッカーノイズ）
   const [flickerActive, setFlickerActive] = useState(false);
@@ -377,6 +387,14 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
   };
 
   const currentStep = selectedScenario?.tree[currentStepKey];
+
+  useEffect(() => {
+    if (currentStep && currentStep.choices) {
+      setShuffledChoices(shuffleArray(currentStep.choices));
+    } else {
+      setShuffledChoices([]);
+    }
+  }, [currentStepKey, selectedScenario]);
 
   // 回答決定
   const handleAnswer = (choiceIdx, choice) => {
@@ -431,8 +449,30 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
       setIsTyping(false);
       
       const nextStepKey = choice.nextStep;
+
+      // 次のステップが finish の場合は、ここで対話終了処理（結果画面へ）
+      if (nextStepKey === 'finish') {
+        setTimeout(() => {
+          setTrust(finalTrust => {
+            if (finalTrust >= 75) {
+              setGameStatus('clear');
+            } else {
+              setGameStatus('gameover');
+            }
+            return finalTrust;
+          });
+        }, 1000);
+        return;
+      }
+
       setCurrentStepKey(nextStepKey);
       const nextStep = selectedScenario.tree[nextStepKey];
+
+      if (!nextStep) {
+        // セーフティ
+        setGameStatus('gameover');
+        return;
+      }
 
       setChatLog(prev => [
         ...prev,
@@ -444,7 +484,7 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
         }
       ]);
 
-      // 対話終了判定（次の選択肢がない ＝ finish または fail）
+      // 対話終了判定（次の選択肢がない ＝ fail など）
       if (!nextStep.choices || nextStep.choices.length === 0) {
         setTimeout(() => {
           if (nextStepKey === 't3_fail') {
@@ -770,7 +810,7 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
 
           {/* 下部：選択肢（会話の返答コマンド） */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {!isAnswered && !isTyping && currentStep && currentStep.choices && currentStep.choices.map((choice, idx) => (
+            {!isAnswered && !isTyping && shuffledChoices.map((choice, idx) => (
               <button
                 key={idx}
                 onClick={() => handleAnswer(idx, choice)}
