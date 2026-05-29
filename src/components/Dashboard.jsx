@@ -1071,7 +1071,7 @@ export default function Dashboard({
               {/* アイキャッチ画像 */}
               <div style={{ width: '100%', height: '140px', overflow: 'hidden', position: 'relative' }}>
                 <img 
-                  src="/kaeru_analyst_eyecatch_cropped.png" 
+                  src="/kaeru_analyst_eyecatch.jpg" 
                   alt="カエル分析官" 
                   style={{ 
                     width: '100%', 
