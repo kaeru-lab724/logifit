@@ -1,6 +1,14 @@
 import React from 'react';
 import { Zap, BookOpen, Eye, ShoppingCart } from 'lucide-react';
 
+// サイトオーナー様の楽天アフィリエイトID
+const RAKUTEN_AFFILIATE_ID = '13d7e480.d3ca8031.13d7e481.fbbf2c18';
+
+// 商品ごとの楽天アフィリエイト個別商品リンクを作成するユーティリティ
+const createRakutenLink = (productUrl) => {
+  return `https://hb.afl.rakuten.co.jp/ichiba/${RAKUTEN_AFFILIATE_ID}/?pc=${encodeURIComponent(productUrl)}`;
+};
+
 export default function RecoveryGearSection() {
   const gears = [
     {
@@ -11,7 +19,7 @@ export default function RecoveryGearSection() {
       icon: <Zap size={22} style={{ color: 'var(--color-amber)' }} />,
       color: 'var(--color-amber)',
       bgColor: 'rgba(245, 158, 11, 0.1)',
-      link: 'https://hb.afl.rakuten.co.jp/ichiba/3cc3e6c0.ad7cb5ef.3cc3e6c1.196d2466/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Frakuten24%2F4902888232374%2F'
+      link: createRakutenLink('https://item.rakuten.co.jp/rakuten24/4902888232374/')
     },
     {
       id: 'book',
@@ -21,7 +29,7 @@ export default function RecoveryGearSection() {
       icon: <BookOpen size={22} style={{ color: 'var(--color-primary)' }} />,
       color: 'var(--color-primary)',
       bgColor: 'rgba(139, 92, 246, 0.1)',
-      link: 'https://hb.afl.rakuten.co.jp/ichiba/3cc3e7a0.803714b9.3cc3e7a1.d17b5f1a/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F1133379%2F'
+      link: createRakutenLink('https://item.rakuten.co.jp/book/1133379/')
     },
     {
       id: 'eyemask',
@@ -31,7 +39,7 @@ export default function RecoveryGearSection() {
       icon: <Eye size={22} style={{ color: 'var(--color-rose)' }} />,
       color: 'var(--color-rose)',
       bgColor: 'rgba(244, 63, 94, 0.1)',
-      link: 'https://hb.afl.rakuten.co.jp/ichiba/3cc3e810.1d4e41ba.3cc3e811.0f9797ad/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fsoukaidrug%2F4901301348029%2F'
+      link: createRakutenLink('https://item.rakuten.co.jp/soukaidrug/4901301348029/')
     }
   ];
 
