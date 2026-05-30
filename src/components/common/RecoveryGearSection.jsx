@@ -65,7 +65,7 @@ export default function RecoveryGearSection() {
           </h3>
         </div>
         <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-          ※本アリーナ推奨装備のリンクは楽天アフィリエイト広告を含みます。
+          ※本ラボ推奨装備のリンクは楽天アフィリエイト広告を含みます。
         </span>
       </div>
 

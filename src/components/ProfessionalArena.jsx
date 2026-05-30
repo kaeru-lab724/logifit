@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { 
   ChevronLeft, 
-  Sword, 
   Sparkles, 
   Brain,
-  Lock
+  Lock,
+  Activity
 } from 'lucide-react';
 import FallacyHunter from './games/FallacyHunter';
 import TreeQuest from './games/TreeQuest';
@@ -18,34 +18,34 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
     {
       id: 'fallacyHunter',
       name: 'LogiFit: Fallacy Hunter',
-      moduleNum: 'ADVANCED 01',
-      desc: '対話に潜む誤謬（へりくつ）を制限時間内に討伐する、批判思考バトルアクションゲーム。',
-      difficulty: 'プロフェッショナル',
+      moduleNum: 'LAB MODULE 01',
+      desc: '日常会話やビジネスコードに潜む誤謬（へりくつ）を検出（Detect）し、論理バグを取り除く批判的思考スキャンゲーム。',
+      difficulty: '脳内デバッグ',
       color: 'var(--color-rose)',
       bgColor: 'var(--color-rose-soft)',
-      icon: <Sword size={24} style={{ color: 'var(--color-rose)' }} />,
+      icon: <Activity size={24} style={{ color: 'var(--color-rose)' }} />,
       isLocked: false
     },
     {
       id: 'treeQuest',
       name: 'LogiFit: Tree Quest',
-      moduleNum: 'ADVANCED 02',
-      desc: '複雑な課題のダンジョンを、ロジックツリーの枝を美しく伸ばして攻略する、構造化アドベンチャーゲーム。',
-      difficulty: 'プロフェッショナル',
+      moduleNum: 'LAB MODULE 02',
+      desc: '複雑に絡み合った課題をMECEに分解・スキャンし、論理的な接続構造を構築するロジックツリー・デバッグゲーム。',
+      difficulty: '脳内デバッグ',
       color: 'var(--color-amber)',
       bgColor: 'var(--color-amber-soft)',
-      icon: <Sword size={24} style={{ color: 'var(--color-amber)' }} />,
+      icon: <Brain size={24} style={{ color: 'var(--color-amber)' }} />,
       isLocked: false
     },
     {
       id: 'eqSimulator',
       name: 'EQ・共感対話シミュレーター',
-      moduleNum: 'ADVANCED 03',
-      desc: '正論だけでは動かない「人の心」に寄り添い、信頼関係を築く対話シミュレーションゲーム。',
-      difficulty: 'プロフェッショナル',
+      moduleNum: 'LAB MODULE 03',
+      desc: '正論による論破（ロジハラバグ）を回避し、相手の心の防衛壁を解きほぐす対話スタイル診断＆共感シミュレーター。',
+      difficulty: '脳内デバッグ',
       color: 'var(--color-primary)',
       bgColor: 'var(--color-primary-soft)',
-      icon: <Sword size={24} style={{ color: 'var(--color-primary)' }} />,
+      icon: <Sparkles size={24} style={{ color: 'var(--color-primary)' }} />,
       isLocked: false
     }
   ];
@@ -142,15 +142,15 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
       >
         <div style={{ marginBottom: "16px" }}>
           <span className="game-badge" style={{ background: "var(--color-badge-bg)", border: "1px solid var(--color-badge-border)", color: "var(--color-badge-text)", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold", letterSpacing: '1px' }}>
-            ⚔️ PROFESSIONAL STAGE
+            🔬 BRAIN DEBUG LAB
           </span>
         </div>
         <h1 className="text-glow" style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '16px', marginTop: 0 }}>
-          プロフェッショナル・アリーナ
+          脳内デバッグ・ラボ
         </h1>
         <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '14.5px', marginBottom: '0', maxWidth: '680px', margin: '0 auto' }}>
-          日常・ビジネスの枠を超え、より高度で複雑な課題解決や対人スキルのデバッグに挑むプロフェッショナル用ステージです。
-          実戦的なスピンオフゲームを通じて、極限 of 思考回路をアンロックしましょう。
+          思考や対話の中に潜む「バグ（認知の歪み）」をスキャンし、思考回路を修正する知的デバッグスペースです。
+          各セッションを通じて、論理的かつ共感的な思考回路を脳内へインストールしましょう。
         </p>
       </div>
 
@@ -219,7 +219,7 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
 
               {/* statusバッジ（Coming Soon / ベストスコア） */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>難易度: {game.difficulty}</span>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>診断カテゴリ: {game.difficulty}</span>
                 {isLocked ? (
                   <span 
                     style={{ 
@@ -250,7 +250,7 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
                       border: `1px solid ${game.color}`
                     }}
                   >
-                    ベスト: {score}%
+                    最適デバッグ率: {score}%
                   </span>
                 )}
               </div>

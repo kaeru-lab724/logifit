@@ -59,6 +59,90 @@ const dungeonStages = [
       ]
     },
     explanation: 'スマートフォンの通信コストは、毎月一定の「基本料金」と、使い方による「通話・通信オプション（アプリ含む）」にMECE分解できます。それぞれ「回線変更や容量ダウン」「不要なサブスク解約や割引適用」に細分化して削減案を具体化します。'
+  },
+  {
+    id: 'stage3',
+    name: '残業超過の荒野',
+    theme: '社員の残業時間削減アプローチ',
+    goal: '残業時間を減らし、健康的な職場環境と生産性向上を両立させよ！',
+    options: [
+      { id: 'op11', text: '業務量の削減（やめる・減らす） ＋ 業務プロセスの効率化（自動化・仕組み化）' },
+      { id: 'op12', text: '無駄な会議や定例報告の廃止 ＋ 資料作成の簡易化・テンプレート化' },
+      { id: 'op13', text: 'AIツールの導入による自動書き起こし ＋ 社内手続きの電子承認化によるスピード向上' },
+      { id: 'op14', text: '残業を禁止する強制ルールの設定' }, // 誤り
+      { id: 'op15', text: '全員で早く帰るように声を掛け合う' } // 誤り
+    ],
+    correctStructure: {
+      slots: [
+        { id: 'root', label: '第1階層：残業削減 of 二大アプローチ', expectedText: '業務量の削減（やめる・減らす） ＋ 業務プロセスの効率化（自動化・仕組み化）', hint: '残業を減らすには、こなすべき「仕事の量そのものを減らす」か、「仕事を進めるスピードを速くする」かの2択になります。' }, // correction below: 'of' replaced by 'の'
+        { id: 'sub1', label: '「業務量削減」の具体策', expectedText: '無駄な会議や定例報告の廃止 ＋ 資料作成の簡易化・テンプレート化', hint: 'やらなくても致命的ではない定例業務をやめたり、資料の手間を減らすアプローチはどちらですか？' },
+        { id: 'sub2', label: '「プロセス効率化」の具体策', expectedText: 'AIツールの導入による自動書き起こし ＋ 社内手続きの電子承認化によるスピード向上', hint: 'ITツールや仕組みを使って、同じ量の仕事をより短時間で終わらせるためのアプローチはどちらですか？' }
+      ]
+    },
+    explanation: '残業削減は、こなす「業務量の削減」と、進行を速める「業務プロセスの効率化」にMECE分解できます。業務量削減は無駄な会議や資料の廃止、効率化はAIや電子承認の導入へと具体化することで、実効性のある残業対策が構築できます。'
+  },
+  {
+    id: 'stage4',
+    name: '顧客獲得の迷宮',
+    theme: '新規モバイルアプリのユーザー獲得経路',
+    goal: 'アプリの新規DL数を増やすための獲得チャネルをMECEに分類せよ！',
+    options: [
+      { id: 'op16', text: 'オーガニック（自然流入）チャネルの強化 ＋ ペイド（有料広告）チャネルの最適化' },
+      { id: 'op17', text: 'アプリストアのSEO（ASO）対策 ＋ 口コミ・紹介（バイラル）機能の向上' },
+      { id: 'op18', text: 'SNS広告・動画広告の出稿 ＋ インフルエンサーPR・アフィリエイトの活用' },
+      { id: 'op19', text: 'とにかく街頭でチラシを配る' }, // 誤り
+      { id: 'op20', text: 'アプリのアイコンの色をもっと目立つ赤にする' } // 誤り
+    ],
+    correctStructure: {
+      slots: [
+        { id: 'root', label: '第1階層：広告費用の有無による分解', expectedText: 'オーガニック（自然流入）チャネルの強化 ＋ ペイド（有料広告）チャネルの最適化', hint: 'ユーザーの流入経路を、直接的な広告費用をかけない獲得と、費用をかけて強制的に露出する獲得の２つに分けましょう。' },
+        { id: 'sub1', label: '「自然流入」の具体策', expectedText: 'アプリストアのSEO（ASO）対策 ＋ 口コミ・紹介（バイラル）機能の向上', hint: 'ストア内検索での露出アップや、既存ユーザーからの紹介など、自発的なダウンロードを促す施策は？' },
+        { id: 'sub2', label: '「有料広告」の具体策', expectedText: 'SNS広告・動画広告の出稿 ＋ インフルエンサーPR・アフィリエイトの活用', hint: 'メディアへの出稿やインフルエンサーへの対価支払いなど、予算を投じてリードを即座に増やす施策は？' }
+      ]
+    },
+    explanation: 'アプリのユーザー獲得チャネルは、広告費をかけない「オーガニック」と、広告費をかける「ペイド」にMECE分解できます。オーガニックはASOや口コミ紹介、ペイドはSNS広告やアフィリエイト活用へ細分化してアプローチを整理します。'
+  },
+  {
+    id: 'stage5',
+    name: '流出防止の氷山',
+    theme: 'サブスクサービスの解約（チャーン）防止策',
+    goal: 'ユーザーがサービスを解約する要因をMECEに分解し、対策を立てよ！',
+    options: [
+      { id: 'op21', text: 'プロダクト自体の不満解消（価値不足） ＋ サポートやフォロー体制の強化（顧客体験）' },
+      { id: 'op22', text: '主要機能のUI/UX改善による操作性向上 ＋ 新規コンテンツ・アップデートの頻度増加' },
+      { id: 'op23', text: 'オンボーディングガイドの充実化 ＋ 解約直前のユーザーへの特別オファー提示' },
+      { id: 'op24', text: '解約ボタンを分かりにくい場所に隠す' }, // 誤り
+      { id: 'op25', text: '解約したユーザーにアンケートで怒りをぶつける' } // 誤り
+    ],
+    correctStructure: {
+      slots: [
+        { id: 'root', label: '第1階層：解約防止の二大領域', expectedText: 'プロダクト自体の不満解消（価値不足） ＋ サポートやフォロー体制の強化（顧客体験）', hint: '解約の原因を、提供している「システムやサービス自体への不満」と、それ以外の「サポートや初期体験の不満」の２つに分けましょう。' },
+        { id: 'sub1', label: '「プロダクト不満」への対策', expectedText: '主要機能のUI/UX改善による操作性向上 ＋ 新規コンテンツ・アップデートの頻度増加', hint: 'アプリの使い勝手そのものを良くしたり、新機能を追加することで、サービスの価値を直接的に高める方法は？' },
+        { id: 'sub2', label: '「顧客体験・サポート不満」への対策', expectedText: 'オンボーディングガイドの充実化 ＋ 解約直前のユーザーへの特別オファー提示', hint: '初期ユーザーの使い方をサポートしたり、離脱しかけている人に寄り添った個別アプローチを取る方法は？' }
+      ]
+    },
+    explanation: '解約防止策は、製品そのものの価値を高める「プロダクト不満の解消」と、顧客接点の質を高める「サポート・フォローの強化」にMECE分解できます。プロダクト改善はUI/UXやコンテンツ追加、サポート強化はガイド充実や離脱防止オファーへ細分化されます。'
+  },
+  {
+    id: 'stage6',
+    name: 'コスト削減の試練',
+    theme: '小売店舗の年間運営費の削減',
+    goal: '店舗の運営コストをMECEに分類し、インパクトの大きい節約ポイントを特定せよ！',
+    options: [
+      { id: 'op26', text: '毎月の売上に連動する変動費の節約 ＋ 売上に関わらず一定の固定費の引き下げ' },
+      { id: 'op27', text: '仕入れルート見直しによる材料費削減 ＋ 節電・LED化による水道光熱費の抑制' },
+      { id: 'op28', text: 'シフトの自動最適化による人件費適正化 ＋ テナント家賃の値下げ交渉・店舗面積の縮小' },
+      { id: 'op29', text: '営業時間を極端に短くして電気代を浮かす' }, // 誤り
+      { id: 'op30', text: '文房具の購入を禁止する' } // 誤り
+    ],
+    correctStructure: {
+      slots: [
+        { id: 'root', label: '第1階層：コストの発生性質による分解', expectedText: '毎月の売上に連動する変動費の節約 ＋ 売上に関わらず一定の固定費の引き下げ', hint: '店舗コストを、売上高や来客数に応じて増減するコストと、営業していなくても必ず発生する固定のコストの２つに分けましょう。' },
+        { id: 'sub1', label: '「変動費」の節約アプローチ', expectedText: '仕入れルート見直しによる材料費削減 ＋ 節電・LED化による水道光熱費の抑制', hint: '売上や稼働に伴って発生する、材料費（売上原価）や水道光熱費の削減に該当するものは？' },
+        { id: 'sub2', label: '「固定費」の削減アプローチ', expectedText: 'シフトの自動最適化による人件費適正化 ＋ テナント家賃の値下げ交渉・店舗面積の縮小', hint: '毎月ほぼ固定で支払う家賃や、スケジュール調整可能な基本人件費の削減に該当するものは？' }
+      ]
+    },
+    explanation: '店舗コスト削減は、売上規模で変動する「変動費の削減」と、毎月一定でかかる「固定費の引き下げ」にMECE分解できます。変動費は材料費や光熱費の削減、固定費はシフト適正化（人件費）や家賃交渉へと細分化されます。'
   }
 ];
 
@@ -73,9 +157,9 @@ const shuffleArray = (array) => {
 
 export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBack }) {
   // ゲーム進行用ステート
-  const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'playing' | 'gameover' | 'clear'
-  const [stageIdx, setStageIdx] = useState(0); // 0, 1
-  const [mana, setMana] = useState(100);
+  const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'playing' | 'clear'
+  const [activeStages, setActiveStages] = useState([]);
+  const [stageIdx, setStageIdx] = useState(0); // 0, 1, 2
 
   // パズル配置状態
   const [currentStage, setCurrentStage] = useState(null);
@@ -86,12 +170,15 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null); // 'success' | 'fail' | null
   const [activeHintSlot, setActiveHintSlot] = useState(null);
-  const [scoreTracker, setScoreTracker] = useState([]); // 各ステージのクリア時残りMana
+
+  // 診断用ステート
+  const [stageScanCount, setStageScanCount] = useState(0); // 現在のステージのスキャン試行回数
+  const [scanCounts, setScanCounts] = useState([]); // 各ステージのスキャン回数記録
 
   // 1. ステージの初期化
-  const initializeStage = (idx) => {
-    if (idx >= dungeonStages.length) return;
-    const stage = dungeonStages[idx];
+  const initializeStage = (idx, stagesList = activeStages) => {
+    if (stagesList.length === 0 || idx >= stagesList.length) return;
+    const stage = stagesList[idx];
     setCurrentStage({
       ...stage,
       options: shuffleArray(stage.options)
@@ -101,11 +188,20 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
     setIsScanning(false);
     setScanResult(null);
     setActiveHintSlot(null);
+    setStageScanCount(0);
   };
 
   useEffect(() => {
-    initializeStage(stageIdx);
-  }, [stageIdx]);
+    // 初回ロード時にランダムに3つ選択
+    const initialStages = shuffleArray(dungeonStages).slice(0, 3);
+    setActiveStages(initialStages);
+  }, []);
+
+  useEffect(() => {
+    if (activeStages.length > 0) {
+      initializeStage(stageIdx, activeStages);
+    }
+  }, [stageIdx, activeStages]);
 
   if (!currentStage) return null;
 
@@ -161,6 +257,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
   const handleCheck = () => {
     playSound('click');
     setIsScanning(true);
+    setStageScanCount(prev => prev + 1);
 
     // 2秒間のスキャン演出のあとに合否判定
     setTimeout(() => {
@@ -187,15 +284,6 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
       } else {
         playSound('incorrect');
         setScanResult('fail');
-        
-        // マナ減少（MP -25）
-        setMana(prev => {
-          const nextMana = Math.max(0, prev - 25);
-          if (nextMana <= 0) {
-            setTimeout(() => setGameStatus('gameover'), 1500);
-          }
-          return nextMana;
-        });
       }
     }, 2000);
   };
@@ -203,9 +291,9 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
   // 4. 次のステージへ
   const handleNext = () => {
     playSound('click');
-    setScoreTracker(prev => [...prev, mana]);
+    setScanCounts(prev => [...prev, stageScanCount]);
 
-    if (stageIdx < dungeonStages.length - 1) {
+    if (stageIdx < activeStages.length - 1) {
       setStageIdx(prev => prev + 1);
     } else {
       // 全ステージクリア！
@@ -217,31 +305,48 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
   // 5. ゲームリセット
   const handleReset = () => {
     setStageIdx(0);
-    setMana(100);
-    setScoreTracker([]);
-    initializeStage(0);
+    setScanCounts([]);
+    setStageScanCount(0);
+    const shuffledStages = shuffleArray(dungeonStages).slice(0, 3);
+    setActiveStages(shuffledStages);
     setGameStatus('playing');
   };
 
+  // 各ステージのスキャン回数からデバッグ精度（%）を算出
+  // 1回でクリア -> 100%, 2回 -> 80%, 3回 -> 60%, 4回以上 -> 40%
+  const getStageAccuracy = (count) => {
+    if (count <= 1) return 100;
+    if (count === 2) return 80;
+    if (count === 3) return 60;
+    return 40;
+  };
+
+  // 3ステージの平均精度
+  const currentScanCounts = gameStatus === 'clear' ? scanCounts : [...scanCounts, stageScanCount];
+  const totalAccuracy = currentScanCounts.length > 0 
+    ? Math.round(currentScanCounts.reduce((sum, c) => sum + getStageAccuracy(c), 0) / currentScanCounts.length)
+    : 100;
+  const totalScans = currentScanCounts.reduce((sum, c) => sum + c, 0);
+
   // 6. 結果のセーブ＆アリーナに戻る
   const handleFinishGame = () => {
-    // 残りManaに基づいてスコア (0〜100%) を算出
-    const finalScore = Math.min(100, mana);
-    onFinish(finalScore);
+    onFinish(totalAccuracy);
   };
 
   const startQuest = () => {
     playSound('click');
-    setMana(100);
     setStageIdx(0);
-    setScoreTracker([]);
+    setScanCounts([]);
+    setStageScanCount(0);
+    const shuffledStages = shuffleArray(dungeonStages).slice(0, 3);
+    setActiveStages(shuffledStages);
     setGameStatus('playing');
   };
 
   return (
     <div className="dungeon-wrapper" style={{ maxWidth: '850px', margin: '0 auto', padding: '0 16px' }}>
       
-      {/* ネオンパルスやレーザースキャナーのローカルスタイル定義 */}
+      {/* ネオンラインやレーザースキャナーのローカルスタイル定義 */}
       <style>{`
         .dungeon-wrapper {
           position: relative;
@@ -360,7 +465,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
           background: rgba(16, 185, 129, 0.08) !important;
           box-shadow: 0 0 15px rgba(16, 185, 129, 0.2) !important;
         }
-        .slot-box.fail {
+        .slot-box.failed-node {
           border: 2px solid #ef4444 !important;
           background: rgba(239, 68, 68, 0.08) !important;
           box-shadow: 0 0 15px rgba(239, 68, 68, 0.2) !important;
@@ -370,33 +475,33 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
       {/* 1. チュートリアル */}
       {gameStatus === 'tutorial' && (
         <div className="glass-panel fade-in" style={{ padding: '32px', textAlign: 'left', borderLeft: '4px solid var(--color-amber)' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--color-amber)', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: 0 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--color-amber)', fontSize: '22px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: 0 }}>
             <Compass size={24} />
-            Tree Quest : 構造化アドベンチャー
+            Tree Quest : ロジックツリー構造化診断
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', margin: '16px 0 24px 0' }}>
-            複雑な課題が絡み合う思考のダンジョン「売上低迷の森」および「無駄コストの火山」が立ちはだかりました！<br />
-            ゲートを開通するために、テーマを最もMECE（モレなくダブりなく）に分解するルートを組み上げ、マナ（魔力）を維持してクリアを目指してください。
+            複雑な課題を「MECE（漏れなくダブりなく）」に分解・構造化し、認知の接続ルートを修復するデバッグモジュールです。<br />
+            ゲートを開通するために、テーマを正しく整理するパーツを配置し、最小の修正回数でスキャン開通を成功させてください。
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
             <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-              <strong style={{ fontSize: '15px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                🌳 クエストの掟:
+              <strong style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🔬 診断ルール:
               </strong>
               <ul style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '8px', paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <li><strong>ツリーを開通させよ</strong>: ゲートスロットに手持ちのパーツを配置し、MECE開通チェックを実行。</li>
-                <li><strong>マナ (Mana) のペナルティ</strong>: 誤ったルートを組んで開通チェックに失敗すると、罠が発動してマナが `-25` 減少します。</li>
-                <li><strong>思考フリーズに注意</strong>: マナが0になると思考回路がフリーズし、ダンジョンの闇へ飲み込まれます（ゲームオーバー）。</li>
+                <li><strong>構造を修復せよ</strong>: スロットにパーツを配置し、「MECEチェック」を実行して回路を繋ぎます。</li>
+                <li><strong>ペナルティの廃止（何度でも再試行可能）</strong>: スキャンに失敗しても途中でゲームオーバーになることはありません。解説やヒントをヒントに、納得いくまで配置を修正できます。</li>
+                <li><strong>デバッグ精度の測定</strong>: 各ステージを「何回のスキャンで開通できたか（修正回数）」によって、あなたの論理的構造化精度（デバッグ率）を診断します。</li>
               </ul>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '16px' }}>
-            <button onClick={onBack} className="btn btn-secondary" style={{ flex: 1 }}>アリーナに戻る</button>
+            <button onClick={onBack} className="btn btn-secondary" style={{ flex: 1 }}>ラボに戻る</button>
             <button onClick={startQuest} className="btn btn-primary" style={{ flex: 2, background: 'linear-gradient(135deg, var(--color-amber) 0%, #d97706 100%)', boxShadow: '0 4px 15px var(--color-amber-glow)' }}>
               <Play size={16} style={{ marginRight: '6px' }} />
-              クエストを開始する！
+              スキャンを開始する
             </button>
           </div>
         </div>
@@ -406,29 +511,29 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
       {gameStatus === 'playing' && (
         <div className="glass-panel fade-in" style={{ padding: '24px', position: 'relative' }}>
           
-          {/* 上部ヘッダー（マナゲージ） */}
+          {/* 上部ヘッダー */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div>
               <span style={{ color: 'var(--color-amber)', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1.5px', fontFamily: 'var(--font-display)' }}>
-                STAGE {stageIdx + 1} / 2
+                STAGE {stageIdx + 1} / {activeStages.length}
               </span>
               <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: 'var(--text-primary)' }}>
                 Dungeon: {currentStage.name}
               </h2>
             </div>
 
-            {/* プレイヤーのMana */}
+            {/* スキャン試行回数の表示 */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '150px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontSize: '12px', fontWeight: 'bold', color: mana <= 40 ? '#ef4444' : 'var(--color-amber)' }}>
-                <Zap size={13} fill={mana <= 40 ? '#ef4444' : 'var(--color-amber)'} style={{ color: mana <= 40 ? '#ef4444' : 'var(--color-amber)' }} />
-                MANA {mana} / 100
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontSize: '12px', fontWeight: 'bold', color: 'var(--color-amber)' }}>
+                <Activity size={13} style={{ color: 'var(--color-amber)' }} />
+                SCAN TRIAL: {stageScanCount}回
               </div>
-              <div className="mana-bar-outer">
+              <div className="mana-bar-outer" style={{ height: '6px' }}>
                 <div 
                   className="mana-bar-inner" 
                   style={{ 
-                    width: `${mana}%`,
-                    background: mana <= 40 ? 'linear-gradient(90deg, #ef4444, #b91c1c)' : 'linear-gradient(90deg, #f59e0b, #d97706)'
+                    width: `${Math.max(0, 100 - stageScanCount * 25)}%`,
+                    background: 'linear-gradient(90deg, #f59e0b, #d97706)'
                   }} 
                 />
               </div>
@@ -440,7 +545,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
             <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>※パーツを各スロットにドラッグ、またはクリックで配置してください。</span>
           </p>
 
-          {/* 3. ツリーアリーナ（バトルスクリーン） */}
+          {/* 3. ツリーアリーナ */}
           <div style={{ width: '100%', overflowX: 'auto', marginBottom: '24px' }}>
             <div className="tree-arena" style={{ width: '780px', height: '340px', position: 'relative', flexShrink: 0, margin: '0 auto', display: 'block', padding: 0 }}>
               <div className="grid-overlay" />
@@ -494,7 +599,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   textAlign: 'center',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  justifycontent: 'center',
                   boxSizing: 'border-box',
                   zIndex: 5
                 }}
@@ -526,7 +631,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   onClick={() => handleSlotClick('root')}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, 'root')}
-                  className={`slot-box ${placedItems['root'] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'fail' : ''}`}
+                  className={`slot-box ${placedItems['root'] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'failed-node' : ''}`}
                   style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
                 >
                   {placedItems['root'] ? (
@@ -564,7 +669,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   onClick={() => handleSlotClick(currentStage.correctStructure.slots[1].id)}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, currentStage.correctStructure.slots[1].id)}
-                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[1].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'fail' : ''}`}
+                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[1].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'failed-node' : ''}`}
                   style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
                 >
                   {placedItems[currentStage.correctStructure.slots[1].id] ? (
@@ -601,7 +706,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   onClick={() => handleSlotClick(currentStage.correctStructure.slots[2].id)}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, currentStage.correctStructure.slots[2].id)}
-                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[2].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'fail' : ''}`}
+                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[2].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'failed-node' : ''}`}
                   style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
                 >
                   {placedItems[currentStage.correctStructure.slots[2].id] ? (
@@ -630,7 +735,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
 
                   return (
                     <div
-                      key={option.id}
+                       key={option.id}
                       draggable={!isPlaced}
                       onDragStart={(e) => handleDragStart(e, option.id)}
                       onClick={() => !isPlaced && handleOptionClick(option.id)}
@@ -657,7 +762,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
             </div>
           )}
 
-          {/* 解答フィードバック解説 (合格/不合格) */}
+          {/* 解答フィードバック解説 */}
           {scanResult && !isScanning && (
             <div 
               style={{ 
@@ -679,7 +784,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                 ) : (
                   <>
                     <XCircle style={{ color: '#ef4444' }} />
-                    <strong style={{ color: '#ef4444', fontSize: '14.5px' }}>不開通：モレや重複、誤配置があります（マナ -25）</strong>
+                    <strong style={{ color: '#ef4444', fontSize: '14.5px' }}>スキャン失敗：不開通（配置にモレや重複があります）</strong>
                   </>
                 )}
               </div>
@@ -736,7 +841,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                     boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' 
                   }}
                 >
-                  {stageIdx < dungeonStages.length - 1 ? '次のダンジョンへ' : '結果を見る'}
+                  {stageIdx < activeStages.length - 1 ? '次のダンジョンへ' : '結果を見る'}
                   <ArrowRight size={14} style={{ marginLeft: '6px' }} />
                 </button>
               )}
@@ -746,36 +851,12 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
         </div>
       )}
 
-      {/* 3. ゲームオーバー画面 */}
-      {gameStatus === 'gameover' && (
-        <div className="glass-panel fade-in" style={{ padding: '40px 32px', textAlign: 'center', borderLeft: '4px solid #ef4444' }}>
-          <XCircle size={64} style={{ color: '#ef4444', marginBottom: '20px', margin: '0 auto' }} />
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', margin: '16px 0 12px 0' }}>
-            マナが枯渇した...
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', marginBottom: '32px' }}>
-            思考の迷宮の中でマナ（MP）が完全に枯渇し、構造化の道筋を見失ってしまいました。
-          </p>
-
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <button onClick={onBack} className="btn btn-secondary">アリーナに戻る</button>
-            <button onClick={handleReset} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)' }}>
-              <RotateCcw size={16} style={{ marginRight: '6px' }} />
-              ダンジョンに再挑戦
-            </button>
-          </div>
-
-          {/* 推奨デバッガー装備 */}
-          <RecoveryGearSection />
-        </div>
-      )}
-
       {/* 4. クエストクリア画面 */}
       {gameStatus === 'clear' && (
         <div className="glass-panel fade-in" style={{ padding: '40px 32px', textAlign: 'center', borderLeft: '4px solid var(--color-emerald)' }}>
           <CheckCircle2 size={64} style={{ color: 'var(--color-emerald)', marginBottom: '20px', margin: '0 auto' }} />
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', margin: '16px 0 12px 0' }}>
-            ダンジョン完全開通！
+            ツリー構造化診断 完了
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', marginBottom: '32px' }}>
             すべてのスロットへMECEな階層ルートを通し、複雑な事業課題のダンジョンを見事に踏破しました！
@@ -783,16 +864,16 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
 
           <div style={{ display: 'flex', gap: '32px', justifyContent: 'center', marginBottom: '32px' }}>
             <div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>最終残りマナ (MP)</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>平均デバッグ構造化精度</div>
               <div style={{ fontSize: '28px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-amber)', marginTop: '4px' }}>
-                {mana} / 100
+                {totalAccuracy}%
               </div>
             </div>
             <div style={{ borderLeft: '1px solid var(--border-color)' }}></div>
             <div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>踏破ステージ</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>スキャン（修正）試行総数</div>
               <div style={{ fontSize: '28px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-emerald)', marginTop: '4px' }}>
-                2 / 2 Stages
+                {totalScans} 回
               </div>
             </div>
           </div>

@@ -27,7 +27,8 @@ const arenaQuestions = [
       { text: '単一原因の誤謬（ツールの導入だけで効率化が進むと決めつける）', isCorrect: false },
       { text: '権威に訴える論証（偉い人が言っているから正しいと信じ込ませる）', isCorrect: false }
     ],
-    explanation: '多数の企業が導入しているからといって、自社の規模や業務プロセスに適合しているとは限りません。「みんながやっているから良い」とするのは大衆に訴える論証です。'
+    explanation: '多数の企業が導入しているからといって、自社の規模や業務プロセスに適合しているとは限りません。「みんながやっているから良い」とするのは大衆に訴える論証です。',
+    biasType: 'showa'
   },
   {
     id: 'fh2',
@@ -40,7 +41,8 @@ const arenaQuestions = [
       { text: 'ストローマン論法（相手の主張を勝手に過激なものに歪める）', isCorrect: false },
       { text: '無知に訴える論証（失敗の証拠がないから大丈夫だとする）', isCorrect: false }
     ],
-    explanation: '「1時間遅らせる」ことから「倒産」まで、途中の因果関係の証拠がないまま破滅的シナリオを滑り落ちるように繋ぎ合わせて反論する「滑り坂論法」の誤謬です。'
+    explanation: '「1時間遅らせる」ことから「倒産」まで、途中の因果関係の証拠がないまま破滅的シナリオを滑り落ちるように繋ぎ合わせて反論する「滑り坂論法」の誤謬です。',
+    biasType: 'reiwa'
   },
   {
     id: 'fh3',
@@ -53,7 +55,8 @@ const arenaQuestions = [
       { text: '相関と因果の混同（単に時期が重なっただけなのに因果関係があると誤認する）', isCorrect: false },
       { text: '早まった一般化（極端な一例からすべてを決めつける）', isCorrect: false }
     ],
-    explanation: '売上の向上には市場動向や営業努力など多くの要因が絡むはずですが、ロゴの変更という単一の要因だけを絶対的な勝因にするのは「単一原因の誤謬」です。'
+    explanation: '売上の向上には市場動向や営業努力など多くの要因が絡むはずですが、ロゴの変更という単一の要因だけを絶対的な勝因にするのは「単一原因の誤謬」です。',
+    biasType: 'reiwa'
   },
   {
     id: 'fh4',
@@ -66,7 +69,8 @@ const arenaQuestions = [
       { text: 'ストローマン論法（遅刻の定義を歪めて解釈する）', isCorrect: false },
       { text: '感情に訴える論証（自分の苦労を煽って同情を引く）', isCorrect: false }
     ],
-    explanation: '「遅刻厳禁」という全体ルールに対して、特段の合理的理由（事前承認など）なしに、自分の立場や状況を理由に「自分だけは特別」とする「二重基準（特殊認可）」の罠です。'
+    explanation: '「遅刻厳禁」という全体ルールに対して、特段の合理的理由（事前承認など）なしに、自分の立場や状況を理由に「自分だけは特別」とする「二重基準（特殊認可）」の罠です。',
+    biasType: 'showa'
   },
   {
     id: 'fh5',
@@ -79,7 +83,8 @@ const arenaQuestions = [
       { text: '誤った二分法（ゴミを捨てるか、ゴミを机に放置するかの2択にする）', isCorrect: false },
       { text: '滑り坂論法（オフィスの不衛生から倒産へと繋げる）', isCorrect: false }
     ],
-    explanation: '「個人ゴミ箱を廃止し集約する」という提案を、「机をゴミだらけにして不衛生にする」という極端に歪んだ形にすり替えて非難しています。これがストローマン論法です。'
+    explanation: '「個人ゴミ箱を廃止し集約する」という提案を、「机をゴミだらけにして不衛生にする」という極端に歪んだ形にすり替えて非難しています。これがストローマン論法です。',
+    biasType: 'reiwa'
   },
   {
     id: 'fh6',
@@ -92,7 +97,8 @@ const arenaQuestions = [
       { text: '循環論証（同じ内容をグルグル言い換えている）', isCorrect: false },
       { text: '滑り坂論法（1回の遅れから破滅を導く）', isCorrect: false }
     ],
-    explanation: '「スケジュールを遵守すべき」という正当な指摘に対し、「指摘するあなたも過去に遅れた」という矛盾を突くことで、指摘の本質から議論をそらそうとする「お前だって論法（Tu Quoque）」です。'
+    explanation: '「スケジュールを遵守すべき」という正当な指摘に対し、「指摘するあなたも過去に遅れた」という矛盾を突くことで、指摘の本質から議論をそらそうとする「お前だって論法（Tu Quoque）」です。',
+    biasType: 'showa'
   },
   {
     id: 'fh7',
@@ -105,7 +111,8 @@ const arenaQuestions = [
       { text: '単一原因の誤謬（自動化だけが不可欠だと思い込む）', isCorrect: false },
       { text: '権威に訴える論証（偉い人の必要論を借用する）', isCorrect: false }
     ],
-    explanation: '「なぜ必要か」という具体的なメリットを答えず、「不可欠で必要だから必要だ」と同じ意味をグルグル繰り返しているだけで、論証が成立していない「循環論証」です。'
+    explanation: '「なぜ必要か」という具体的なメリットを答えず、「不可欠で必要だから必要だ」と同じ意味をグルグル繰り返しているだけで、論証が成立していない「循環論証」です。',
+    biasType: 'reiwa'
   },
   {
     id: 'fh8',
@@ -118,7 +125,8 @@ const arenaQuestions = [
       { text: '大衆に訴える論証（競合がやっているから自社もやるべきだとする）', isCorrect: false },
       { text: '単一原因の誤謬（倒産の原因をシェア低下だけに絞る）', isCorrect: false }
     ],
-    explanation: '「投資額を削って段階導入する」「他事業の拡大で補填する」などの多様な選択肢を排除し、「投資か倒産か」の極端な2択のみを突きつける「誤った二分法」です。'
+    explanation: '「投資額を削って段階導入する」「他事業の拡大で補填する」などの多様な選択肢を排除し、「投資か倒産か」の極端な2択のみを突きつける「誤った二分法」です。',
+    biasType: 'reiwa'
   },
   {
     id: 'fh9',
@@ -131,7 +139,8 @@ const arenaQuestions = [
       { text: '無知に訴える論証（誰も失敗したことがないから大丈夫だとする）', isCorrect: false },
       { text: '大衆に訴える論証（流行りのAIだから優れているとする）', isCorrect: false }
     ],
-    explanation: '最新のシステムは未検証のバグや導入コストを含んでいる場合があり、「新しければ常に良い」とは限りません。これが新しさに訴える誤謬です。'
+    explanation: '最新のシステムは未検証のバグや導入コストを含んでいる場合があり、「新しければ常に良い」とは限りません。これが新しさに訴える誤謬です。',
+    biasType: 'reiwa'
   },
   {
     id: 'fh10',
@@ -144,7 +153,288 @@ const arenaQuestions = [
       { text: '循環論証（成功の証拠がないから成功とする）', isCorrect: false },
       { text: '感情に訴える論証（成功への熱望のみで論証する）', isCorrect: false }
     ],
-    explanation: '失敗するという証拠がないことは、成功するという証拠にはなりません。証明されていないことを逆手に取って真実だと強弁する「無知に訴える論証」です。'
+    explanation: '失敗するという証拠がないことは、成功するという証拠にはなりません。証明されていないことを逆手に取って真実だと強弁する「無知に訴える論証」です。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh11',
+    fallacyType: '人身攻撃 (対人論証)',
+    scenario: '「鈴木さんのUI改善案は論理的には優れているように見えます。しかし、彼は最近別のプロジェクトで手痛い納期遅れを出したばかりですよ。そんな彼の提案を信用できますか？」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '人身攻撃（提案者の過去の過失や性格を攻撃し、提案そのものの妥当性を否定する）', isCorrect: true },
+      { text: '滑り坂論法（UI改善案を採用すると会社が潰れると脅す）', isCorrect: false },
+      { text: 'ストローマン論法（鈴木さんの提案を過激なものに歪める）', isCorrect: false },
+      { text: '権威に訴える論証（納期遅れという事実だけを根拠にする）', isCorrect: false }
+    ],
+    explanation: '提案内容自体のロジックではなく、提案者である鈴木さんの過去のミスを理由に提案を退けようとするのは「人身攻撃（対人論証）」の典型例です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh12',
+    fallacyType: 'チェリー・ピッキング',
+    scenario: '「我が社の新サービスは顧客満足度が非常に高いです！アンケート結果のうち、『非常に満足』『満足』と答えた上位20%のユーザーの声だけを見れば、製品の素晴らしさは一目瞭然でしょう！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: 'チェリー・ピッキング（全体データから、自分の主張に都合の良い一部のみを抽出する）', isCorrect: true },
+      { text: '早まった一般化（数名の極端な声から全体を評価する）', isCorrect: false },
+      { text: '循環論証（満足度が高いから素晴らしい製品だと言い換えているだけ）', isCorrect: false },
+      { text: '単一原因の誤謬（製品の良さだけが満足度の要因だとする）', isCorrect: false }
+    ],
+    explanation: 'アンケート全体の傾向を無視し、自分に都合の良い「満足した上位層」のデータだけを取り出して結論を誘導するのは「チェリー・ピッキング」の誤謬です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh13',
+    fallacyType: '偽りの等価性',
+    scenario: '「あの競合企業も過去にセキュリティ事故を起こしましたし、我が社が今回顧客データを少し紛失したのも同じようなものです。どちらの会社もセキュリティに課題があるという点で同罪ですよ。」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '偽りの等価性（本質的な規模や過失の度合いが異なる２つの事象を、一部の類似点で同等に扱う）', isCorrect: true },
+      { text: '誤った二分法（同罪か、無罪かの極端な２択にする）', isCorrect: false },
+      { text: 'お前だって論法（競合がお前だって言っていると責任転嫁する）', isCorrect: false },
+      { text: '滑り坂論法（データの紛失が倒産に繋がると脅す）', isCorrect: false }
+    ],
+    explanation: '事故の重要度、漏洩規模、企業責任の重さが全く異なるにもかかわらず、「どちらもセキュリティ事故を起こした」という共通点だけで不当に「同等」と見なす「偽りの等価性」の罠です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh14',
+    fallacyType: '感情に訴える論証',
+    scenario: '「このプロジェクトをここで中止にするなんて絶対に認められません！この半年間、開発チームのメンバーが毎日終電まで残業し、血のにじむような努力を重ねてきた姿を、あなたは見捨てるのですか！？」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '感情に訴える論証（論理的妥当性ではなく、苦労や同情、怒りなどの感情を煽って主張を通す）', isCorrect: true },
+      { text: '滑り坂論法（プロジェクト中止による最悪のドミノ倒しを語る）', isCorrect: false },
+      { text: '大衆に訴える論証（みんなが残業を反対しているからダメだとする）', isCorrect: false },
+      { text: '二重基準・特殊認可（自分たちにだけ特別な評価を求める）', isCorrect: false }
+    ],
+    explanation: 'プロジェクト継続のビジネス合理性や収益性のロジックではなく、チームの「これまでの苦労」や「同情」を引くことで感情的に説得しようとする論理エラーです。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh15',
+    fallacyType: '権威に訴える論証',
+    scenario: '「この新しい暗号資産に投資すべきだよ。SNSでフォロワーが100万人以上いる高名な経済インフルエンサー of A氏が、YouTubeで『これは絶対に値上がりする次世代の技術だ』と大絶賛していたんだから間違いない！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '権威に訴える論証（客観的データではなく、有名人やインフルエンサーの発言のみを信用の根拠にする）', isCorrect: true },
+      { text: '新しさに訴える論証（次世代の技術だから優れているとする）', isCorrect: false },
+      { text: '無知に訴える論証（値下がりする証拠がないから値上がりするはずだとする）', isCorrect: false },
+      { text: '大衆に訴える論証（フォロワー100万人がみんな買っているとする）', isCorrect: false }
+    ],
+    explanation: '客観的な市場分析や暗号資産自体の財務的・技術的な価値検証をせず、「有名インフルエンサーが推奨しているから正しい」と決めつける「権威に訴える論証」です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh16',
+    fallacyType: '相関と因果の混同',
+    scenario: '「オフィスの観葉植物の数を増やしたところ、翌月の営業チームの成約数が前月比で15%アップしました！やはり緑が放つマイナスイオンには、社員の営業力を引き出す強力な効果がありますね！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '相関と因果の混同（単なる前後の関係や相関関係があるに過ぎない事象に、安易な因果関係を認める）', isCorrect: true },
+      { text: '単一原因の誤謬（成約数アップの要因が植物だけだとする）', isCorrect: false },
+      { text: '早まった一般化（一つのオフィスだけの例から全体を一般化する）', isCorrect: false },
+      { text: '新しさに訴える論証（植物を置く新しい試みだから良いとする）', isCorrect: false }
+    ],
+    explanation: '「植物を置いた」時期と「成約数が増えた」時期が重なっただけ（または市場要因など別の変数がある）かもしれないのに、直接的な因果があると主張するのは「相関と因果の混同」です。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh17',
+    fallacyType: '早まった一般化',
+    scenario: '「昨日採用面接したA大学の学生は挨拶の声が小さく、態度も悪かった。やはりA大学の学生はマナーがなっておらず、我が社のカルチャーには絶対に合わないから全員不採用にすべきだ。」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '早まった一般化（限定された少ないサンプルから、全体を規定する一般的な結論を導き出す）', isCorrect: true },
+      { text: '誤った二分法（A大学の学生を採用するか、しないかの2択にする）', isCorrect: false },
+      { text: '対人論証・人身攻撃（A大学そのものを不当に貶める）', isCorrect: false },
+      { text: 'ストローマン論法（A大学のカリキュラムを歪めて解釈する）', isCorrect: false }
+    ],
+    explanation: 'わずか「1人」の面接者の態度から、A大学の「全学生」の性質を決めつける、典型的な「早まった一般化」の誤謬です。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh18',
+    fallacyType: '誤った二分法',
+    scenario: '「社員のモチベーションを上げる方法は2つに1つだ。基本給を一律で10%上げるか、さもなければ社員が完全にやる気を失って全員退職し、会社が崩壊するのを静観するかだ！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '誤った二分法（他にも存在する多様な選択肢を無視し、極端な２者択一を迫る）', isCorrect: true },
+      { text: '滑り坂論法（基本給を上げないと会社が崩壊するという因果の連鎖）', isCorrect: false },
+      { text: 'お前だって論法（経営陣だってモチベーションが低いじゃないかとする）', isCorrect: false },
+      { text: '感情に訴える論証（崩壊する会社を見たくないという感情を利用する）', isCorrect: false }
+    ],
+    explanation: '「評価制度の見直し」「働き方の柔軟化」など、モチベーション向上には他にも無数の手段があるのにもかかわらず、「給与10%アップか倒産か」の極端な2択に絞る「誤った二分法」です。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh19',
+    fallacyType: '合成の誤謬',
+    scenario: '「我がチームのメンバーは全員、社内テストでトップ10%に入る優秀なエンジニアばかりだ。したがって、このメンバーで結成した新規開発プロジェクトチームは、必ず業界最高峰の優れた成果物を生み出せるはずだ！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '合成の誤謬（個別の要素が優秀だからといって、それらを統合した全体も優秀であると誤認する）', isCorrect: true },
+      { text: '単一原因の誤謬（エンジニアの能力だけが成果物の勝因だとする）', isCorrect: false },
+      { text: '早まった一般化（テストの結果からチーム全員を優秀だと決めつける）', isCorrect: false },
+      { text: '権威に訴える論証（社内テストという指標のみを過信する）', isCorrect: false }
+    ],
+    explanation: '個々の技術力が高くても、チームワークや相性、役割の重複などによって組織としての効率が下がるケースがあります。「部分の正が全体の正になるとは限らない」のが「合成の誤謬」です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh20',
+    fallacyType: '分割の誤謬',
+    scenario: '「我が社はフォーチュン500に選ばれる世界最高峰の超一流IT企業だ。したがって、新卒でこの会社に配属された佐藤くんも、初日から業界最高クラスの優秀な開発スキルを持っているに違いない。」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '分割の誤謬（全体が優秀・特別であるからといって、その個々の構成要素も同様に優秀であると思い込む）', isCorrect: true },
+      { text: '早まった一般化（世界一流の評価から佐藤くんを判断する）', isCorrect: false },
+      { text: '権威に訴える論証（フォーチュン500というブランドを信じる）', isCorrect: false },
+      { text: '新しさに訴える論証（新卒だから最新スキルを持っているとする）', isCorrect: false }
+    ],
+    explanation: '会社全体が一流だとしても、個々の配属されたばかりの新人までが初めから一流のスキルを持っているとは限りません。「全体の属性を部分の属性と混同する」のは「分割 of 誤謬」です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh21',
+    fallacyType: 'ギャンブラーの誤謬',
+    scenario: '「この新しい広告クリエイティブは、過去10回連続でABテストに敗北し、成約率が目標を下回り続けました。確率的にも、次の11回目のテストでは必ず大ヒット（成約率急上昇）を記録するはずです！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: 'ギャンブラーの誤謬（独立した確率事象で、過去のハズレが重なるほど次は当たりやすくなると錯覚する）', isCorrect: true },
+      { text: '無知に訴える論証（次のクリエイティブが失敗する証拠がないとする）', isCorrect: false },
+      { text: '相関と因果の混同（テスト回数とヒット率の相関を誤解する）', isCorrect: false },
+      { text: '滑り坂論法（負け続けることで最悪のシナリオになると考える）', isCorrect: false }
+    ],
+    explanation: '個々のABテストは基本的に独立した試行であり、過去10回連続でダメだったからといって、11回目の成功率が自動的に上がることはありません。「確率の帳尻合わせ」を期待するのは「ギャンブラーの誤謬」です。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh22',
+    fallacyType: 'テキサスの狙撃兵の誤謬',
+    scenario: '「この新しい健康サプリを販売したところ、Aさんは血圧が下がり、Bさんは不眠が改善し、Cさんは腰痛が和らいだと言っています！どんな体の不調も劇的に改善する、万能のサプリメントであることが実証されました！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: 'テキサスの狙撃兵の誤謬（ランダムなデータ群から、たまたま一致した結果だけを都合よく結びつけて因果とする）', isCorrect: true },
+      { text: 'チェリー・ピッキング（サプリを飲んで改善しなかった人の声を無視する）', isCorrect: false },
+      { text: '単一原因の誤謬（サプリだけで体調がすべて改善したとする）', isCorrect: false },
+      { text: '早まった一般化（Aさん、Bさん、Cさんの3例から万能とする）', isCorrect: false }
+    ],
+    explanation: '多様な体験データの中から、たまたま起きた別々の改善例（血圧、不眠、腰痛など異なる事象）だけを無理やり抽出し、あたかも「万能」という統一の因果関係が証明されたかのように主張する論理エラーです。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh23',
+    fallacyType: '伝統に訴える論証',
+    scenario: '「我が社は創業以来50年間、ずっと紙の伝票と印鑑での承認フローで業務を回してきました。だから、このフローが最もミスが少なく安全であり、電子契約ツールを導入する必要はありません！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '伝統に訴える論証（「歴史がある」「昔から続いている」こと自体を、その正しさ・優位性の根拠にする）', isCorrect: true },
+      { text: '新しさに訴える論証（電子ツールが新しいからダメだとする）', isCorrect: false },
+      { text: '大衆に訴える論証（みんながこのフローを使っているとする）', isCorrect: false },
+      { text: '循環論証（安全だから伝票を使い、伝票だから安全だとする）', isCorrect: false }
+    ],
+    explanation: '「50年間続いてきた」ということは、単に慣習であることを示しているに過ぎず、それが現代の基準で「最もミスが少なく安全」であることの合理的・客観的証明にはなりません。これが伝統に訴える論証です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh24',
+    fallacyType: '中庸への逃避 (折衷の誤謬)',
+    scenario: '「マーケティング予算を巡って、A部長は『効果測定のために100%デジタル広告にすべきだ』と主張し、B部長は『認知拡大のために100%テレビCMにすべきだ』と言っています。間を取って50%ずつ予算を分けるのが、最も論理的で正しい判断ですね。」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '中庸への逃避・折衷の誤謬（対立する２つの極端な主張があるとき、中間の妥協案が常に正しいと盲信する）', isCorrect: true },
+      { text: '誤った二分法（デジタルかテレビかの２択しかないとする）', isCorrect: false },
+      { text: '単一原因の誤謬（予算配分だけが広告成果の勝因だとする）', isCorrect: false },
+      { text: '循環論証（中庸だから正しく、正しいから中庸だとする）', isCorrect: false }
+    ],
+    explanation: '対立する２つの極端なプランの論理的妥当性や費用対効果を全く検証せず、ただ単に「真ん中の50%ずつ」という折衷案を選択することが無条件で最適であると判断するのは「折衷の誤謬」です。',
+    biasType: 'showa'
+  },
+  {
+    id: 'fh25',
+    fallacyType: '多義性の誤謬 (意味のすり替え)',
+    scenario: '「『社会に役立つ素晴らしいアイデアは誰もが自由に共有すべきだ』とよく言われますよね。だから、競合他社が莫大な開発費を投じて取得したこの特許技術も、社会のために我が社が自由にコピーして使って良いはずです！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '多義性の誤謬（論旨の途中で、同一の単語の異なる意味をすり替えて論理を構築する）', isCorrect: true },
+      { text: 'ストローマン論法（競合他社の主張を過激に歪めて解釈する）', isCorrect: false },
+      { text: '二重基準（自分たちの特許技術は守るが他社のは奪う）', isCorrect: false },
+      { text: '特殊認可（自分たちにだけ特許コピーを例外的に許す）', isCorrect: false }
+    ],
+    explanation: '「素晴らしいアイデアを（言葉や精神として）自由に共有・議論する」という意味から、「知的財産権（特許）を無断でコピーして商用利用する」という意味へ、「自由に共有・使用する」の意味を狡猾にすり替えています。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh26',
+    fallacyType: '滑り坂論法 (目標設定)',
+    scenario: '「今期の目標設定を少しでも妥協して下げると、社員は楽な方へ流され、次の期にはさらに目標を下げ、最終的に誰も仕事を真面目にしなくなり、我が社は数年以内に確実に倒産します！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '滑り坂論法（合理的な因果関係の証明なしに、小さな変化が最終的な大惨事へと直結すると主張する）', isCorrect: true },
+      { text: '誤った二分法（妥協するか、倒産するかの2択にする）', isCorrect: false },
+      { text: 'ストローマン論法（目標引き下げ案をサボりの推奨に歪める）', isCorrect: false },
+      { text: '単一原因の誤謬（倒産の原因を目標引き下げだけに求める）', isCorrect: false }
+    ],
+    explanation: '「目標を少し下げる」ことから「確実に倒産する」までの極端な因果関係のドミノ倒しが、何の根拠もなく飛躍的に繋げられて相手を脅しています。これが滑り坂論法です。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh27',
+    fallacyType: 'ストローマン論法 (AI活用)',
+    scenario: '「営業部の鈴木さんが『営業資料の誤字脱字チェックをAIに任せて効率化しよう』と提案した。つまり彼は、人間は一切確認せず、誤字だらけの不正確な資料をクライアントに平気で送りつけてもいいと言っているわけだ！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: 'ストローマン論法（相手の提案を極端で非合理的な形に勝手に歪め、攻撃しやすい標的にする）', isCorrect: true },
+      { text: '人身攻撃（鈴木さんの人格や注意不足を非難する）', isCorrect: false },
+      { text: 'お前だって論法（あなただって誤字が多いじゃないかとする）', isCorrect: false },
+      { text: '二重基準（自分がAIを使うのは良いが、鈴木さんが使うのはダメとする）', isCorrect: false }
+    ],
+    explanation: '「AIで初期チェックをして効率化する」という提案を、「人間が確認せず誤字だらけの資料を送る」という不名誉で無責任な主張にすり替え、攻撃しやすくしています。これがストローマン論法です。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh28',
+    fallacyType: '循環論証 (企画書)',
+    scenario: '「鈴木さんの書く企画書は、常に論理的で素晴らしい出来栄えです。なぜそれが分かるかって？それは、彼の企画書には全く矛盾がなく、非常にロジカルで優れているからですよ！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '循環論証（証明すべき結論である「論理的で素晴らしい」を、別の表現で前提として使い回す）', isCorrect: true },
+      { text: '権威に訴える論証（鈴木さんという人物の評価だけを信じる）', isCorrect: false },
+      { text: '大衆に訴える論証（みんなが鈴木さんの企画書を褒めているとする）', isCorrect: false },
+      { text: '相関と因果の混同（ロジカルさと出来栄えの相関を誤解する）', isCorrect: false }
+    ],
+    explanation: '「論理的で素晴らしい」という結論の根拠が、「矛盾がなくロジカルで優れている（＝同じ意味の言い換え）」になっており、主張の内容を実質的に何一つ証明していません。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh29',
+    fallacyType: '無知に訴える論証 (安全評価)',
+    scenario: '「このプロジェクトで発生したバグの原因が、新しく導入したフレームワークにあるという明確な証拠は見つかりませんでした。よって、このフレームワークは100%安全で無実であることが証明されました！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: '無知に訴える論証（「バグの原因である証拠がない」ことを、「安全である」ことの証明とする）', isCorrect: true },
+      { text: '新しさに訴える論証（新しく導入したフレームワークだから良いとする）', isCorrect: false },
+      { text: 'ギャンブラーの誤謬（今回はバグの原因でなかったから次も大丈夫だとする）', isCorrect: false },
+      { text: '特殊認可（フレームワークだけ例外的にバグ検証から除外する）', isCorrect: false }
+    ],
+    explanation: '「原因であると証明されていない」ことは、「原因ではない（安全である）」ことの積極的な証明にはなりません。未検証の不具合があるかもしれないため、「無知に訴える論証」に該当します。',
+    biasType: 'reiwa'
+  },
+  {
+    id: 'fh30',
+    fallacyType: 'お前だって論法 (パスワード)',
+    scenario: '「お客様、セキュリティパスワードは定期的に変更してください。そうしないとアカウントが乗っ取られますよ。」「そういうあなたこそ、自分のPCのログインパスワードを数ヶ月間も変更せずに使い回しているそうじゃないですか。あなたに言われる筋合いはありません！」',
+    question: 'この主張に潜む論理エラー（誤謬）を特定せよ！',
+    choices: [
+      { text: 'お前だって論法（相手の言行不一致や落ち度を指摘することで、指摘そのものの正当性から議論をそらす）', isCorrect: true },
+      { text: '人身攻撃（相手のセキュリティ意識の低さを責め立てる）', isCorrect: false },
+      { text: '感情に訴える論証（パスワード変更の面倒さを感情的に訴える）', isCorrect: false },
+      { text: 'ストローマン論法（パスワード定期変更のルールを歪める）', isCorrect: false }
+    ],
+    explanation: '「パスワードを変更すべき」というセキュリティ上の正しい指摘に対し、「指摘した本人もやっていない」という矛盾を突きつけることで、指摘自体の必要性から議論をそらそうとする「お前だって論法」です。',
+    biasType: 'showa'
   }
 ];
 
@@ -193,12 +483,11 @@ const shuffleArray = (array) => {
 
 export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, onBack }) {
   // ゲーム進行用ステート
-  const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'playing' | 'gameover' | 'clear'
-  const [wave, setWave] = useState(1); // 1, 2, 3
-  const [playerHp, setPlayerHp] = useState(100);
-  const [monsterHp, setMonsterHp] = useState(monsters[0].maxHp);
+  const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'playing' | 'clear'
+  const [wave, setWave] = useState(1); // 1, 2, 3 (モンスター/デバッグ対象の難易度レベル)
+  const [monsterHp, setMonsterHp] = useState(100); // 難易度ビジュアル用進捗(2問正解で討伐)
 
-  // 問題管理
+  // 問題管理 (1セッションあたり6問)
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [selectedChoiceIdx, setSelectedChoiceIdx] = useState(null);
@@ -207,34 +496,46 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
   const [maxCombo, setMaxCombo] = useState(0);
   const [totalCorrectAnswers, setTotalCorrectAnswers] = useState(0);
 
-  // タイマー管理
-  const [timeLeft, setTimeLeft] = useState(monsters[0].timeLimit);
+  // タイマー＆診断測定管理
+  const [timeLeft, setTimeLeft] = useState(20);
   const timerRef = useRef(null);
+  const startTimeRef = useRef(0);
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0); // 累計思考時間 (秒)
+  const [showaStats, setShowaStats] = useState({ correct: 0, total: 0 });
+  const [reiwaStats, setReiwaStats] = useState({ correct: 0, total: 0 });
 
   // アニメーション制御用フラグ
-  const [screenEffect, setScreenEffect] = useState(null); // 'shake' | 'damage-flash' | null
-  const [damageNumber, setDamageNumber] = useState(null); // { val: number, target: 'player' | 'monster' }
+  const [screenEffect, setScreenEffect] = useState(null); // 'shake' | null
+  const [damageNumber, setDamageNumber] = useState(null); // { val: number, target: 'monster' | 'player' }
   const [atkEffect, setAtkEffect] = useState(false);
 
   // 1. クイズの初期化
   const initializeGame = () => {
-    // 毎回ランダムにシャッフルした問題をセット
+    // 30問からランダムにシャッフルして、昭和15問・令和15問の偏りを防ぎつつ、
+    // 昭和から3問、令和から3問の計6問をピックアップしてバランス良い診断にする
     const shuffled = shuffleArray(arenaQuestions);
-    const finalized = shuffled.map(q => ({
+    const showaQs = shuffled.filter(q => q.biasType === 'showa').slice(0, 3);
+    const reiwaQs = shuffled.filter(q => q.biasType === 'reiwa').slice(0, 3);
+    
+    // ピックアップした6問をさらにシャッフル
+    const sessionQs = shuffleArray([...showaQs, ...reiwaQs]).map(q => ({
       ...q,
       choices: shuffleArray(q.choices)
     }));
-    setQuestions(finalized);
+
+    setQuestions(sessionQs);
     setWave(1);
-    setPlayerHp(100);
-    setMonsterHp(monsters[0].maxHp);
+    setMonsterHp(100);
     setCurrentQuestionIdx(0);
     setSelectedChoiceIdx(null);
     setIsAnswered(false);
     setCombo(0);
     setMaxCombo(0);
     setTotalCorrectAnswers(0);
-    setTimeLeft(monsters[0].timeLimit);
+    setTotalTimeSpent(0);
+    setShowaStats({ correct: 0, total: 0 });
+    setReiwaStats({ correct: 0, total: 0 });
+    setTimeLeft(20);
     setScreenEffect(null);
     setDamageNumber(null);
     setAtkEffect(false);
@@ -247,18 +548,24 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
     };
   }, []);
 
-  // 2. タイマー監視 (ゲーム進行中のみ稼働)
+  // 各問題の開始時にタイマーをセットし、開始時刻を記録
   useEffect(() => {
-    if (gameStatus !== 'playing' || isAnswered) {
+    if (gameStatus !== 'playing') return;
+    
+    // スキャン開始時間を記録
+    startTimeRef.current = Date.now();
+    
+    if (isAnswered) {
       if (timerRef.current) clearInterval(timerRef.current);
       return;
     }
 
-    // タイマー開始
+    const currentMonster = monsters[wave - 1] || monsters[0];
+    setTimeLeft(currentMonster.timeLimit);
+
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // 時間切れ！
           clearInterval(timerRef.current);
           handleTimeOut();
           return 0;
@@ -275,7 +582,6 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
   const currentMonster = monsters[wave - 1] || monsters[0];
   const currentQuestion = questions[currentQuestionIdx];
 
-  // 3. 正解・不正解時のダメージ演出トリガー
   const triggerDamageNum = (val, target) => {
     setDamageNumber({ val, target });
     setTimeout(() => {
@@ -289,19 +595,37 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
     setIsAnswered(true);
     setCombo(0);
 
-    // 画面揺れ・赤フラッシュエフェクト
+    // 警告エフェクト
     setScreenEffect('shake');
-    triggerDamageNum(20, 'player');
+    triggerDamageNum('TIMEOUT', 'player');
     setTimeout(() => setScreenEffect(null), 500);
 
-    // プレイヤーが20ダメージ受ける
-    setPlayerHp((prev) => {
-      const nextHp = Math.max(0, prev - 20);
-      if (nextHp <= 0) {
-        setTimeout(() => setGameStatus('gameover'), 800);
-      }
-      return nextHp;
-    });
+    // 思考時間を加算 (最大制限時間分)
+    const currentMonster = monsters[wave - 1] || monsters[0];
+    setTotalTimeSpent(prev => prev + currentMonster.timeLimit);
+
+    // 世代バイアス統計の更新
+    const bias = currentQuestion.biasType;
+    if (bias === 'showa') {
+      setShowaStats(prev => ({ ...prev, total: prev.total + 1 }));
+    } else {
+      setReiwaStats(prev => ({ ...prev, total: prev.total + 1 }));
+    }
+  };
+
+  // 統計データの更新
+  const updateStats = (bias, isCorrect) => {
+    if (bias === 'showa') {
+      setShowaStats(prev => ({
+        correct: prev.correct + (isCorrect ? 1 : 0),
+        total: prev.total + 1
+      }));
+    } else {
+      setReiwaStats(prev => ({
+        correct: prev.correct + (isCorrect ? 1 : 0),
+        total: prev.total + 1
+      }));
+    }
   };
 
   // 5. 解答選択肢をクリック
@@ -313,10 +637,16 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
     setSelectedChoiceIdx(choiceIdx);
     setIsAnswered(true);
 
+    // 思考時間の計測
+    const timeSpentSec = (Date.now() - startTimeRef.current) / 1000;
+    setTotalTimeSpent(prev => prev + timeSpentSec);
+
     const isCorrect = currentQuestion.choices[choiceIdx].isCorrect;
+    const bias = currentQuestion.biasType;
+    updateStats(bias, isCorrect);
 
     if (isCorrect) {
-      // 正解：モンスターにダメージ
+      // 正解：デバッグ成功エフェクト
       playSound('correct');
       setCombo(prev => {
         const next = prev + 1;
@@ -328,82 +658,41 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
       // 斬撃エフェクト
       setAtkEffect(true);
       setTimeout(() => setAtkEffect(false), 600);
+      triggerDamageNum('DEBUGGED', 'monster');
 
-      const hitDmg = currentMonster.dmgPerHit;
-      triggerDamageNum(hitDmg, 'monster');
-
-      // モンスターのHPを減らす
-      setMonsterHp((prev) => {
-        const nextHp = Math.max(0, prev - hitDmg);
-        if (nextHp <= 0) {
-          // モンスター討伐！ウェーブ進行
-          setTimeout(() => handleMonsterDefeated(), 1000);
-        }
-        return nextHp;
-      });
-
+      // モンスターHP（デバッグ進捗）を減らす
+      setMonsterHp(prev => Math.max(0, prev - 50));
     } else {
-      // 不正解：プレイヤーにダメージ
+      // 不正解：警告
       playSound('incorrect');
       setCombo(0);
-
-      // 画面激震・赤フラッシュ
       setScreenEffect('shake');
-      triggerDamageNum(20, 'player');
+      triggerDamageNum('WARNING', 'player');
       setTimeout(() => setScreenEffect(null), 500);
-
-      setPlayerHp((prev) => {
-        const nextHp = Math.max(0, prev - 20);
-        if (nextHp <= 0) {
-          setTimeout(() => setGameStatus('gameover'), 800);
-        }
-        return nextHp;
-      });
     }
   };
 
-  // 6. モンスターを倒した時の処理
-  const handleMonsterDefeated = () => {
-    if (wave < 3) {
-      playSound('success');
-      const nextWave = wave + 1;
-      setWave(nextWave);
-      setMonsterHp(monsters[nextWave - 1].maxHp);
-      setTimeLeft(monsters[nextWave - 1].timeLimit);
-      setIsAnswered(false);
-      setSelectedChoiceIdx(null);
-      
-      // 問題インデックスを進める (問題が残っている場合)
-      if (currentQuestionIdx < questions.length - 1) {
-        setCurrentQuestionIdx(prev => prev + 1);
-      } else {
-        // 万が一問題が尽きたら再シャッフル
-        const reshuffled = shuffleArray(arenaQuestions);
-        setQuestions(reshuffled.map(q => ({ ...q, choices: shuffleArray(q.choices) })));
-        setCurrentQuestionIdx(0);
-      }
-    } else {
-      // 全3ウェーブクリア！勝利画面へ
-      playSound('success');
-      setGameStatus('clear');
-    }
-  };
-
-  // 7. 次の問題へ (モンスターがまだ生きている場合の移行ボタン)
+  // 6. 次の問題へ
   const handleNext = () => {
     if (!isAnswered) return;
     playSound('click');
     setSelectedChoiceIdx(null);
     setIsAnswered(false);
-    setTimeLeft(currentMonster.timeLimit);
 
-    if (currentQuestionIdx < questions.length - 1) {
-      setCurrentQuestionIdx(prev => prev + 1);
+    // 2問ごとにモンスター（難易度）を切り替える
+    // 6問中の進行具合から wave を判定
+    const nextQuestionIdx = currentQuestionIdx + 1;
+    if (nextQuestionIdx < 6) {
+      setCurrentQuestionIdx(nextQuestionIdx);
+      const nextWave = Math.floor(nextQuestionIdx / 2) + 1;
+      if (nextWave !== wave) {
+        setWave(nextWave);
+        setMonsterHp(100);
+      }
     } else {
-      // 循環
-      const reshuffled = shuffleArray(arenaQuestions);
-      setQuestions(reshuffled.map(q => ({ ...q, choices: shuffleArray(q.choices) })));
-      setCurrentQuestionIdx(0);
+      // 6問すべて終了。診断完了！
+      playSound('success');
+      setGameStatus('clear');
     }
   };
 
@@ -413,35 +702,60 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
     setGameStatus('playing');
   };
 
-  // 9. ゲームクリアスコア算出＆接続
+  // 9. ゲーム結果の記録
   const handleFinishGame = () => {
-    // プレイヤーの残りHP、コンボ数、正解率をもとにスコア (最大100%) を算出
-    const accuracy = totalCorrectAnswers / Math.max(1, totalCorrectAnswers + (5 - playerHp / 20)); // 推定誤回答数から算出
-    const hpBonus = playerHp * 0.4; // max 40pt
-    const comboBonus = Math.min(20, maxCombo * 4); // max 20pt
-    const accuracyBonus = Math.round(accuracy * 40); // max 40pt
-    const finalScore = Math.min(100, Math.round(hpBonus + comboBonus + accuracyBonus));
-    
-    onFinish(finalScore);
+    const accuracyScore = Math.round((totalCorrectAnswers / 6) * 100);
+    onFinish(accuracyScore);
   };
 
   const startBattle = () => {
     playSound('click');
     setGameStatus('playing');
-    setTimeLeft(monsters[0].timeLimit);
+    startTimeRef.current = Date.now();
   };
 
   if (questions.length === 0 || !currentQuestion) {
     return null;
   }
 
-  // 残り時間のカラー判定
   const getTimerColor = () => {
     const ratio = timeLeft / currentMonster.timeLimit;
     if (ratio <= 0.25) return '#ef4444'; // 赤
     if (ratio <= 0.5) return '#f59e0b'; // 黄
     return 'var(--color-cyan)'; // シアン
   };
+
+  // 診断データ集計
+  const showaDebRate = showaStats.total > 0 ? Math.round((showaStats.correct / showaStats.total) * 100) : 100;
+  const reiwaDebRate = reiwaStats.total > 0 ? Math.round((reiwaStats.correct / reiwaStats.total) * 100) : 100;
+  const avgScanTime = Math.round((totalTimeSpent / 6) * 10) / 10;
+
+  const getDiagnosis = () => {
+    if (showaDebRate >= 80 && reiwaDebRate >= 80) {
+      return {
+        title: "スーパークリーン・デバッガー",
+        desc: "昭和の精神論バイアスも、令和のタイパ至上主義バイアスも完璧に見破るクリアな脳の持ち主です。極めてフラットで論理的な認知バランスを持っています。"
+      };
+    }
+    if (showaDebRate < 50 && reiwaDebRate >= 80) {
+      return {
+        title: "令和偏重・精神論アレルギー脳",
+        desc: "令和の合理的なルールや防衛姿勢は正しく理解できますが、昭和の『感情論』や『伝統への訴え』などのへりくつバグに引っかかりやすい傾向があります。"
+      };
+    }
+    if (reiwaDebRate < 50 && showaDebRate >= 80) {
+      return {
+        title: "昭和偏重・タイパ過信脳",
+        desc: "昭和的な経験主義や人情の歪みは冷静見破れますが、令和的な『タイパ至上主義』や『過剰防衛的なすり替え』などのモダンなへりくつバグをスルーしがちです。"
+      };
+    }
+    return {
+      title: "思考ノイズ蓄積脳",
+      desc: "昭和・令和それぞれのバイアスが少しずつ脳内にノイズとして混入しています。物事をロジカルに整理する際、世代的なへりくつやバイアスに思考を惑わされやすい状態です。"
+    };
+  };
+
+  const diagnosis = getDiagnosis();
 
   return (
     <div className={`arena-wrapper ${screenEffect === 'shake' ? 'shake-active' : ''}`} style={{ maxWidth: '800px', margin: '0 auto', padding: '0 16px' }}>
@@ -536,7 +850,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
           position: absolute;
           font-family: var(--font-display);
           font-weight: 900;
-          font-size: 36px;
+          font-size: 28px;
           text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
           z-index: 10;
           animation: dmg-float 1.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
@@ -574,24 +888,24 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
       {/* 1. チュートリアル / 導入画面 */}
       {gameStatus === 'tutorial' && (
         <div className="glass-panel fade-in" style={{ padding: '32px', textAlign: 'left', borderLeft: '4px solid var(--color-rose)' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--color-rose)', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: 0 }}>
-            <Zap size={24} />
-            Fallacy Hunter : 批判思考スピードバトル
+          <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--color-rose)', fontSize: '22px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: 0 }}>
+            <Award size={24} />
+            Fallacy Hunter : 脳内バイアス診断
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6', margin: '16px 0 24px 0' }}>
-            アリーナの奥から、対話の論理を食い荒らす「へりくつモンスター」が襲いかかってきました！<br />
-            彼らが放つ歪んだ主張（セリフ）を迅速にデバッグ（誤謬特定）し、デバッグコマンドを実行して討伐してください。
+            日常会話やビジネスコードに潜む「論理エラー（へりくつ・詭弁バグ）」を検出（Detect）し、論理思考の偏りを暴き出す診断モジュールです。<br />
+            提示された主張コードから、誤謬パターンを素早く見分けてデバッグコマンドを実行してください。
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
             <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-              <strong style={{ fontSize: '15px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                ⚔️ バトルの掟:
+              <strong style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🔬 診断プロセス:
               </strong>
               <ul style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '8px', paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <li><strong>制限時間内に見破れ</strong>: ウェーブが進むほど、タイマー（思考の許容時間）が短縮されます。</li>
-                <li><strong>コンボで攻撃力を高めよ</strong>: 連続して正解すると、攻撃のテンポと精度が向上します。</li>
-                <li><strong>誤回答と時間切れは致命傷</strong>: 不正解、またはタイマーが0（時間切れ）になると、強烈なカウンターダメージ（HP -20）を受けます。</li>
+                <li><strong>世代バイアスのスキャン</strong>: 出題される6つのバグ主張には、それぞれ「昭和脳（精神論や伝統）」または「令和脳（過度なタイパや自己防衛）」の歪みバイアスが隠されています。</li>
+                <li><strong>スキャンタイム（思考速度）測定</strong>: 各回答の決定にかかった時間を診断指標として正確に記録します。</li>
+                <li><strong>誤バグ警告演出</strong>: 不正解や時間切れはペナルティ（ゲームオーバー）にはならず、詳細なデバッグ解説が表示されます。内容を納得した上で次の問題へ進んでください。</li>
               </ul>
             </div>
 
@@ -600,78 +914,78 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
                 <div key={idx} style={{ padding: '12px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
                   <div style={{ fontSize: '28px', marginBottom: '4px' }}>{m.emoji}</div>
                   <div style={{ fontSize: '11px', fontWeight: 'bold' }}>{m.name}</div>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>HP {m.maxHp} / {m.timeLimit}秒</div>
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>難易度Lv.{idx + 1}</div>
                 </div>
               ))}
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '16px' }}>
-            <button onClick={onBack} className="btn btn-secondary" style={{ flex: 1 }}>アリーナに戻る</button>
+            <button onClick={onBack} className="btn btn-secondary" style={{ flex: 1 }}>ラボに戻る</button>
             <button onClick={startBattle} className="btn btn-primary" style={{ flex: 2, background: 'linear-gradient(135deg, var(--color-rose) 0%, #e11d48 100%)', boxShadow: '0 4px 15px var(--color-rose-glow)' }}>
-              <Play size={16} />
-              バトルを開始する！
+              <Play size={16} style={{ marginRight: '6px' }} />
+              診断を開始する
             </button>
           </div>
         </div>
       )}
 
-      {/* 2. 戦闘中画面 */}
+      {/* 2. 診断・戦闘中画面 */}
       {gameStatus === 'playing' && (
         <div className="glass-panel fade-in" style={{ padding: '24px', position: 'relative' }}>
           
-          {/* 上部：バトルのヘッダー（ウェーブとHPバー） */}
+          {/* 上部：バトルのヘッダー */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div>
               <span style={{ color: 'var(--color-rose)', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', fontFamily: 'var(--font-display)' }}>
-                WAVE {wave} / 3
+                SCAN PROGRESS {currentQuestionIdx + 1} / 6
               </span>
               <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '2px 0 0 0', color: currentMonster.color }}>
-                VS {currentMonster.name}
+                {currentMonster.name} のコードを解析中
               </h2>
             </div>
             
-            {/* プレイヤーのHP */}
+            {/* スキャン進行度 */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '120px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontSize: '12px', fontWeight: 'bold', color: playerHp <= 40 ? '#ef4444' : 'var(--text-primary)' }}>
-                <Heart size={14} fill={playerHp <= 40 ? '#ef4444' : 'var(--color-rose)'} style={{ color: playerHp <= 40 ? '#ef4444' : 'var(--color-rose)' }} />
-                HP {playerHp} / 100
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                <Zap size={14} style={{ color: 'var(--color-rose)' }} />
+                PROGRESS {currentQuestionIdx} / 6
               </div>
               <div className="hp-bar-outer">
                 <div 
                   className="hp-bar-inner" 
                   style={{ 
-                    width: `${playerHp}%`, 
-                    background: playerHp <= 40 ? 'linear-gradient(90deg, #ef4444, #b91c1c)' : 'linear-gradient(90deg, var(--color-rose), #ec4899)' 
+                    width: `${(currentQuestionIdx / 6) * 100}%`, 
+                    background: 'linear-gradient(90deg, var(--color-rose), #ec4899)' 
                   }} 
                 />
               </div>
             </div>
           </div>
 
-          {/* モンスターHPバー & バトルタイマー */}
+          {/* デバッグ進捗 & スキャンタイムリミット */}
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px' }}>
-            {/* モンスターのHP */}
+            {/* モンスター（バグ）の残りHP（デバッグ完了への進捗） */}
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                <span>MONSTER HP</span>
-                <span>{monsterHp} / {currentMonster.maxHp}</span>
+                <span>ANALYSIS COMPLETE RATE</span>
+                <span>{100 - monsterHp}%</span>
               </div>
               <div className="hp-bar-outer">
                 <div 
                   className="hp-bar-inner" 
                   style={{ 
-                    width: `${(monsterHp / currentMonster.maxHp) * 100}%`, 
-                    background: `linear-gradient(90deg, ${currentMonster.color}, #7f1d1d)` 
+                    width: `${100 - monsterHp}%`, 
+                    background: `linear-gradient(90deg, ${currentMonster.color}, var(--color-emerald))` 
                   }} 
                 />
               </div>
             </div>
 
-            {/* バトルタイマー */}
+            {/* スキャンタイマー */}
             <div style={{ width: '120px', position: 'relative' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}><Timer size={10} /> TIME</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}><Timer size={10} /> SCAN TIME</span>
                 <span style={{ color: getTimerColor(), fontWeight: 'bold' }}>{timeLeft}s</span>
               </div>
               <div className="timer-bar-outer">
@@ -686,19 +1000,19 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
             </div>
           </div>
 
-          {/* 中部：バトルスクリーン（モンスターと吹き出し） */}
+          {/* 中部：バトルスクリーン */}
           <div className="monster-box" style={{ marginBottom: '24px' }}>
             <div className="grid-bg" />
             
-            {/* ダメージのポップアップ */}
+            {/* ポップアップ表示 */}
             {damageNumber && damageNumber.target === 'monster' && (
-              <span className="dmg-number" style={{ color: '#ffffff', textShadow: '0 0 10px #ef4444', left: '50%', top: '35%', transform: 'translateX(-50%)' }}>
-                -{damageNumber.val}
+              <span className="dmg-number" style={{ color: 'var(--color-emerald)', textShadow: '0 0 10px rgba(16, 185, 129, 0.6)', left: '50%', top: '35%', transform: 'translateX(-50%)' }}>
+                {damageNumber.val}
               </span>
             )}
             {damageNumber && damageNumber.target === 'player' && (
-              <span className="dmg-number" style={{ color: '#ef4444', textShadow: '0 0 10px #ffffff', left: '75%', top: '35%' }}>
-                -{damageNumber.val}
+              <span className="dmg-number" style={{ color: '#ef4444', textShadow: '0 0 10px rgba(239, 68, 68, 0.6)', left: '50%', top: '35%', transform: 'translateX(-50%)' }}>
+                {damageNumber.val}
               </span>
             )}
 
@@ -716,23 +1030,23 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
                 fontSize: wave === 3 ? '84px' : '72px',
                 filter: damageNumber && damageNumber.target === 'monster' ? 'brightness(2) drop-shadow(0 0 20px #ef4444)' : `drop-shadow(0 0 24px ${currentMonster.color})`,
                 transition: 'transform 0.1s ease, opacity 0.5s ease',
-                opacity: monsterHp <= 0 ? 0 : 1,
+                opacity: monsterHp <= 0 ? 0.3 : 1,
                 transform: damageNumber && damageNumber.target === 'monster' ? 'scale(0.9) rotate(-5deg)' : 'scale(1)'
               }}
             >
               {currentMonster.emoji}
             </div>
 
-            {/* コンボインジケーター */}
+            {/* コンボ */}
             {combo >= 2 && (
-              <div style={{ position: 'absolute', left: '16px', top: '16px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#ff8a8a', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 10, animation: 'pulse 1s infinite' }}>
+              <div style={{ position: 'absolute', left: '16px', top: '16px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#ff8a8a', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px', zIndex: 10 }}>
                 <Flame size={12} fill="#ef4444" style={{ color: '#ef4444' }} />
                 {combo} COMBO!
               </div>
             )}
           </div>
 
-          {/* 吹き出し：モンスターが吐くへりくつ・詭弁のテキスト */}
+          {/* 吹き出し */}
           <div 
             style={{ 
               background: 'var(--bg-inner-box)', 
@@ -747,14 +1061,14 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
           >
             <div style={{ position: 'absolute', top: '-10px', left: '30px', width: 0, height: 0, borderStyle: 'solid', borderWidth: '0 10px 10px 10px', borderColor: `transparent transparent ${currentMonster.color} transparent` }} />
             <span style={{ fontSize: '10px', color: currentMonster.color, fontWeight: 'bold', display: 'block', marginBottom: '6px', letterSpacing: '0.5px' }}>
-              {currentMonster.name} の主張：
+              解析中のバグ主張（属性: {currentQuestion.biasType === 'showa' ? '昭和バイアス' : '令和バイアス'}）：
             </span>
             <p style={{ fontSize: '14.5px', lineHeight: '1.6', color: 'var(--text-primary)', margin: 0, fontWeight: '500' }}>
               {currentQuestion.scenario}
             </p>
           </div>
 
-          {/* 下部：デバッグコマンド（解答選択肢） */}
+          {/* 下部：デバッグコマンド */}
           <div style={{ marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: 'bold' }}>
@@ -825,7 +1139,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
             </div>
           </div>
 
-          {/* 解説表示エリア (解答後) */}
+          {/* 解説表示エリア */}
           {isAnswered && (
             <div 
               style={{ 
@@ -841,12 +1155,12 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                 <span style={{ fontSize: '13px', fontWeight: 'bold', color: selectedChoiceIdx !== null && currentQuestion.choices[selectedChoiceIdx].isCorrect ? 'var(--color-emerald)' : '#ef4444' }}>
                   {selectedChoiceIdx === null 
-                    ? '⚠️ 時間切れ！' 
-                    : currentQuestion.choices[selectedChoiceIdx].isCorrect ? '🎯 デバッグ成功（モンスターにダメージ）' : '💥 反撃を受けた（プレイヤーにダメージ）'
+                    ? '⚠️ タイムアップ（診断：思考遅延バグ）' 
+                    : currentQuestion.choices[selectedChoiceIdx].isCorrect ? '🎯 デバッグ完了（バグの無効化に成功）' : '⚠️ 誤バグ検知（バグの隔離に失敗）'
                   }
                 </span>
                 <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
-                  （正解のデバッグコマンド: {currentQuestion.fallacyType}）
+                  （該当誤謬: {currentQuestion.fallacyType}）
                 </span>
               </div>
               <p style={{ fontSize: '13px', lineHeight: '1.5', color: 'var(--text-secondary)', margin: 0 }}>
@@ -857,60 +1171,69 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
 
           {/* 次へ進むアクション */}
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            {isAnswered && monsterHp > 0 && (
+            {isAnswered && (
               <button onClick={handleNext} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--color-rose) 0%, #e11d48 100%)', boxShadow: '0 4px 15px var(--color-rose-glow)' }}>
-                次の問題へ
-                <ChevronRight size={16} />
+                {currentQuestionIdx < 5 ? '次のコードへ' : '診断結果を表示'}
+                <ChevronRight size={16} style={{ marginLeft: '4px' }} />
               </button>
             )}
           </div>
         </div>
       )}
 
-      {/* 3. ゲームオーバー画面 */}
-      {gameStatus === 'gameover' && (
-        <div className="glass-panel fade-in" style={{ padding: '40px 32px', textAlign: 'center', borderLeft: '4px solid #ef4444' }}>
-          <ShieldAlert size={64} style={{ color: '#ef4444', marginBottom: '20px', margin: '0 auto' }} />
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', margin: '16px 0 12px 0' }}>
-            デバッグ失敗...（敗北）
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', marginBottom: '32px' }}>
-            へりくつモンスターの詭弁を見破れず、思考回路がオーバーヒート（HPが0）してしまいました。
-          </p>
-
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <button onClick={onBack} className="btn btn-secondary">アリーナに戻る</button>
-            <button onClick={handleRetry} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)' }}>
-              <RotateCcw size={16} style={{ marginRight: '6px' }} />
-              もう一度挑戦
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 4. ゲームクリア画面 */}
+      {/* 3. 診断完了画面 */}
       {gameStatus === 'clear' && (
         <div className="glass-panel fade-in" style={{ padding: '40px 32px', textAlign: 'center', borderLeft: '4px solid var(--color-emerald)' }}>
           <Award size={64} style={{ color: 'var(--color-emerald)', marginBottom: '20px', margin: '0 auto' }} />
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', margin: '16px 0 12px 0' }}>
-            アリーナクリア！
+            デバッグ診断 完了
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', marginBottom: '32px' }}>
-            見事にすべてのへりくつモンスターを討伐し、プロフェッショナルな批判思考力を実証しました！
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14.5px', marginBottom: '24px' }}>
+            見事にすべてのバグコードのスキャンが終了しました。あなたの脳内デバッグ精度とバイアス比率は以下の通りです。
           </p>
 
-          <div style={{ display: 'flex', gap: '32px', justifyContent: 'center', marginBottom: '32px' }}>
+          {/* 診断タイトルと説明 */}
+          <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '20px', marginBottom: '28px', textAlign: 'left' }}>
+            <span style={{ fontSize: '11px', color: 'var(--color-emerald)', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase' }}>脳内バイアス診断結果</span>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '6px 0 10px 0', color: 'var(--text-primary)' }}>{diagnosis.title}</h3>
+            <p style={{ fontSize: '13px', lineHeight: '1.6', color: 'var(--text-secondary)', margin: 0 }}>{diagnosis.desc}</p>
+          </div>
+
+          {/* 診断詳細スタッツ */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+            {/* 昭和脳デバッグ率 */}
+            <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '16px', borderRadius: '10px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>昭和脳 デバッグ率</div>
+              <div style={{ fontSize: '24px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-amber)' }}>{showaDebRate}%</div>
+              <div className="hp-bar-outer" style={{ marginTop: '8px', height: '6px' }}>
+                <div className="hp-bar-inner" style={{ width: `${showaDebRate}%`, background: 'var(--color-amber)' }} />
+              </div>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>（精神論・伝統バイアス）</span>
+            </div>
+
+            {/* 令和脳デバッグ率 */}
+            <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '16px', borderRadius: '10px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>令和脳 デバッグ率</div>
+              <div style={{ fontSize: '24px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-rose)' }}>{reiwaDebRate}%</div>
+              <div className="hp-bar-outer" style={{ marginTop: '8px', height: '6px' }}>
+                <div className="hp-bar-inner" style={{ width: `${reiwaDebRate}%`, background: 'var(--color-rose)' }} />
+              </div>
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>（タイパ・過剰防衛バイアス）</span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '32px', justifyContent: 'center', marginBottom: '32px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
             <div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>プレイヤー残りHP</div>
-              <div style={{ fontSize: '28px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-rose)', marginTop: '4px' }}>
-                {playerHp} / 100
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>平均スキャン速度</div>
+              <div style={{ fontSize: '22px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-cyan)', marginTop: '4px' }}>
+                {avgScanTime} 秒 / 問
               </div>
             </div>
             <div style={{ borderLeft: '1px solid var(--border-color)' }}></div>
             <div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>最大コンボ数</div>
-              <div style={{ fontSize: '28px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-cyan)', marginTop: '4px' }}>
-                {maxCombo} Combos
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>デバッグ成功数</div>
+              <div style={{ fontSize: '22px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-emerald)', marginTop: '4px' }}>
+                {totalCorrectAnswers} / 6 問
               </div>
             </div>
           </div>
@@ -918,7 +1241,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <button onClick={handleRetry} className="btn btn-secondary">
               <RotateCcw size={16} style={{ marginRight: '6px' }} />
-              もう一度挑戦
+              もう一度診断
             </button>
             <button 
               onClick={handleFinishGame} 
