@@ -172,14 +172,14 @@ export default function Dashboard({
                   badgeColor: "var(--color-badge-bg)",
                   badgeTextColor: "var(--color-badge-text)",
                   badgeBorder: "var(--color-badge-border)",
-                  level: `レベル ${gameState.level}`,
+                  level: gameState?.level ? `レベル ${gameState.level}` : '',
                   icon: currentType?.emoji || "🐸",
-                  title: currentType?.name || charClass.title,
+                  title: currentType?.name || charClass?.title,
                   tagline: currentType?.tagline || '思考のデバッグジムへようこそ',
                   desc: (
                     <>
                       <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
-                        {currentType?.description || charClass.desc}
+                        {currentType?.description || charClass?.desc}
                       </p>
                       
                       {/* アコーディオン: 取扱説明書 (トリセツ) & 3大バグ */}
@@ -208,22 +208,22 @@ export default function Dashboard({
                             <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left', animation: 'fadeIn 0.3s ease' }}>
                               <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
                                 <span style={{ fontSize: '12px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>💼 工作でのバグ</span>
-                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.workBug}</p>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType?.workBug}</p>
                               </div>
                               <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
                                 <span style={{ fontSize: '12px', color: '#f43f5e', fontWeight: 'bold' }}>🏡 私生活でのバグ</span>
-                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.privateBug}</p>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType?.privateBug}</p>
                               </div>
                               <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
                                 <span style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 'bold' }}>⚡ ふとした瞬間のクセ</span>
-                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.dailyHabit}</p>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType?.dailyHabit}</p>
                               </div>
                               <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '14px', borderRadius: '8px' }}>
                                 <span style={{ display: 'block', fontSize: '12px', color: '#10b981', fontWeight: 'bold', marginBottom: '8px' }}>📋 取扱説明書</span>
                                 <span style={{ display: 'block', fontSize: '11px', color: '#f43f5e', fontWeight: 'bold' }}>● 地雷ポイント</span>
-                                <p style={{ margin: '2px 0 8px 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.jealousPoint}</p>
+                                <p style={{ margin: '2px 0 8px 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType?.torisetsu?.jealousPoint}</p>
                                 <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold' }}>● デバッグコマンド</span>
-                                <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.debugSpell}</p>
+                                <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType?.torisetsu?.debugSpell}</p>
                               </div>
                             </div>
                           )}
