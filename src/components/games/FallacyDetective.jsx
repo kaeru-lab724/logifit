@@ -20,6 +20,8 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [hasRetried, setHasRetried] = useState(false);
+  const [wrongChoices, setWrongChoices] = useState([]);
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? fallaciesBusiness : fallaciesDaily;
@@ -34,6 +36,8 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
     setIsAnswered(false);
     setScore(0);
     setCompleted(false);
+    setHasRetried(false);
+    setWrongChoices([]);
   };
 
   useEffect(() => {
@@ -46,18 +50,34 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
 
   const currentQuestion = questions[currentIdx];
 
+  const getMiniHint = () => {
+    return "💡 ヒント: 会話のすれ違いや、相手の『極端な解釈』や『論点のすり替え』、あるいは『白黒の決めつけ』を疑ってみましょう。各選択肢の（）内の説明をもう一度よく読み、シナリオの発言内容と照らし合わせてみてください。";
+  };
+
   const handleAnswer = (choiceIdx) => {
-    if (isAnswered) return;
+    if (isAnswered || wrongChoices.includes(choiceIdx)) return;
     playSound('click');
     setSelectedChoiceIdx(choiceIdx);
-    setIsAnswered(true);
 
     const isCorrect = currentQuestion.choices[choiceIdx].isCorrect;
     if (isCorrect) {
-      setScore(prev => prev + 1);
+      if (!hasRetried) {
+        setScore(prev => prev + 1);
+      } else {
+        setScore(prev => prev + 0.5);
+      }
+      setIsAnswered(true);
       playSound('correct');
     } else {
-      playSound('incorrect');
+      if (!hasRetried) {
+        setHasRetried(true);
+        setWrongChoices(prev => [...prev, choiceIdx]);
+        playSound('incorrect');
+      } else {
+        setWrongChoices(prev => [...prev, choiceIdx]);
+        setIsAnswered(true);
+        playSound('incorrect');
+      }
     }
   };
 
@@ -67,6 +87,8 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
       setCurrentIdx(prev => prev + 1);
       setSelectedChoiceIdx(null);
       setIsAnswered(false);
+      setHasRetried(false);
+      setWrongChoices([]);
     } else {
       setCompleted(true);
       const finalScore = Math.round((score / questions.length) * 100);
@@ -233,6 +255,7 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {currentQuestion.choices.map((choice, idx) => {
                   const isSelected = selectedChoiceIdx === idx;
+                  const isWrongAttempt = wrongChoices.includes(idx);
                   const showCorrect = isAnswered && choice.isCorrect;
                   const showWrong = isAnswered && isSelected && !choice.isCorrect;
 
@@ -242,7 +265,13 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                     color: 'var(--text-primary)'
                   };
 
-                  if (isSelected && !isAnswered) {
+                  if (isWrongAttempt) {
+                    cardStyle = {
+                      background: 'rgba(244, 63, 94, 0.15)',
+                      borderColor: 'var(--color-rose)',
+                      color: 'var(--color-rose)'
+                    };
+                  } else if (isSelected && !isAnswered) {
                     cardStyle = {
                       background: 'rgba(244, 63, 94, 0.05)',
                       borderColor: 'var(--color-rose)',
@@ -266,7 +295,7 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                     <button
                       key={idx}
                       onClick={() => handleAnswer(idx)}
-                      disabled={isAnswered}
+                      disabled={isAnswered || wrongChoices.includes(idx)}
                       className="btn"
                       style={{
                         ...cardStyle,
@@ -280,7 +309,7 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                         fontSize: '15px',
                         lineHeight: '1.4',
                         cursor: isAnswered ? 'default' : 'pointer',
-                        opacity: isAnswered && !isSelected && !choice.isCorrect ? 0.5 : 1
+                        opacity: (isAnswered && !isSelected && !choice.isCorrect) || wrongChoices.includes(idx) ? 0.5 : 1
                       }}
                     >
                       <span style={{ 
@@ -296,6 +325,31 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                 })}
               </div>
             </div>
+
+            {hasRetried && !isAnswered && (
+              <div 
+                className="fade-in incorrect-shake"
+                style={{ 
+                  padding: '16px 20px', 
+                  borderRadius: '12px', 
+                  backgroundColor: 'rgba(244, 63, 94, 0.05)',
+                  border: '1px solid rgba(244, 63, 94, 0.2)',
+                  borderLeft: '4px solid var(--color-rose)',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '18px' }}>🧠</span>
+                  <strong style={{ color: 'var(--color-rose)', fontSize: '14px' }}>
+                    シグナル：論理的誤謬を検出！別の選択肢を再選択できます。
+                  </strong>
+                </div>
+                <p style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-primary)', margin: 0 }}>
+                  {getMiniHint()}
+                </p>
+              </div>
+            )}
 
             {isAnswered && (
               <div 
@@ -315,10 +369,12 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
                     <XCircle style={{ color: 'var(--color-rose)' }} />
                   )}
                   <strong style={{ fontSize: '16px', color: currentQuestion.choices[selectedChoiceIdx].isCorrect ? 'var(--color-emerald)' : 'var(--color-rose)' }}>
-                    {currentQuestion.choices[selectedChoiceIdx].isCorrect ? '正解！' : '不正解'}
+                    {currentQuestion.choices[selectedChoiceIdx].isCorrect 
+                      ? (hasRetried ? 'リカバリー成功！' : '正解！') 
+                      : '不正解'}
                   </strong>
                   <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-                    （正解: {String.fromCharCode(65 + currentQuestion.choices.findIndex(c => c.isCorrect))}）
+                    （正解: {String.fromCharCode(65 + currentQuestion.choices.findIndex(c => c.isCorrect))} {hasRetried && ' | リトライで正解'}）
                   </span>
                 </div>
                 <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-primary)' }}>

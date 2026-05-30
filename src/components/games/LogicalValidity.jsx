@@ -20,6 +20,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [hasRetried, setHasRetried] = useState(false);
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? logicalValidityBusiness : logicalValidityDaily;
@@ -30,6 +31,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
     setIsAnswered(false);
     setScore(0);
     setCompleted(false);
+    setHasRetried(false);
   };
 
   useEffect(() => {
@@ -42,18 +44,36 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
 
   const currentQuestion = questions[currentIdx];
 
+  const getMiniHint = () => {
+    if (currentQuestion.isValid) {
+      return "💡 ヒント: 「すべてのAはBである」「CはAである」から「CはBである」のように、前提がすべて正しいと仮定したとき、結論が『論理のルール』として100%絶対に正しくなる構造（または対偶などの正しい変形）になっていませんか？";
+    } else {
+      return "💡 ヒント: 前提が正しくても、結論に飛躍（「～とは限らない」別の原因がある可能性、前件否定・後件肯定などの勘違い）がありませんか？「もし～なら絶対に…と言えるか？」を疑ってみましょう。";
+    }
+  };
+
   const handleAnswer = (answer) => {
     if (isAnswered) return;
     playSound('click');
     setSelectedAnswer(answer);
-    setIsAnswered(true);
 
     const isCorrect = answer === currentQuestion.isValid;
     if (isCorrect) {
-      setScore(prev => prev + 1);
+      if (!hasRetried) {
+        setScore(prev => prev + 1);
+      } else {
+        setScore(prev => prev + 0.5);
+      }
+      setIsAnswered(true);
       playSound('correct');
     } else {
-      playSound('incorrect');
+      if (!hasRetried) {
+        setHasRetried(true);
+        playSound('incorrect');
+      } else {
+        setIsAnswered(true);
+        playSound('incorrect');
+      }
     }
   };
 
@@ -63,6 +83,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
       setCurrentIdx(prev => prev + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
+      setHasRetried(false);
     } else {
       setCompleted(true);
       const finalScore = Math.round((score / questions.length) * 100);
@@ -205,7 +226,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '32px' }}>
               <button 
                 onClick={() => handleAnswer(true)}
-                disabled={isAnswered}
+                disabled={isAnswered || (hasRetried && selectedAnswer === true)}
                 className="btn"
                 style={{
                   flex: 1,
@@ -214,12 +235,16 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
                   fontSize: '18px',
                   borderRadius: '16px',
                   background: selectedAnswer === true 
-                    ? 'var(--color-emerald)' 
+                    ? (isAnswered && currentQuestion.isValid ? 'var(--color-emerald)' : 'rgba(244, 63, 94, 0.15)') 
                     : 'rgba(16, 185, 129, 0.1)',
-                  border: `1px solid ${selectedAnswer === true ? 'var(--color-emerald)' : 'rgba(16, 185, 129, 0.3)'}`,
-                  color: selectedAnswer === true ? '#0a0b10' : 'var(--color-emerald)',
-                  opacity: isAnswered && selectedAnswer !== true ? 0.5 : 1,
-                  boxShadow: selectedAnswer === true ? '0 0 15px var(--color-emerald-glow)' : 'none'
+                  border: `1px solid ${selectedAnswer === true 
+                    ? (isAnswered && currentQuestion.isValid ? 'var(--color-emerald)' : 'var(--color-rose)') 
+                    : 'rgba(16, 185, 129, 0.3)'}`,
+                  color: selectedAnswer === true 
+                    ? (isAnswered && currentQuestion.isValid ? '#0a0b10' : 'var(--color-rose)') 
+                    : 'var(--color-emerald)',
+                  opacity: (isAnswered && selectedAnswer !== true) || (hasRetried && selectedAnswer === true) ? 0.5 : 1,
+                  boxShadow: selectedAnswer === true && isAnswered && currentQuestion.isValid ? '0 0 15px var(--color-emerald-glow)' : 'none'
                 }}
               >
                 妥当 (Valid)
@@ -227,7 +252,7 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
 
               <button 
                 onClick={() => handleAnswer(false)}
-                disabled={isAnswered}
+                disabled={isAnswered || (hasRetried && selectedAnswer === false)}
                 className="btn"
                 style={{
                   flex: 1,
@@ -236,17 +261,46 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
                   fontSize: '18px',
                   borderRadius: '16px',
                   background: selectedAnswer === false 
-                    ? 'var(--color-emerald)' 
+                    ? (isAnswered && !currentQuestion.isValid ? 'var(--color-emerald)' : 'rgba(244, 63, 94, 0.15)') 
                     : 'rgba(16, 185, 129, 0.1)',
-                  border: `1px solid ${selectedAnswer === false ? 'var(--color-emerald)' : 'rgba(16, 185, 129, 0.3)'}`,
-                  color: selectedAnswer === false ? '#0a0b10' : 'var(--color-emerald)',
-                  opacity: isAnswered && selectedAnswer !== false ? 0.5 : 1,
-                  boxShadow: selectedAnswer === false ? '0 0 15px var(--color-emerald-glow)' : 'none'
+                  border: `1px solid ${selectedAnswer === false 
+                    ? (isAnswered && !currentQuestion.isValid ? 'var(--color-emerald)' : 'var(--color-rose)') 
+                    : 'rgba(16, 185, 129, 0.3)'}`,
+                  color: selectedAnswer === false 
+                    ? (isAnswered && !currentQuestion.isValid ? '#0a0b10' : 'var(--color-rose)') 
+                    : 'var(--color-emerald)',
+                  opacity: (isAnswered && selectedAnswer !== false) || (hasRetried && selectedAnswer === false) ? 0.5 : 1,
+                  boxShadow: selectedAnswer === false && isAnswered && !currentQuestion.isValid ? '0 0 15px var(--color-emerald-glow)' : 'none'
                 }}
               >
                 非妥当 (Invalid)
               </button>
             </div>
+
+            {hasRetried && !isAnswered && (
+              <div 
+                className="fade-in incorrect-shake"
+                style={{ 
+                  padding: '16px 20px', 
+                  borderRadius: '12px', 
+                  backgroundColor: 'rgba(244, 63, 94, 0.05)',
+                  border: '1px solid rgba(244, 63, 94, 0.2)',
+                  borderLeft: '4px solid var(--color-rose)',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '18px' }}>🧠</span>
+                  <strong style={{ color: 'var(--color-rose)', fontSize: '14px' }}>
+                    シグナル：推論エラーを検知！もう一度だけ選択できます。
+                  </strong>
+                </div>
+                <p style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-primary)', margin: 0 }}>
+                  {getMiniHint()}
+                </p>
+              </div>
+            )}
 
             {isAnswered && (
               <div 
@@ -266,10 +320,12 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
                     <XCircle style={{ color: 'var(--color-rose)' }} />
                   )}
                   <strong style={{ fontSize: '16px', color: selectedAnswer === currentQuestion.isValid ? 'var(--color-emerald)' : 'var(--color-rose)' }}>
-                    {selectedAnswer === currentQuestion.isValid ? '正解！' : '不正解'}
+                    {selectedAnswer === currentQuestion.isValid 
+                      ? (hasRetried ? 'リカバリー成功！' : '正解！') 
+                      : '不正解'}
                   </strong>
                   <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-                    （正解: {currentQuestion.isValid ? '妥当' : '非妥当'}）
+                    （正解: {currentQuestion.isValid ? '妥当' : '非妥当'} {hasRetried && ' | リトライで正解'}）
                   </span>
                 </div>
                 <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-primary)' }}>

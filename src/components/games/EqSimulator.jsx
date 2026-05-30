@@ -858,6 +858,12 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
   const [flickerActive, setFlickerActive] = useState(false);
   const [trustChangeNotify, setTrustChangeNotify] = useState(null); // { val: number, isUp: boolean }
 
+  // 防衛シールド状態
+  const [shieldActive, setShieldActive] = useState(false);
+  const [shieldHp, setShieldHp] = useState(0); // 0 or 100
+  const [shieldFlash, setShieldFlash] = useState(false); // 被シールドヒット時のフラッシュ用
+  const [shieldBreak, setShieldBreak] = useState(false); // シールド解除時のアニメーション用
+
   const chatEndRef = useRef(null);
 
   // チャットスクロール
@@ -879,6 +885,10 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
     setIsAnswered(false);
     setSelectedChoiceIdx(null);
     setSelectedChoices([]);
+    setShieldActive(false);
+    setShieldHp(0);
+    setShieldFlash(false);
+    setShieldBreak(false);
 
     // 最初のメッセージを受信
     setIsTyping(true);
@@ -924,27 +934,86 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
       }
     ]);
 
-    // 信頼度の更新
+    // 信頼度の更新と防衛シールド判定
     const val = choice.trustChange;
-    const isUp = val > 0;
-    
-    if (isUp) {
-      setTimeout(() => playSound('correct'), 300);
+    let actualTrustChange = val;
+    let isUp = val > 0;
+    let isBlocked = false;
+
+    if (shieldActive) {
+      if (choice.type === 'empathy') {
+        // 共感回答によるシールド解除！
+        setShieldBreak(true);
+        setTimeout(() => setShieldBreak(false), 800);
+        setShieldActive(false);
+        setShieldHp(0);
+      } else {
+        // 非共感回答はシールドによって完全に防がれる
+        actualTrustChange = 0;
+        isBlocked = true;
+        setShieldFlash(true);
+        setTimeout(() => setShieldFlash(false), 450);
+
+        // システム警告チャットをログに追加
+        setTimeout(() => {
+          setChatLog(prev => [
+            ...prev,
+            {
+              sender: 'system',
+              speaker: '防衛システム警報',
+              text: '🛡️ 正論ブロック：あなたの理論的アドバイスは相手の防衛シールドに弾かれました。共感を示し、シールドを解除してください。',
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          ]);
+        }, 500);
+      }
     } else {
-      setTimeout(() => playSound('incorrect'), 300);
-      // 被正論ダメージのフリッカーノイズ演出発動
-      setFlickerActive(true);
-      setTimeout(() => setFlickerActive(false), 400);
+      // 大きな正論ダメージ（信頼度 -20以下）かつ非共感選択時にシールド展開！
+      if (val <= -20 && choice.type !== 'empathy') {
+        setShieldActive(true);
+        setShieldHp(100);
+        
+        // システム警告チャットをログに追加
+        setTimeout(() => {
+          setChatLog(prev => [
+            ...prev,
+            {
+              sender: 'system',
+              speaker: '防衛システム警報',
+              text: '🛡️ シールド起動：強い正論ダメージ（ロジハラ等）を検知。相手が心を閉ざし、防衛シールドを展開しました！',
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          ]);
+        }, 500);
+      }
     }
 
-    setTrustChangeNotify({ val: Math.abs(val), isUp });
-    setTimeout(() => setTrustChangeNotify(null), 1500);
+    if (actualTrustChange !== 0) {
+      if (isUp) {
+        setTimeout(() => playSound('correct'), 300);
+      } else {
+        setTimeout(() => playSound('incorrect'), 300);
+        // 被正論ダメージのフリッカーノイズ演出発動
+        setFlickerActive(true);
+        setTimeout(() => setFlickerActive(false), 400);
+      }
 
-    setTrust(prev => Math.min(100, Math.max(0, prev + val)));
+      setTrustChangeNotify({ val: Math.abs(actualTrustChange), isUp });
+      setTimeout(() => setTrustChangeNotify(null), 1500);
+
+      setTrust(prev => Math.min(100, Math.max(0, prev + actualTrustChange)));
+    } else if (isBlocked) {
+      setTimeout(() => playSound('incorrect'), 300);
+      setTrustChangeNotify({ val: 'SHIELD BLOCK', isUp: false });
+      setTimeout(() => setTrustChangeNotify(null), 1500);
+    }
 
     // 感情ステートの更新
-    setEmotion(choice.nextEmotion);
-    setEmotionColor(choice.nextEmotionColor);
+    // ブロックされた場合は相手の感情は「極度防衛（シールド展開中）」で維持する
+    const nextEmotion = isBlocked ? '極度防衛（シールド展開中）' : choice.nextEmotion;
+    const nextEmotionColor = isBlocked ? '#ef4444' : choice.nextEmotionColor;
+    setEmotion(nextEmotion);
+    setEmotionColor(nextEmotionColor);
 
     // 相手の反応をタイピング表示
     setIsTyping(true);
@@ -970,12 +1039,13 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
         return;
       }
 
+      // ブロックされた場合は、会話は先に進むが、テキストの先頭に防衛シールドのエフェクトを想起させる文脈を少し補正して表示
       setChatLog(prev => [
         ...prev,
         {
           sender: 'them',
           speaker: selectedScenario.name.split('（')[0],
-          text: nextStep.text,
+          text: isBlocked ? `（耳を塞ぐように）「…言っていることは分かりますが、今はそんな理屈を受け入れる心の余裕がありません。」${nextStep.text}` : nextStep.text,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -1125,6 +1195,74 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
           20% { transform: translateY(-5px); opacity: 1; }
           100% { transform: translateY(-20px); opacity: 0; }
         }
+        .shield-on {
+          animation: shield-glow 2s infinite ease-in-out;
+        }
+        .shield-overlay {
+          position: absolute;
+          top: -5px; left: -5px; right: -5px; bottom: -5px;
+          border-radius: 50%;
+          border: 2px solid #ef4444;
+          background: radial-gradient(circle, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.25) 100%);
+          box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          z-index: 10;
+        }
+        .shield-grid {
+          position: absolute;
+          width: 100%; height: 100%;
+          border-radius: 50%;
+          background-size: 8px 8px;
+          background-image: 
+            radial-gradient(circle, rgba(239, 68, 68, 0.3) 1px, transparent 1px);
+          opacity: 0.8;
+          animation: rotate-shield 10s linear infinite;
+        }
+        .shield-tag {
+          position: absolute;
+          bottom: -15px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #ef4444;
+          color: #ffffff;
+          font-size: 8px;
+          font-family: var(--font-display);
+          font-weight: 900;
+          padding: 1px 4px;
+          border-radius: 3px;
+          white-space: nowrap;
+          box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+          animation: tag-pulse 1s infinite alternate;
+        }
+        .shield-flash-anim {
+          animation: shield-flash 0.4s ease;
+        }
+        .shield-break-anim {
+          animation: shield-break 0.8s ease forwards;
+        }
+        @keyframes shield-glow {
+          0%, 100% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+          50% { box-shadow: 0 0 22px rgba(239, 68, 68, 0.8); }
+        }
+        @keyframes rotate-shield {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes tag-pulse {
+          from { opacity: 0.7; }
+          to { opacity: 1; }
+        }
+        @keyframes shield-flash {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.8) drop-shadow(0 0 15px #ef4444); }
+        }
+        @keyframes shield-break {
+          0% { transform: scale(1); opacity: 1; filter: hue-rotate(0deg); }
+          50% { transform: scale(1.1); opacity: 0.8; filter: hue-rotate(90deg); }
+          100% { transform: scale(1.3); opacity: 0; filter: hue-rotate(180deg); }
+        }
       `}</style>
 
       {/* 1. チュートリアル */}
@@ -1223,14 +1361,22 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
           {/* チャットヘッダー */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div 
-                className="avatar-neon-ring" 
-                style={{ 
-                  borderColor: emotionColor,
-                  boxShadow: `0 0 15px ${emotionColor}60`
-                }}
-              >
-                {selectedScenario.avatar}
+              <div style={{ position: 'relative' }}>
+                <div 
+                  className={`avatar-neon-ring ${shieldActive ? 'shield-on' : ''} ${shieldFlash ? 'shield-flash-anim' : ''} ${shieldBreak ? 'shield-break-anim' : ''}`} 
+                  style={{ 
+                    borderColor: shieldActive ? '#ef4444' : emotionColor,
+                    boxShadow: shieldActive ? '0 0 15px rgba(239, 68, 68, 0.7)' : `0 0 15px ${emotionColor}60`
+                  }}
+                >
+                  {selectedScenario.avatar}
+                </div>
+                {shieldActive && (
+                  <div className="shield-overlay">
+                    <div className="shield-grid" />
+                    <span className="shield-tag">SHIELD ACTIVE</span>
+                  </div>
+                )}
               </div>
               <div style={{ textAlign: 'left' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>
@@ -1247,8 +1393,8 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
               
               {/* 信頼度通知ポップアップ */}
               {trustChangeNotify && (
-                <span className="notify-trust" style={{ color: trustChangeNotify.isUp ? 'var(--color-emerald)' : '#ef4444' }}>
-                  {trustChangeNotify.isUp ? `+${trustChangeNotify.val}% Trust` : `-${trustChangeNotify.val}% Trust`}
+                <span className="notify-trust" style={{ color: trustChangeNotify.val === 'SHIELD BLOCK' ? '#ef4444' : (trustChangeNotify.isUp ? 'var(--color-emerald)' : '#ef4444') }}>
+                  {trustChangeNotify.val === 'SHIELD BLOCK' ? '🛡️ SHIELD BLOCKED' : (trustChangeNotify.isUp ? `+${trustChangeNotify.val}% Trust` : `-${trustChangeNotify.val}% Trust`)}
                 </span>
               )}
 
@@ -1289,34 +1435,41 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
           >
             {chatLog.map((msg, index) => {
               const isMe = msg.sender === 'me';
+              const isSystem = msg.sender === 'system';
               return (
                 <div 
                   key={index}
                   className="fade-in"
                   style={{
                     display: 'flex',
-                    justifyContent: isMe ? 'flex-end' : 'flex-start',
+                    justifyContent: isSystem ? 'center' : (isMe ? 'flex-end' : 'flex-start'),
                     width: '100%'
                   }}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '80%', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginBottom: '2px', padding: '0 4px' }}>
-                      {msg.speaker}
-                    </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', maxWidth: isSystem ? '100%' : '80%', alignItems: isSystem ? 'center' : (isMe ? 'flex-end' : 'flex-start') }}>
+                    {!isSystem && (
+                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginBottom: '2px', padding: '0 4px' }}>
+                        {msg.speaker}
+                      </span>
+                    )}
                     <div 
                       style={{
-                        padding: '10px 14px',
-                        borderRadius: '14px',
-                        borderTopLeftRadius: isMe ? '14px' : '2px',
-                        borderTopRightRadius: isMe ? '2px' : '14px',
-                        background: isMe 
-                          ? 'linear-gradient(135deg, var(--color-primary) 0%, #6d28d9 100%)' 
-                          : 'rgba(255, 255, 255, 0.04)',
-                        border: isMe ? 'none' : '1px solid var(--border-color)',
-                        color: 'var(--text-primary)',
-                        fontSize: '13.5px',
+                        padding: isSystem ? '8px 16px' : '10px 14px',
+                        borderRadius: isSystem ? '8px' : '14px',
+                        borderTopLeftRadius: isSystem ? '8px' : (isMe ? '14px' : '2px'),
+                        borderTopRightRadius: isSystem ? '8px' : (isMe ? '2px' : '14px'),
+                        background: isSystem
+                          ? 'rgba(239, 68, 68, 0.08)'
+                          : (isMe 
+                              ? 'linear-gradient(135deg, var(--color-primary) 0%, #6d28d9 100%)' 
+                              : 'rgba(255, 255, 255, 0.04)'),
+                        border: isSystem 
+                          ? '1px solid rgba(239, 68, 68, 0.3)'
+                          : (isMe ? 'none' : '1px solid var(--border-color)'),
+                        color: isSystem ? '#fca5a5' : 'var(--text-primary)',
+                        fontSize: isSystem ? '12px' : '13.5px',
                         lineHeight: '1.45',
-                        textAlign: 'left',
+                        textAlign: isSystem ? 'center' : 'left',
                         boxShadow: isMe ? '0 4px 10px rgba(139, 92, 246, 0.15)' : 'none'
                       }}
                     >

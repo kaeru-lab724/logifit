@@ -27,8 +27,8 @@ const dungeonStages = [
       { id: 'op1', text: '客数 × 客単価' },
       { id: 'op2', text: '新規顧客 ＋ リピート顧客' },
       { id: 'op3', text: '注文数 × 平均注文単価' },
-      { id: 'op4', text: '午前中の売上 ＋ 午後の売上' }, // 誤り（ダブりはないが、ビジネス課題特定には不十分）
-      { id: 'op5', text: 'ドリンクの売上 ＋ フードの売上' } // 誤り
+      { id: 'op4', text: '午前中の売上 ＋ 午後の売上', errorType: 'leak' }, // 誤り（ダブりはないが、ビジネス課題特定には不十分）
+      { id: 'op5', text: 'ドリンクの売上 ＋ フードの売上', errorType: 'duplicate' } // 誤り
     ],
     correctStructure: {
       slots: [
@@ -48,8 +48,8 @@ const dungeonStages = [
       { id: 'op6', text: '基本料金の引き下げ ＋ 通話・通信オプションの見直し' },
       { id: 'op7', text: '格安SIMへの乗り換え ＋ 契約プランの容量ダウン' },
       { id: 'op8', text: '不要な有料アプリの解約 ＋ 通話割引サービスの適用' },
-      { id: 'op9', text: 'スマホの画面の明るさを下げる' }, // 誤り（インフラ削減に直結しない、MECEではない）
-      { id: 'op10', text: '携帯ショップに相談しに行く' } // 誤り
+      { id: 'op9', text: 'スマホの画面の明るさを下げる', errorType: 'leak' }, // 誤り（インフラ削減に直結しない、MECEではない）
+      { id: 'op10', text: '携帯ショップに相談しに行く', errorType: 'duplicate' } // 誤り
     ],
     correctStructure: {
       slots: [
@@ -69,12 +69,12 @@ const dungeonStages = [
       { id: 'op11', text: '業務量の削減（やめる・減らす） ＋ 業務プロセスの効率化（自動化・仕組み化）' },
       { id: 'op12', text: '無駄な会議や定例報告の廃止 ＋ 資料作成の簡易化・テンプレート化' },
       { id: 'op13', text: 'AIツールの導入による自動書き起こし ＋ 社内手続きの電子承認化によるスピード向上' },
-      { id: 'op14', text: '残業を禁止する強制ルールの設定' }, // 誤り
-      { id: 'op15', text: '全員で早く帰るように声を掛け合う' } // 誤り
+      { id: 'op14', text: '残業を禁止する強制ルールの設定', errorType: 'duplicate' }, // 誤り
+      { id: 'op15', text: '全員で早く帰るように声を掛け合う', errorType: 'leak' } // 誤り
     ],
     correctStructure: {
       slots: [
-        { id: 'root', label: '第1階層：残業削減 of 二大アプローチ', expectedText: '業務量の削減（やめる・減らす） ＋ 業務プロセスの効率化（自動化・仕組み化）', hint: '残業を減らすには、こなすべき「仕事の量そのものを減らす」か、「仕事を進めるスピードを速くする」かの2択になります。' }, // correction below: 'of' replaced by 'の'
+        { id: 'root', label: '第1階層：残業削減の二大アプローチ', expectedText: '業務量の削減（やめる・減らす） ＋ 業務プロセスの効率化（自動化・仕組み化）', hint: '残業を減らすには、こなすべき「仕事の量そのものを減らす」か、「仕事を進めるスピードを速くする」かの2択になります。' }, // correction below: 'of' replaced by 'の'
         { id: 'sub1', label: '「業務量削減」の具体策', expectedText: '無駄な会議や定例報告の廃止 ＋ 資料作成の簡易化・テンプレート化', hint: 'やらなくても致命的ではない定例業務をやめたり、資料の手間を減らすアプローチはどちらですか？' },
         { id: 'sub2', label: '「プロセス効率化」の具体策', expectedText: 'AIツールの導入による自動書き起こし ＋ 社内手続きの電子承認化によるスピード向上', hint: 'ITツールや仕組みを使って、同じ量の仕事をより短時間で終わらせるためのアプローチはどちらですか？' }
       ]
@@ -90,8 +90,8 @@ const dungeonStages = [
       { id: 'op16', text: 'オーガニック（自然流入）チャネルの強化 ＋ ペイド（有料広告）チャネルの最適化' },
       { id: 'op17', text: 'アプリストアのSEO（ASO）対策 ＋ 口コミ・紹介（バイラル）機能の向上' },
       { id: 'op18', text: 'SNS広告・動画広告の出稿 ＋ インフルエンサーPR・アフィリエイトの活用' },
-      { id: 'op19', text: 'とにかく街頭でチラシを配る' }, // 誤り
-      { id: 'op20', text: 'アプリのアイコンの色をもっと目立つ赤にする' } // 誤り
+      { id: 'op19', text: 'とにかく街頭でチラシを配る', errorType: 'leak' }, // 誤り
+      { id: 'op20', text: 'アプリのアイコンの色をもっと目立つ赤にする', errorType: 'duplicate' } // 誤り
     ],
     correctStructure: {
       slots: [
@@ -111,8 +111,8 @@ const dungeonStages = [
       { id: 'op21', text: 'プロダクト自体の不満解消（価値不足） ＋ サポートやフォロー体制の強化（顧客体験）' },
       { id: 'op22', text: '主要機能のUI/UX改善による操作性向上 ＋ 新規コンテンツ・アップデートの頻度増加' },
       { id: 'op23', text: 'オンボーディングガイドの充実化 ＋ 解約直前のユーザーへの特別オファー提示' },
-      { id: 'op24', text: '解約ボタンを分かりにくい場所に隠す' }, // 誤り
-      { id: 'op25', text: '解約したユーザーにアンケートで怒りをぶつける' } // 誤り
+      { id: 'op24', text: '解約ボタンを分かりにくい場所に隠す', errorType: 'duplicate' }, // 誤り
+      { id: 'op25', text: '解約したユーザーにアンケートで怒りをぶつける', errorType: 'leak' } // 誤り
     ],
     correctStructure: {
       slots: [
@@ -132,8 +132,8 @@ const dungeonStages = [
       { id: 'op26', text: '毎月の売上に連動する変動費の節約 ＋ 売上に関わらず一定の固定費の引き下げ' },
       { id: 'op27', text: '仕入れルート見直しによる材料費削減 ＋ 節電・LED化による水道光熱費の抑制' },
       { id: 'op28', text: 'シフトの自動最適化による人件費適正化 ＋ テナント家賃の値下げ交渉・店舗面積の縮小' },
-      { id: 'op29', text: '営業時間を極端に短くして電気代を浮かす' }, // 誤り
-      { id: 'op30', text: '文房具の購入を禁止する' } // 誤り
+      { id: 'op29', text: '営業時間を極端に短くして電気代を浮かす', errorType: 'leak' }, // 誤り
+      { id: 'op30', text: '文房具の購入を禁止する', errorType: 'duplicate' } // 誤り
     ],
     correctStructure: {
       slots: [
@@ -323,6 +323,72 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
     return 40;
   };
 
+  // スロットのエラー状態（重複、漏れ、階層ズレ）を判定するロジック
+  const getSlotError = (slotId) => {
+    if (scanResult !== 'fail') return null;
+    const placedId = placedItems[slotId];
+    if (!placedId) return 'leak'; // 配置されていないスロットは「漏れ」
+
+    const placedOption = currentStage.options.find(o => o.id === placedId);
+    if (!placedOption) return 'leak';
+
+    const expectedSlot = currentStage.correctStructure.slots.find(s => s.id === slotId);
+    if (placedOption.text === expectedSlot.expectedText) return null; // 正解！
+
+    // オプション自体に定義されたエラータイプを判定
+    if (placedOption.errorType) {
+      return placedOption.errorType;
+    }
+
+    // 正解の選択肢だが別のスロットに配置されている場合は「階層ズレ（mismatch）」
+    const isCorrectForOtherSlot = currentStage.correctStructure.slots.some(s => s.expectedText === placedOption.text);
+    if (isCorrectForOtherSlot) {
+      return 'mismatch';
+    }
+
+    return 'leak'; // デフォルトは「漏れ」
+  };
+
+  // SVG接続線のクラス名を取得する
+  const getPathClass = (slotId) => {
+    if (isScanning) return '';
+    if (scanResult === 'success') return 'connected';
+    if (scanResult === 'fail') {
+      const error = getSlotError(slotId);
+      if (error === 'duplicate') return 'failed-duplicate';
+      if (error === 'leak') return 'failed-leak';
+      if (error === 'mismatch') return 'failed-mismatch';
+      return 'failed';
+    }
+    return '';
+  };
+
+  // スロット用のエラー警告バッジをレンダリングする
+  const renderSlotBadge = (slotId) => {
+    const error = getSlotError(slotId);
+    if (!error) return null;
+    
+    let badgeText = '';
+    let badgeColor = '';
+    
+    if (error === 'duplicate') {
+      badgeText = '⚠️ 重複エラー';
+      badgeColor = '#ef4444';
+    } else if (error === 'leak') {
+      badgeText = '💧 漏れエラー';
+      badgeColor = '#06b6d4';
+    } else if (error === 'mismatch') {
+      badgeText = '🔄 階層ズレ';
+      badgeColor = '#a855f7';
+    }
+    
+    return (
+      <div style={{ fontSize: '10px', color: badgeColor, fontWeight: 'bold', marginTop: '4px', letterSpacing: '0.5px' }}>
+        {badgeText}
+      </div>
+    );
+  };
+
   // 3ステージの平均精度
   const currentScanCounts = gameStatus === 'clear' ? scanCounts : [...scanCounts, stageScanCount];
   const totalAccuracy = currentScanCounts.length > 0 
@@ -416,6 +482,24 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
           filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.8));
           animation: short-circuit 0.3s ease infinite;
         }
+        .neon-line.failed-duplicate {
+          stroke: #ef4444;
+          filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.9));
+          stroke-width: 3.5;
+          animation: short-circuit 0.12s ease infinite;
+        }
+        .neon-line.failed-leak {
+          stroke: #06b6d4;
+          filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.6));
+          stroke-dasharray: 4, 12;
+          animation: leak-flow 1.2s linear infinite;
+        }
+        .neon-line.failed-mismatch {
+          stroke: #a855f7;
+          filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.6));
+          stroke-dasharray: 10, 5;
+          animation: mismatch-pulse 1.8s ease infinite;
+        }
         @keyframes pulse-flow {
           to {
             stroke-dashoffset: -1000;
@@ -424,6 +508,15 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
         @keyframes short-circuit {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.3; }
+        }
+        @keyframes leak-flow {
+          to {
+            stroke-dashoffset: 40;
+          }
+        }
+        @keyframes mismatch-pulse {
+          0%, 100% { opacity: 0.5; stroke-width: 2.2; }
+          50% { opacity: 1; stroke-width: 3.5; }
         }
 
         /* マナ進捗バー */
@@ -446,14 +539,15 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
           border: 2px dashed var(--border-item-slot);
           background: var(--bg-item-slot);
           border-radius: 12px;
-          min-height: 52px;
+          min-height: 64px;
           width: 240px;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           font-size: 13px;
           transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-          padding: 8px;
+          padding: 10px 8px;
           text-align: center;
           z-index: 5;
         }
@@ -471,6 +565,27 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
           border: 2px solid #ef4444 !important;
           background: rgba(239, 68, 68, 0.08) !important;
           box-shadow: 0 0 15px rgba(239, 68, 68, 0.2) !important;
+        }
+        .slot-box.failed-duplicate-node {
+          border: 2px solid #ef4444 !important;
+          background: rgba(239, 68, 68, 0.12) !important;
+          box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
+          animation: node-shake 0.35s ease;
+        }
+        .slot-box.failed-leak-node {
+          border: 2px dashed #06b6d4 !important;
+          background: rgba(6, 182, 212, 0.08) !important;
+          box-shadow: 0 0 15px rgba(6, 182, 212, 0.2) !important;
+        }
+        .slot-box.failed-mismatch-node {
+          border: 2px solid #a855f7 !important;
+          background: rgba(168, 85, 247, 0.08) !important;
+          box-shadow: 0 0 15px rgba(168, 85, 247, 0.2) !important;
+        }
+        @keyframes node-shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-4px); }
+          40%, 80% { transform: translateX(4px); }
         }
       `}</style>
 
@@ -568,17 +683,17 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                 {/* Theme から Root への接続線 */}
                 <path 
                   d="M 160 170 L 250 170"
-                  className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
+                  className={`neon-line ${getPathClass('root')}`}
                 />
                 {/* Root から Sub1 への接続線 */}
                 <path 
                   d="M 490 170 C 505 170, 505 80, 520 80"
-                  className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
+                  className={`neon-line ${getPathClass('sub1')}`}
                 />
                 {/* Root から Sub2 への接続線 */}
                 <path 
                   d="M 490 170 C 505 170, 505 260, 520 260"
-                  className={`neon-line ${scanResult === 'success' ? 'connected' : scanResult === 'fail' ? 'failed' : ''}`}
+                  className={`neon-line ${getPathClass('sub2')}`}
                 />
               </svg>
 
@@ -633,15 +748,21 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   onClick={() => handleSlotClick('root')}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, 'root')}
-                  className={`slot-box ${placedItems['root'] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'failed-node' : ''}`}
+                  className={`slot-box ${placedItems['root'] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? `failed-${getSlotError('root')}-node` : ''}`}
                   style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
                 >
                   {placedItems['root'] ? (
-                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                      {currentStage.options.find(o => o.id === placedItems['root'])?.text}
-                    </span>
+                    <>
+                      <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                        {currentStage.options.find(o => o.id === placedItems['root'])?.text}
+                      </span>
+                      {renderSlotBadge('root')}
+                    </>
                   ) : (
-                    <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                    <>
+                      <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                      {renderSlotBadge('root')}
+                    </>
                   )}
                 </div>
               </div>
@@ -671,15 +792,21 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   onClick={() => handleSlotClick(currentStage.correctStructure.slots[1].id)}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, currentStage.correctStructure.slots[1].id)}
-                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[1].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'failed-node' : ''}`}
+                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[1].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? `failed-${getSlotError(currentStage.correctStructure.slots[1].id)}-node` : ''}`}
                   style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
                 >
                   {placedItems[currentStage.correctStructure.slots[1].id] ? (
-                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                      {currentStage.options.find(o => o.id === placedItems[currentStage.correctStructure.slots[1].id])?.text}
-                    </span>
+                    <>
+                      <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                        {currentStage.options.find(o => o.id === placedItems[currentStage.correctStructure.slots[1].id])?.text}
+                      </span>
+                      {renderSlotBadge(currentStage.correctStructure.slots[1].id)}
+                    </>
                   ) : (
-                    <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                    <>
+                      <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                      {renderSlotBadge(currentStage.correctStructure.slots[1].id)}
+                    </>
                   )}
                 </div>
               </div>
@@ -708,15 +835,21 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   onClick={() => handleSlotClick(currentStage.correctStructure.slots[2].id)}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, currentStage.correctStructure.slots[2].id)}
-                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[2].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? 'failed-node' : ''}`}
+                  className={`slot-box ${placedItems[currentStage.correctStructure.slots[2].id] ? 'placed' : ''} ${scanResult === 'success' ? 'success' : scanResult === 'fail' ? `failed-${getSlotError(currentStage.correctStructure.slots[2].id)}-node` : ''}`}
                   style={{ width: '100%', height: '60px', boxSizing: 'border-box' }}
                 >
                   {placedItems[currentStage.correctStructure.slots[2].id] ? (
-                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                      {currentStage.options.find(o => o.id === placedItems[currentStage.correctStructure.slots[2].id])?.text}
-                    </span>
+                    <>
+                      <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                        {currentStage.options.find(o => o.id === placedItems[currentStage.correctStructure.slots[2].id])?.text}
+                      </span>
+                      {renderSlotBadge(currentStage.correctStructure.slots[2].id)}
+                    </>
                   ) : (
-                    <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                    <>
+                      <span style={{ color: 'var(--text-muted)', opacity: 0.6 }}>[配置してください]</span>
+                      {renderSlotBadge(currentStage.correctStructure.slots[2].id)}
+                    </>
                   )}
                 </div>
               </div>

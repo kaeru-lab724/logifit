@@ -20,6 +20,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [hasRetried, setHasRetried] = useState(false);
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? factsOpinionsBusiness : factsOpinionsDaily;
@@ -30,6 +31,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
     setIsAnswered(false);
     setScore(0);
     setCompleted(false);
+    setHasRetried(false);
   };
 
   useEffect(() => {
@@ -42,18 +44,36 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
 
   const currentQuestion = questions[currentIdx];
 
+  const getMiniHint = () => {
+    if (currentQuestion.isFact) {
+      return "💡 ヒント: この記述の中に、誰が検証しても同じ値・結果になるような「客観的な数値や証拠（測定値、公式発表、実績データなど）」が含まれていませんか？";
+    } else {
+      return "💡 ヒント: この記述の中に、「格好いい」「使いやすい」「美味しい」「高額すぎる」など、個人の好みや感情、主観的な価値判断・解釈を表す言葉が含まれていませんか？";
+    }
+  };
+
   const handleAnswer = (answer) => {
     if (isAnswered) return;
     playSound('click');
     setSelectedAnswer(answer);
-    setIsAnswered(true);
 
     const isCorrect = answer === currentQuestion.isFact;
     if (isCorrect) {
-      setScore(prev => prev + 1);
+      if (!hasRetried) {
+        setScore(prev => prev + 1);
+      } else {
+        setScore(prev => prev + 0.5);
+      }
+      setIsAnswered(true);
       playSound('correct');
     } else {
-      playSound('incorrect');
+      if (!hasRetried) {
+        setHasRetried(true);
+        playSound('incorrect');
+      } else {
+        setIsAnswered(true);
+        playSound('incorrect');
+      }
     }
   };
 
@@ -63,6 +83,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
       setCurrentIdx(prev => prev + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
+      setHasRetried(false);
     } else {
       setCompleted(true);
       const finalScore = Math.round((score / questions.length) * 100);
@@ -138,7 +159,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
 
               <div style={{ padding: '12px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.01)', borderLeft: '3px solid var(--color-cyan)' }}>
                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                  💡 多くの人は、誰かの主観的な「意見」を客観的な「事実」だと信じ込んでしまい、論理を間違えてしまいます。これらを瞬時に見分ける脳のフィルターを鍛えましょう！
+                  💡 多くの人は、誰かの主観的な「意見」を客観的な「事実」だと信じ込んでしまい、論理を間違えてしまいます。これらを瞬時に見分ける脳 of フィルターを鍛えましょう！
                 </p>
               </div>
             </div>
@@ -175,7 +196,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '32px' }}>
               <button 
                 onClick={() => handleAnswer(true)}
-                disabled={isAnswered}
+                disabled={isAnswered || (hasRetried && selectedAnswer === true)}
                 className="btn"
                 style={{
                   flex: 1,
@@ -184,12 +205,16 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
                   fontSize: '18px',
                   borderRadius: '16px',
                   background: selectedAnswer === true 
-                    ? 'var(--color-cyan)' 
-                    : 'var(--color-badge-bg)',
-                  border: `1px solid ${selectedAnswer === true ? 'var(--color-cyan)' : 'var(--color-badge-border)'}`,
-                  color: selectedAnswer === true ? '#0a0b10' : 'var(--color-badge-text)',
-                  opacity: isAnswered && selectedAnswer !== true ? 0.5 : 1,
-                  boxShadow: selectedAnswer === true ? '0 0 15px var(--color-cyan-glow)' : 'none'
+                    ? (isAnswered && currentQuestion.isFact ? 'var(--color-cyan)' : 'rgba(244, 63, 94, 0.15)') 
+                    : (isAnswered && currentQuestion.isFact ? 'rgba(6, 182, 212, 0.1)' : 'var(--color-badge-bg)'),
+                  border: `1px solid ${selectedAnswer === true 
+                    ? (isAnswered && currentQuestion.isFact ? 'var(--color-cyan)' : 'var(--color-rose)') 
+                    : (isAnswered && currentQuestion.isFact ? 'rgba(6, 182, 212, 0.3)' : 'var(--color-badge-border)')}`,
+                  color: selectedAnswer === true 
+                    ? (isAnswered && currentQuestion.isFact ? '#0a0b10' : 'var(--color-rose)') 
+                    : (isAnswered && currentQuestion.isFact ? 'var(--color-cyan)' : 'var(--color-badge-text)'),
+                  opacity: (isAnswered && selectedAnswer !== true) || (hasRetried && selectedAnswer === true) ? 0.5 : 1,
+                  boxShadow: selectedAnswer === true && isAnswered && currentQuestion.isFact ? '0 0 15px var(--color-cyan-glow)' : 'none'
                 }}
               >
                 事実 (Fact)
@@ -197,7 +222,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
 
               <button 
                 onClick={() => handleAnswer(false)}
-                disabled={isAnswered}
+                disabled={isAnswered || (hasRetried && selectedAnswer === false)}
                 className="btn"
                 style={{
                   flex: 1,
@@ -206,17 +231,46 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
                   fontSize: '18px',
                   borderRadius: '16px',
                   background: selectedAnswer === false 
-                    ? 'var(--color-cyan)' 
-                    : 'var(--color-badge-bg)',
-                  border: `1px solid ${selectedAnswer === false ? 'var(--color-cyan)' : 'var(--color-badge-border)'}`,
-                  color: selectedAnswer === false ? '#0a0b10' : 'var(--color-badge-text)',
-                  opacity: isAnswered && selectedAnswer !== false ? 0.5 : 1,
-                  boxShadow: selectedAnswer === false ? '0 0 15px var(--color-cyan-glow)' : 'none'
+                    ? (isAnswered && !currentQuestion.isFact ? 'var(--color-cyan)' : 'rgba(244, 63, 94, 0.15)') 
+                    : (isAnswered && !currentQuestion.isFact ? 'rgba(6, 182, 212, 0.1)' : 'var(--color-badge-bg)'),
+                  border: `1px solid ${selectedAnswer === false 
+                    ? (isAnswered && !currentQuestion.isFact ? 'var(--color-cyan)' : 'var(--color-rose)') 
+                    : (isAnswered && !currentQuestion.isFact ? 'rgba(6, 182, 212, 0.3)' : 'var(--color-badge-border)')}`,
+                  color: selectedAnswer === false 
+                    ? (isAnswered && !currentQuestion.isFact ? '#0a0b10' : 'var(--color-rose)') 
+                    : (isAnswered && !currentQuestion.isFact ? 'var(--color-cyan)' : 'var(--color-badge-text)'),
+                  opacity: (isAnswered && selectedAnswer !== false) || (hasRetried && selectedAnswer === false) ? 0.5 : 1,
+                  boxShadow: selectedAnswer === false && isAnswered && !currentQuestion.isFact ? '0 0 15px var(--color-cyan-glow)' : 'none'
                 }}
               >
                 意見 (Opinion)
               </button>
             </div>
+
+            {hasRetried && !isAnswered && (
+              <div 
+                className="fade-in incorrect-shake"
+                style={{ 
+                  padding: '16px 20px', 
+                  borderRadius: '12px', 
+                  backgroundColor: 'rgba(244, 63, 94, 0.05)',
+                  border: '1px solid rgba(244, 63, 94, 0.2)',
+                  borderLeft: '4px solid var(--color-rose)',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '18px' }}>🧠</span>
+                  <strong style={{ color: 'var(--color-rose)', fontSize: '14px' }}>
+                    シグナル：思考のバイアスを検知！もう一度だけ選択できます。
+                  </strong>
+                </div>
+                <p style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-primary)', margin: 0 }}>
+                  {getMiniHint()}
+                </p>
+              </div>
+            )}
 
             {isAnswered && (
               <div 
@@ -236,10 +290,12 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
                     <XCircle style={{ color: 'var(--color-rose)' }} />
                   )}
                   <strong style={{ fontSize: '16px', color: selectedAnswer === currentQuestion.isFact ? 'var(--color-emerald)' : 'var(--color-rose)' }}>
-                    {selectedAnswer === currentQuestion.isFact ? '正解！' : '不正解'}
+                    {selectedAnswer === currentQuestion.isFact 
+                      ? (hasRetried ? 'リカバリー成功！' : '正解！') 
+                      : '不正解'}
                   </strong>
                   <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-                    （正解: {currentQuestion.isFact ? '事実' : '意見'}）
+                    （正解: {currentQuestion.isFact ? '事実' : '意見'} {hasRetried && ' | リトライで正解'}）
                   </span>
                 </div>
                 <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-primary)' }}>
