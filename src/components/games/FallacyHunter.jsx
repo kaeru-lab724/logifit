@@ -438,37 +438,37 @@ const arenaQuestions = [
   }
 ];
 
-// モンスターの定義
+// デバッグ対象（思考バグ・コード）の定義
 const monsters = [
   {
-    name: 'へりくつコウモリ',
-    emoji: '🦇',
+    name: 'ストローマン・バグ',
+    emoji: '👾',
     maxHp: 40,
     timeLimit: 20,
     dmgPerHit: 20,
     color: '#ec4899',
     glowColor: 'rgba(236, 72, 153, 0.4)',
-    desc: '対話の端々を歪め、ストローマンや二分法のコウモリ傘に隠れて奇襲する狡猾な魔獣。'
+    desc: '対話のねじ曲げやストローマン論法を頻発し、論点をすり替える狡猾な初期思考バグ・コード。'
   },
   {
-    name: 'キベンゴーレム',
-    emoji: '🗿',
+    name: 'キベン・ブロック',
+    emoji: '🧱',
     maxHp: 60,
     timeLimit: 15,
     dmgPerHit: 20,
     color: '#f59e0b',
     glowColor: 'rgba(245, 158, 11, 0.4)',
-    desc: '「昔からこうだ」「みんなそう言っている」という伝統と大衆の重厚な鎧を纏う、へりくつの石像兵。'
+    desc: '「前例がない」「みんなそうしている」という伝統や大衆心理の重厚な壁を形成する、強固な思考エラーブロック。'
   },
   {
-    name: 'ゴビュードラゴン',
-    emoji: '🐉',
+    name: 'ゴビュード・コア',
+    emoji: '🌀',
     maxHp: 80,
     timeLimit: 12,
     dmgPerHit: 20,
     color: '#ef4444',
     glowColor: 'rgba(239, 68, 68, 0.4)',
-    desc: '無知に訴え、滑りやすい急坂を激しい怒りと共に滑り落ちながら全てを焼き尽くす、誤謬の帝王。'
+    desc: '滑り坂論法などの巨大な論理飛躍や感情論を引き起こす、システム中枢に巣食う最悪の誤謬バグコア。'
   }
 ];
 
@@ -708,7 +708,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
     onFinish(accuracyScore);
   };
 
-  const startBattle = () => {
+  const startDiagnostics = () => {
     playSound('click');
     setGameStatus('playing');
     startTimeRef.current = Date.now();
@@ -828,23 +828,22 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
           width: 100%; height: 100%;
           top: 0; left: 0;
           z-index: 5;
-          display: flex;
-          align-items: center;
-          justify-content: center;
           pointer-events: none;
         }
         .slash-line {
-          width: 120%;
-          height: 8px;
+          width: 100%;
+          height: 4px;
           background: linear-gradient(90deg, transparent, #fff, var(--color-rose), transparent);
-          box-shadow: 0 0 20px var(--color-rose);
-          transform: rotate(-35deg);
-          animation: slash-animation 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+          box-shadow: 0 0 15px var(--color-rose);
+          position: absolute;
+          left: 0;
+          animation: slash-animation 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
         }
         @keyframes slash-animation {
-          0% { transform: rotate(-35deg) scaleX(0); opacity: 0; }
-          30% { opacity: 1; }
-          100% { transform: rotate(-35deg) scaleX(1); opacity: 0; }
+          0% { top: 0%; opacity: 0; }
+          20% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
         }
         .dmg-number {
           position: absolute;
@@ -914,7 +913,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
                 <div key={idx} style={{ padding: '12px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
                   <div style={{ fontSize: '28px', marginBottom: '4px' }}>{m.emoji}</div>
                   <div style={{ fontSize: '11px', fontWeight: 'bold' }}>{m.name}</div>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>難易度Lv.{idx + 1}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>危険度Lv.{idx + 1}</div>
                 </div>
               ))}
             </div>
@@ -922,7 +921,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
 
           <div style={{ display: 'flex', gap: '16px' }}>
             <button onClick={onBack} className="btn btn-secondary" style={{ flex: 1 }}>ラボに戻る</button>
-            <button onClick={startBattle} className="btn btn-primary" style={{ flex: 2, background: 'linear-gradient(135deg, var(--color-rose) 0%, #e11d48 100%)', boxShadow: '0 4px 15px var(--color-rose-glow)' }}>
+            <button onClick={startDiagnostics} className="btn btn-primary" style={{ flex: 2, background: 'linear-gradient(135deg, var(--color-rose) 0%, #e11d48 100%)', boxShadow: '0 4px 15px var(--color-rose-glow)' }}>
               <Play size={16} style={{ marginRight: '6px' }} />
               診断を開始する
             </button>
@@ -930,11 +929,11 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
         </div>
       )}
 
-      {/* 2. 診断・戦闘中画面 */}
+      {/* 2. 診断・スキャン画面 */}
       {gameStatus === 'playing' && (
         <div className="glass-panel fade-in" style={{ padding: '24px', position: 'relative' }}>
           
-          {/* 上部：バトルのヘッダー */}
+          {/* 上部：スキャンモニターのヘッダー */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div>
               <span style={{ color: 'var(--color-rose)', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px', fontFamily: 'var(--font-display)' }}>
@@ -1000,7 +999,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
             </div>
           </div>
 
-          {/* 中部：バトルスクリーン */}
+          {/* 中部：スキャンモニター */}
           <div className="monster-box" style={{ marginBottom: '24px' }}>
             <div className="grid-bg" />
             

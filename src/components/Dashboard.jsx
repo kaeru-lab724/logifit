@@ -604,32 +604,32 @@ export default function Dashboard({
                       <div 
                         className="glass-panel arena-banner-active"
                         style={{
-                          padding: '24px 32px',
-                          background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--glass-bg) 100%)',
-                          border: '1px solid var(--color-primary)',
-                          borderLeft: '5px solid var(--color-primary)',
-                          borderRadius: '16px',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          flexWrap: 'wrap',
-                          gap: '20px',
-                          boxShadow: 'var(--glass-shadow)',
-                          position: 'relative',
-                          overflow: 'hidden'
+                           padding: '24px 32px',
+                           background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--glass-bg) 100%)',
+                           border: '1px solid var(--color-primary)',
+                           borderLeft: '5px solid var(--color-primary)',
+                           borderRadius: '16px',
+                           display: 'flex',
+                           justifyContent: 'space-between',
+                           alignItems: 'center',
+                           flexWrap: 'wrap',
+                           gap: '20px',
+                           boxShadow: 'var(--glass-shadow)',
+                           position: 'relative',
+                           overflow: 'hidden'
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                          <span className="arena-gate-icon" style={{ fontSize: '32px', display: 'inline-block' }}>⚔️</span>
+                          <span className="arena-gate-icon" style={{ fontSize: '32px', display: 'inline-block' }}>🔬</span>
                           <div style={{ textAlign: 'left' }}>
                             <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 'bold', letterSpacing: '1px' }}>
                               UNLOCKED SPECIAL GATE
                             </span>
                             <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '4px 0 0 0', fontFamily: 'var(--font-display)' }}>
-                              プロフェッショナル・アリーナへ挑戦
+                              脳内デバッグ・ラボへアクセス
                             </h3>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '4px', margin: 0 }}>
-                              応用実践ゲーム『Fallacy Hunter』等の上級者向けコンテンツが解放されました。
+                              応用診断モジュール『Fallacy Hunter』等のデバッグセッションが解放されました。
                             </p>
                           </div>
                         </div>
@@ -651,7 +651,7 @@ export default function Dashboard({
                             color: '#ffffff'
                           }}
                         >
-                          <span>アリーナに入る</span>
+                          <span>ラボに入る</span>
                           <span className="arrow-icon" style={{ display: 'inline-block' }}>→</span>
                         </button>
                       </div>
@@ -683,7 +683,7 @@ export default function Dashboard({
                               LOCKED GATE
                             </span>
                             <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-secondary)', margin: '4px 0 0 0', fontFamily: 'var(--font-display)' }}>
-                              プロフェッショナル・アリーナ
+                              脳内デバッグ・ラボ
                             </h3>
                             <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px', margin: 0 }}>
                               アンロック条件：レベル5に到達する（現在のレベル: {gameState.level}）
