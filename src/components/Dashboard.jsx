@@ -53,6 +53,15 @@ export default function Dashboard({
   const [showIntroduction, setShowIntroduction] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (isHovered) return;
@@ -335,7 +344,7 @@ export default function Dashboard({
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                   style={{
-                    padding: '32px 24px',
+                    padding: isMobile ? '24px 16px' : '32px 24px',
                     borderLeft: `4px solid ${
                       activeSlide === 0 
                         ? (isFullUnlocked ? 'var(--color-primary)' : 'var(--color-cyan)')
@@ -346,8 +355,8 @@ export default function Dashboard({
                     justifyContent: 'space-between',
                     background: 'var(--hero-bg)',
                     position: 'relative',
-                    minHeight: '370px',
-                    height: isAccordionOpen ? 'auto' : '370px',
+                    minHeight: isMobile ? 'auto' : '370px',
+                    height: (isAccordionOpen || isMobile) ? 'auto' : '370px',
                     overflow: 'visible',
                     transition: 'border-left-color 0.3s ease'
                   }}
@@ -1125,7 +1134,7 @@ export default function Dashboard({
             <div 
               className="glass-panel"
               style={{
-                padding: '24px',
+                padding: isMobile ? '20px 16px' : '24px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -1133,13 +1142,20 @@ export default function Dashboard({
                 background: 'var(--glass-bg)',
                 border: '1px solid var(--border-color)',
                 borderRadius: '16px',
-                minWidth: '320px'
+                width: '100%',
+                maxWidth: '450px',
+                margin: '0 auto'
               }}
             >
               <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '16px' }}>
                 {isFullUnlocked ? '思考力パラメーター' : '診断結果スキャンマップ'}
               </div>
-              <svg width="320" height="300" style={{ overflow: 'visible' }}>
+              <svg 
+                viewBox="0 0 320 300" 
+                width="100%" 
+                height="auto" 
+                style={{ maxWidth: '320px', overflow: 'visible' }}
+              >
                 <polygon points="160,70 240,150 160,230 80,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
                 <polygon points="160,102 208,150 160,198 112,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
                 <polygon points="160,126 184,150 160,174 136,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
