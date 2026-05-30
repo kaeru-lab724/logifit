@@ -49,6 +49,16 @@ export default function Dashboard({
   const [showBugDetails, setShowBugDetails] = useState(false);
   const [selectedBugId, setSelectedBugId] = useState(null);
   const [showIntroduction, setShowIntroduction] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % 3);
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [isHovered]);
 
   const onCopyClick = () => {
     handleCopySpell(currentSpell);
@@ -153,127 +163,279 @@ export default function Dashboard({
           {/* 左メインカラム（マイプロファイル ＆ タブナビゲーション・コンテンツ） */}
           <div className="dashboard-main-column">
             
-            {/* Column 1: Your Brain Bug Card */}
-            <div 
-              className="glass-panel"
-              style={{
-                padding: '32px 24px',
-                borderLeft: `4px solid ${isFullUnlocked ? 'var(--color-primary)' : 'var(--color-cyan)'}`,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                background: 'var(--hero-bg)'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--color-badge-text)', fontWeight: 'bold', background: 'var(--color-badge-bg)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-badge-border)' }}>
-                    あなたの愛すべき脳内バグ
-                  </span>
-                  {currentType && (
-                    <span style={{ fontSize: '11px', color: 'var(--color-cyan)', fontWeight: 'bold', background: 'rgba(6, 182, 212, 0.05)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-cyan-glow)' }}>
-                      レベル {gameState.level}
-                    </span>
-                  )}
-                </div>
+            {/* Column 1: Your Brain Bug Card (Refactored to Autoplay Carousel) */}
+            {(() => {
+              const slides = [
+                // Slide 1: My Profile
+                {
+                  badge: "あなたの愛すべき脳内バグ",
+                  badgeColor: "var(--color-badge-bg)",
+                  badgeTextColor: "var(--color-badge-text)",
+                  badgeBorder: "var(--color-badge-border)",
+                  level: `レベル ${gameState.level}`,
+                  icon: currentType?.emoji || "🐸",
+                  title: currentType?.name || charClass.title,
+                  tagline: currentType?.tagline || '思考のデバッグジムへようこそ',
+                  desc: (
+                    <>
+                      <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
+                        {currentType?.description || charClass.desc}
+                      </p>
+                      
+                      {/* アコーディオン: 取扱説明書 (トリセツ) & 3大バグ */}
+                      {currentType && (
+                        <div style={{ marginBottom: '24px' }}>
+                          <button
+                            onClick={() => { playSound('click'); setShowBugDetails(!showBugDetails); }}
+                            className="btn btn-secondary"
+                            style={{
+                              width: '100%',
+                              padding: '10px 16px',
+                              fontSize: '13px',
+                              borderRadius: '8px',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              background: showBugDetails ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.01)',
+                              border: '1px solid rgba(255,255,255,0.06)'
+                            }}
+                          >
+                            <span>{showBugDetails ? '▼ 取扱説明書と脳内バグを閉じる' : '▶ あなたの取扱説明書と脳内バグを見る'}</span>
+                            <Sparkles size={14} style={{ color: 'var(--color-cyan)' }} />
+                          </button>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '48px' }}>{currentType?.emoji || "🐸"}</span>
-                  <div>
-                    <h2 className="text-glow" style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
-                      {currentType?.name || charClass.title}
-                    </h2>
-                    <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '13px', margin: '2px 0 0 0' }}>
-                      {currentType?.tagline || '思考のデバッグジムへようこそ'}
+                          {showBugDetails && (
+                            <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left', animation: 'fadeIn 0.3s ease' }}>
+                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
+                                <span style={{ fontSize: '12px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>💼 工作でのバグ</span>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.workBug}</p>
+                              </div>
+                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
+                                <span style={{ fontSize: '12px', color: '#f43f5e', fontWeight: 'bold' }}>🏡 私生活でのバグ</span>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.privateBug}</p>
+                              </div>
+                              <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
+                                <span style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 'bold' }}>⚡ ふとした瞬間のクセ</span>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.dailyHabit}</p>
+                              </div>
+                              <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '14px', borderRadius: '8px' }}>
+                                <span style={{ display: 'block', fontSize: '12px', color: '#10b981', fontWeight: 'bold', marginBottom: '8px' }}>📋 取扱説明書</span>
+                                <span style={{ display: 'block', fontSize: '11px', color: '#f43f5e', fontWeight: 'bold' }}>● 地雷ポイント</span>
+                                <p style={{ margin: '2px 0 8px 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.jealousPoint}</p>
+                                <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold' }}>● デバッグコマンド</span>
+                                <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.debugSpell}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  ),
+                  actions: (
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      <button 
+                        onClick={() => { 
+                          playSound('click'); 
+                          document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
+                        }} 
+                        className="btn btn-primary"
+                        style={{
+                          flex: 1,
+                          background: isFullUnlocked 
+                            ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
+                            : 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                          boxShadow: isFullUnlocked 
+                            ? '0 4px 15px var(--color-primary-glow)' 
+                            : '0 4px 15px rgba(6, 182, 212, 0.3)',
+                          fontSize: '13.5px',
+                          padding: '10px 18px'
+                        }}
+                      >
+                        🎯 {isFullUnlocked ? 'デバッグを再開する' : '最初の練習（デバッグ）へ'}
+                      </button>
+                      <button 
+                        onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
+                        className="btn btn-secondary"
+                        style={{ flex: 0.8, fontSize: '13px', padding: '10px 14px' }}
+                      >
+                        再スキャン/他者スキャン
+                      </button>
+                    </div>
+                  )
+                },
+                // Slide 2: About LogiFit
+                {
+                  badge: "LogiFitとは？",
+                  badgeColor: "rgba(6, 182, 212, 0.05)",
+                  badgeTextColor: "var(--color-cyan)",
+                  badgeBorder: "rgba(6, 182, 212, 0.15)",
+                  level: null,
+                  icon: "🔬",
+                  title: "認知のバグを暴く思考ジム",
+                  tagline: "なぜか話が噛み合わない…そのアタマの偏りをデバッグする",
+                  desc: (
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
+                      LogiFitは、3分間のレントゲン（思考診断）であなたの認知の偏りを暴き、4つの思考ルーム（ロジカル、クリティカル、ラディカル、エモーショナル）でゲーム感覚で思考力をデバッグ・強化するジムです。
                     </p>
-                  </div>
-                </div>
+                  ),
+                  actions: (
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button 
+                        onClick={() => { playSound('click'); setShowIntroduction(!showIntroduction); }} 
+                        className="btn btn-primary"
+                        style={{
+                          flex: 1,
+                          background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                          boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
+                          fontSize: '13.5px',
+                          padding: '10px 18px'
+                        }}
+                      >
+                        💡 {showIntroduction ? 'コンセプト説明を閉じる' : 'コンセプト説明を全表示する'}
+                      </button>
+                    </div>
+                  )
+                },
+                // Slide 3: Update Note
+                {
+                  badge: "システムアップデート",
+                  badgeColor: "rgba(244, 63, 94, 0.05)",
+                  badgeTextColor: "var(--color-rose)",
+                  badgeBorder: "rgba(244, 63, 94, 0.15)",
+                  level: null,
+                  icon: "📢",
+                  title: "「脳内デバッグ・ラボ」へ進化",
+                  tagline: "HPや制限時間によるゲームオーバーを撤廃しました",
+                  desc: (
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
+                      アリーナバトルでの『へりくつ魔獣討伐』を廃止し、本質的な思考デバッグ（バグの特定とスキャン）へリニューアル！Manaの枯渇や即時終了ペナルティをなくし、納得いくまで解説を読んで思考力を磨ける仕様になりました。
+                    </p>
+                  ),
+                  actions: (
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      <button 
+                        onClick={() => { playSound('click'); setActiveTab('bugEncyclopedia'); }} 
+                        className="btn btn-secondary"
+                        style={{
+                          flex: 1,
+                          fontSize: '13.5px',
+                          padding: '10px 18px'
+                        }}
+                      >
+                        👾 脳内バグ図鑑を見る
+                      </button>
+                      <button 
+                        onClick={() => { playSound('click'); setShowBugDetails(!showBugDetails); }} 
+                        className="btn btn-secondary"
+                        style={{
+                          flex: 1,
+                          fontSize: '13.5px',
+                          padding: '10px 18px'
+                        }}
+                      >
+                        📖 マイ取扱説明書を表示
+                      </button>
+                    </div>
+                  )
+                }
+              ];
 
-                <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
-                  {currentType?.description || charClass.desc}
-                </p>
-
-                {/* アコーディオン: 取扱説明書 (トリセツ) & 3大バグ */}
-                {currentType && (
-                  <div style={{ marginBottom: '24px' }}>
-                    <button
-                      onClick={() => { playSound('click'); setShowBugDetails(!showBugDetails); }}
-                      className="btn btn-secondary"
-                      style={{
-                        width: '100%',
-                        padding: '10px 16px',
-                        fontSize: '13px',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        background: showBugDetails ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.01)',
-                        border: '1px solid rgba(255,255,255,0.06)'
-                      }}
-                    >
-                      <span>{showBugDetails ? '▼ 取扱説明書と脳内バグを閉じる' : '▶ あなたの取扱説明書と脳内バグを見る'}</span>
-                      <Sparkles size={14} style={{ color: 'var(--color-cyan)' }} />
-                    </button>
-
-                    {showBugDetails && (
-                      <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left', animation: 'fadeIn 0.3s ease' }}>
-                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--color-cyan)', fontWeight: 'bold' }}>💼 仕事でのバグ</span>
-                          <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.workBug}</p>
-                        </div>
-                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
-                          <span style={{ fontSize: '12px', color: '#f43f5e', fontWeight: 'bold' }}>🏡 私生活でのバグ</span>
-                          <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.privateBug}</p>
-                        </div>
-                        <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', padding: '14px', borderRadius: '8px' }}>
-                          <span style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 'bold' }}>⚡ ふとした瞬間のクセ</span>
-                          <p style={{ margin: '4px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.dailyHabit}</p>
-                        </div>
-                        <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.1)', padding: '14px', borderRadius: '8px' }}>
-                          <span style={{ display: 'block', fontSize: '12px', color: '#10b981', fontWeight: 'bold', marginBottom: '8px' }}>📋 取扱説明書</span>
-                          <span style={{ display: 'block', fontSize: '11px', color: '#f43f5e', fontWeight: 'bold' }}>● 地雷ポイント</span>
-                          <p style={{ margin: '2px 0 8px 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.jealousPoint}</p>
-                          <span style={{ display: 'block', fontSize: '11px', color: '#10b981', fontWeight: 'bold' }}>● デバッグコマンド</span>
-                          <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>{currentType.torisetsu.debugSpell}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                  <button 
-                    onClick={() => { 
-                      playSound('click'); 
-                      document.getElementById('training-menu')?.scrollIntoView({ behavior: 'smooth' }); 
-                    }} 
-                    className="btn btn-primary"
-                    style={{
-                      flex: 1,
-                      background: isFullUnlocked 
-                        ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
-                        : 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
-                      boxShadow: isFullUnlocked 
-                        ? '0 4px 15px var(--color-primary-glow)' 
-                        : '0 4px 15px rgba(6, 182, 212, 0.3)',
-                      fontSize: '13.5px',
-                      padding: '10px 18px'
+              return (
+                <div 
+                  className="glass-panel"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  style={{
+                    padding: '32px 24px',
+                    borderLeft: `4px solid ${
+                      activeSlide === 0 
+                        ? (isFullUnlocked ? 'var(--color-primary)' : 'var(--color-cyan)')
+                        : (activeSlide === 1 ? 'var(--color-cyan)' : 'var(--color-rose)')
+                    }`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    background: 'var(--hero-bg)',
+                    position: 'relative',
+                    minHeight: '340px',
+                    overflow: 'visible'
+                  }}
+                >
+                  <div 
+                    key={activeSlide} 
+                    className="fade-in"
+                    style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      flexGrow: 1,
+                      justifyContent: 'space-between'
                     }}
                   >
-                    🎯 {isFullUnlocked ? 'デバッグを再開する' : '最初の練習（デバッグ）へ'}
-                  </button>
-                  <button 
-                    onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
-                    className="btn btn-secondary"
-                    style={{ flex: 0.8, fontSize: '13px', padding: '10px 14px' }}
-                  >
-                    再スキャン/他者スキャン
-                  </button>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                          <span style={{ 
+                            fontSize: '11px', 
+                            color: slides[activeSlide].badgeTextColor, 
+                            fontWeight: 'bold', 
+                            background: slides[activeSlide].badgeColor, 
+                            padding: '4px 8px', 
+                            borderRadius: '6px', 
+                            border: `1px solid ${slides[activeSlide].badgeBorder}` 
+                          }}>
+                            {slides[activeSlide].badge}
+                          </span>
+                          {slides[activeSlide].level && (
+                            <span style={{ fontSize: '11px', color: 'var(--color-cyan)', fontWeight: 'bold', background: 'rgba(6, 182, 212, 0.05)', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--color-cyan-glow)' }}>
+                              {slides[activeSlide].level}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Dot Indicators */}
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          {slides.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => { playSound('click'); setActiveSlide(idx); }}
+                              style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                background: idx === activeSlide ? 'var(--color-cyan)' : 'rgba(255,255,255,0.15)',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: 0,
+                                transition: 'all 0.3s ease'
+                              }}
+                              title={slides[idx].badge}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '48px' }}>{slides[activeSlide].icon}</span>
+                        <div>
+                          <h2 className="text-glow" style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+                            {slides[activeSlide].title}
+                          </h2>
+                          <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '13px', margin: '2px 0 0 0' }}>
+                            {slides[activeSlide].tagline}
+                          </p>
+                        </div>
+                      </div>
+
+                      {slides[activeSlide].desc}
+                    </div>
+
+                    <div>
+                      {slides[activeSlide].actions}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Tab Navigation */}
             <div 
