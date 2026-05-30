@@ -141,7 +141,7 @@ const SCENARIOS = {
   ]
 };
 
-export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mode }) {
+export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
   const [showTutorial, setShowTutorial] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -156,9 +156,19 @@ export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mod
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? SCENARIOS.business : SCENARIOS.daily;
-    // 毎回3ステージをランダムに抽出
-    const shuffled = [...rawData].sort(() => 0.5 - Math.random()).slice(0, 3);
-    setQuestions(shuffled);
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = SCENARIOS.daily.find(q => q.id === reviewQuestionId) || 
+                    SCENARIOS.business.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [found];
+        setShowTutorial(false);
+      }
+    }
+    if (finalized.length === 0) {
+      finalized = [...rawData].sort(() => 0.5 - Math.random()).slice(0, 3);
+    }
+    setQuestions(finalized);
     setCurrentIdx(0);
     setStep(1);
     setSelectedOpt(null);
@@ -177,6 +187,7 @@ export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mod
   if (questions.length === 0) return null;
 
   const currentQ = questions[currentIdx];
+  const isStep2Correct = selectedOpt !== null && currentQ.step2Options && currentQ.step2Options[selectedOpt] ? currentQ.step2Options[selectedOpt].isCorrect : false;
 
   const handleStep1Answer = (option, idx) => {
     if (isStep1Solved) return;
@@ -198,6 +209,9 @@ export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mod
       } else {
         setIsStep1Solved(true);
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('causalLoop', currentQ.id, `Step 1の誤回答: ${option.text} (正解: ${currentQ.step1Options.find(o => o.isCorrect)?.text})`);
+        }
       }
     }
   };
@@ -228,6 +242,9 @@ export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mod
       } else {
         setIsStep2Solved(true);
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('causalLoop', currentQ.id, `Step 2の誤回答: ${option.text} (正解: ${currentQ.step2Options.find(o => o.isCorrect)?.text})`);
+        }
       }
     }
   };
@@ -244,9 +261,13 @@ export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mod
       setHasRetriedStep2(false);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('causalLoop', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('causalLoop', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('causalLoop', finalScore, false);
+        playSound('success');
+      }
     }
   };
 
@@ -631,16 +652,16 @@ export default function CausalLoop({ onFinish, playSound, muted, toggleMute, mod
                     <div style={{
                       padding: '16px',
                       borderRadius: '12px',
-                      background: 'rgba(16, 185, 129, 0.05)',
-                      border: '1px solid rgba(16, 185, 129, 0.15)',
+                      background: isStep2Correct ? 'rgba(16, 185, 129, 0.05)' : 'rgba(244, 63, 94, 0.05)',
+                      border: isStep2Correct ? '1px solid rgba(16, 185, 129, 0.15)' : '1px solid rgba(244, 63, 94, 0.15)',
                       color: 'var(--text-secondary)',
                       fontSize: '13px',
                       textAlign: 'left',
                       lineHeight: '1.6',
                       marginBottom: '20px'
                     }}>
-                      <span style={{ fontWeight: 'bold', color: 'var(--color-emerald)', display: 'block', marginBottom: '4px' }}>
-                        🎉 パッチ適用成功の解説：
+                      <span style={{ fontWeight: 'bold', color: isStep2Correct ? 'var(--color-emerald)' : 'var(--color-rose)', display: 'block', marginBottom: '4px' }}>
+                        {isStep2Correct ? '🎉 パッチ適用成功の解説：' : '⚠️ パッチ適用失敗（正解の介入策）：'}
                       </span>
                       {currentQ.explanation}
                     </div>

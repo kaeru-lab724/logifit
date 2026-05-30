@@ -1,4 +1,4 @@
-// LogiFit - Hiragana Spell Engine (ふっかつのじゅもん) - 12文字軽量版
+// LogiFit - Hiragana Brain Code Engine (ふっかつのブレインコード) - 12文字軽量版
 
 // 厳選した64文字のひらがな（1文字あたり6ビットの情報を格納可能）
 const CHARS = [
@@ -142,7 +142,7 @@ export function encodeState(state) {
 }
 
 /**
- * ブレインコード（または旧ひらがなじゅもん）をデコードして、ユーザーの進捗ステータスを復元します。
+ * ブレインコード（または旧ひらがなコード）をデコードして、ユーザーの進捗ステータスを復元します。
  * 新英数字コード形式と旧ひらがな形式の双方をチェックサムで自動判別します（後方互換性）。
  */
 export function decodeState(spell) {
@@ -443,7 +443,7 @@ export function calculateFriction(stateA, stateB) {
       friction: 50,
       pairName: "エラーペア",
       description: "摩擦係数の読み込みに失敗しました。",
-      advice: "呪文が正しいかもう一度確認してください。",
+      advice: "ブレインコードが正しいかもう一度確認してください。",
       typeA: "balancedThinker",
       typeB: "balancedThinker"
     };

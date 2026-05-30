@@ -96,19 +96,21 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMute, mode }) {
-  const [showTutorial, setShowTutorial] = useState(true);
+export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
+  const [showTutorial, setShowTutorial] = useState(!reviewQuestionId);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [step, setStep] = useState(1); // 1: Analyze original bug, 2: Assemble DESC
   const [selectedType, setSelectedType] = useState(null);
   const [isStep1Solved, setIsStep1Solved] = useState(false);
+  const [isStep1ForceSolved, setIsStep1ForceSolved] = useState(false);
   const [hasRetriedStep1, setHasRetriedStep1] = useState(false);
 
   // DESC Assembly States
   const [shuffledBlocks, setShuffledBlocks] = useState([]);
   const [assembledKeys, setAssembledKeys] = useState([]); // ['D', 'E', 'S', 'C'] in order of click
   const [isStep2Solved, setIsStep2Solved] = useState(false);
+  const [isStep2ForceSolved, setIsStep2ForceSolved] = useState(false);
   const [hasRetriedStep2, setHasRetriedStep2] = useState(false);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
@@ -118,15 +120,28 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? SCENARIOS.business : SCENARIOS.daily;
-    const shuffled = [...rawData].sort(() => 0.5 - Math.random()).slice(0, 3); // 3シナリオ抽出
-    setQuestions(shuffled);
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = SCENARIOS.daily.find(q => q.id === reviewQuestionId) || 
+                    SCENARIOS.business.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [found];
+        setShowTutorial(false);
+      }
+    }
+    if (finalized.length === 0) {
+      finalized = [...rawData].sort(() => 0.5 - Math.random()).slice(0, 3);
+    }
+    setQuestions(finalized);
     setCurrentIdx(0);
     setStep(1);
     setSelectedType(null);
     setIsStep1Solved(false);
+    setIsStep1ForceSolved(false);
     setHasRetriedStep1(false);
     setAssembledKeys([]);
     setIsStep2Solved(false);
+    setIsStep2ForceSolved(false);
     setHasRetriedStep2(false);
     setScore(0);
     setCompleted(false);
@@ -181,7 +196,12 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
         playSound('incorrect');
       } else {
         setIsStep1Solved(true);
+        setIsStep1ForceSolved(true);
+        setSelectedType(currentQ.correctType); // Highlight correct type
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('assertiveRewrite', currentQ.id, `Step 1の誤回答: 選択したタイプは正しくありません (正解: ${currentQ.correctType === 'aggressive' ? '攻撃的' : '受動的'})`);
+        }
       }
     }
   };
@@ -235,9 +255,13 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
         } else {
           // Force solved even on 2nd fail but show correct order
           setIsStep2Solved(true);
+          setIsStep2ForceSolved(true);
           playSound('incorrect');
           setAssembledKeys(['D', 'E', 'S', 'C']);
           setMeters({ aggressive: 0, passive: 0, assertive: 100 });
+          if (onLogBug && !reviewQuestionId) {
+            onLogBug('assertiveRewrite', currentQ.id, `Step 2の誤回答: DESCブロックの組み立て順序が違います。`);
+          }
         }
       }
     }
@@ -256,15 +280,21 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
       setStep(1);
       setSelectedType(null);
       setIsStep1Solved(false);
+      setIsStep1ForceSolved(false);
       setHasRetriedStep1(false);
       setAssembledKeys([]);
       setIsStep2Solved(false);
+      setIsStep2ForceSolved(false);
       setHasRetriedStep2(false);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('assertiveRewrite', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('assertiveRewrite', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('assertiveRewrite', finalScore, false);
+        playSound('success');
+      }
     }
   };
 
@@ -346,7 +376,13 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
             <RakutenWidget />
 
             <button 
-              onClick={() => onFinish('assertiveRewrite', Math.round((score / questions.length) * 100), true)}
+              onClick={() => {
+                if (reviewQuestionId && onFinishReview) {
+                  onFinishReview('assertiveRewrite', reviewQuestionId);
+                } else {
+                  onFinish('assertiveRewrite', Math.round((score / questions.length) * 100), true);
+                }
+              }}
               className="btn btn-primary"
               style={{ width: '100%', maxWidth: '320px', padding: '14px', background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', border: 'none' }}
             >
@@ -466,16 +502,16 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
                     <div style={{
                       padding: '16px',
                       borderRadius: '12px',
-                      background: 'rgba(255,255,255,0.03)',
-                      border: '1px solid var(--border-color)',
+                      background: isStep1ForceSolved ? 'rgba(244, 63, 94, 0.05)' : 'rgba(255,255,255,0.03)',
+                      border: isStep1ForceSolved ? '1px solid rgba(244, 63, 94, 0.15)' : '1px solid var(--border-color)',
                       color: 'var(--text-secondary)',
                       fontSize: '13px',
                       textAlign: 'left',
                       lineHeight: '1.6',
                       marginBottom: '20px'
                     }}>
-                      <span style={{ fontWeight: 'bold', color: 'var(--color-primary)', display: 'block', marginBottom: '4px' }}>
-                        💡 バグの診断：
+                      <span style={{ fontWeight: 'bold', color: isStep1ForceSolved ? 'var(--color-rose)' : 'var(--color-primary)', display: 'block', marginBottom: '4px' }}>
+                        {isStep1ForceSolved ? '⚠️ バグの診断（正解の表示）：' : '💡 バグの診断：'}
                       </span>
                       {currentQ.typeExplanation}
                     </div>
@@ -522,7 +558,7 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
                 {/* Compilation Output Area */}
                 <div style={{
                   background: 'rgba(255,255,255,0.01)',
-                  border: isStep2Solved ? '2px solid var(--color-emerald)' : '1px dashed var(--color-primary)',
+                  border: isStep2ForceSolved ? '2px solid var(--color-primary)' : (isStep2Solved ? '2px solid var(--color-emerald)' : '1px dashed var(--color-primary)'),
                   borderRadius: '16px',
                   padding: '20px',
                   marginBottom: '24px',
@@ -550,7 +586,10 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
                       let textCol = 'var(--text-primary)';
                       let badgeBg = 'rgba(139, 92, 246, 0.1)';
                       let badgeText = 'var(--color-primary)';
-                      if (isStep2Solved) {
+                      if (isStep2ForceSolved) {
+                        badgeBg = 'rgba(139, 92, 246, 0.15)';
+                        badgeText = 'var(--color-primary)';
+                      } else if (isStep2Solved) {
                         badgeBg = 'rgba(16, 185, 129, 0.1)';
                         badgeText = 'var(--color-emerald)';
                       } else if (!isCorrectSlot && assembledKeys.length === 4) {
@@ -674,16 +713,16 @@ export default function AssertiveRewrite({ onFinish, playSound, muted, toggleMut
                     <div style={{
                       padding: '16px',
                       borderRadius: '12px',
-                      background: 'rgba(16, 185, 129, 0.05)',
-                      border: '1px solid rgba(16, 185, 129, 0.15)',
+                      background: isStep2ForceSolved ? 'rgba(244, 63, 94, 0.05)' : 'rgba(16, 185, 129, 0.05)',
+                      border: isStep2ForceSolved ? '1px solid rgba(244, 63, 94, 0.15)' : '1px solid rgba(16, 185, 129, 0.15)',
                       color: 'var(--text-secondary)',
                       fontSize: '13px',
                       textAlign: 'left',
                       lineHeight: '1.6',
                       marginBottom: '20px'
                     }}>
-                      <span style={{ fontWeight: 'bold', color: 'var(--color-emerald)', display: 'block', marginBottom: '4px' }}>
-                        🎉 アサーティブ表現の完成！
+                      <span style={{ fontWeight: 'bold', color: isStep2ForceSolved ? 'var(--color-rose)' : 'var(--color-emerald)', display: 'block', marginBottom: '4px' }}>
+                        {isStep2ForceSolved ? '⚠️ アサーティブ表現の正解例（デバッグ失敗）：' : '🎉 アサーティブ表現の完成！'}
                       </span>
                       客観的な事実（D）を伝え、自分の本音（E）を優しく明示し、相手への代替案（S）を提示して、協力した際の効果（C）を語ることで、相手に敵対心を与えずに要求を誠実に通すことができます。
                     </div>

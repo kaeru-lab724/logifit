@@ -155,7 +155,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBack }) {
+export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBack, onLogBug, reviewQuestionId, onFinishReview }) {
   // ゲーム進行用ステート
   const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'playing' | 'clear'
   const [activeStages, setActiveStages] = useState([]);
@@ -192,8 +192,17 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
   };
 
   useEffect(() => {
-    // 初回ロード時にランダムに3つ選択
-    const initialStages = shuffleArray(dungeonStages).slice(0, 3);
+    let initialStages = [];
+    if (reviewQuestionId) {
+      const found = dungeonStages.find(s => s.id === reviewQuestionId);
+      if (found) {
+        initialStages = [found];
+        setGameStatus('playing');
+      }
+    }
+    if (initialStages.length === 0) {
+      initialStages = shuffleArray(dungeonStages).slice(0, 3);
+    }
     setActiveStages(initialStages);
   }, []);
 
@@ -286,6 +295,17 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
       } else {
         playSound('incorrect');
         setScanResult('fail');
+        if (onLogBug && !reviewQuestionId) {
+          const wrongSlots = [];
+          currentStage.correctStructure.slots.forEach(slot => {
+            const placedOptionId = placedItems[slot.id];
+            const placedOption = currentStage.options.find(o => o.id === placedOptionId);
+            if (!placedOption || placedOption.text !== slot.expectedText) {
+              wrongSlots.push(`${slot.id === 'root' ? '課題' : slot.id === 'left' ? '要素1' : '要素2'}: ${placedOption ? placedOption.text : '未配置'} (正解: ${slot.expectedText})`);
+            }
+          });
+          onLogBug('treeQuest', currentStage.id, `スロット誤配置: ${wrongSlots.join(', ')}`);
+        }
       }
     }, 2000);
   };
@@ -309,8 +329,17 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
     setStageIdx(0);
     setScanCounts([]);
     setStageScanCount(0);
-    const shuffledStages = shuffleArray(dungeonStages).slice(0, 3);
-    setActiveStages(shuffledStages);
+    let initialStages = [];
+    if (reviewQuestionId) {
+      const found = dungeonStages.find(s => s.id === reviewQuestionId);
+      if (found) {
+        initialStages = [found];
+      }
+    }
+    if (initialStages.length === 0) {
+      initialStages = shuffleArray(dungeonStages).slice(0, 3);
+    }
+    setActiveStages(initialStages);
     setGameStatus('playing');
   };
 
@@ -398,7 +427,11 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
 
   // 6. 結果のセーブ＆アリーナに戻る
   const handleFinishGame = () => {
-    onFinish(totalAccuracy);
+    if (reviewQuestionId && onFinishReview) {
+      onFinishReview('treeQuest', reviewQuestionId);
+    } else {
+      onFinish(totalAccuracy);
+    }
   };
 
   const startQuest = () => {
@@ -406,8 +439,17 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
     setStageIdx(0);
     setScanCounts([]);
     setStageScanCount(0);
-    const shuffledStages = shuffleArray(dungeonStages).slice(0, 3);
-    setActiveStages(shuffledStages);
+    let initialStages = [];
+    if (reviewQuestionId) {
+      const found = dungeonStages.find(s => s.id === reviewQuestionId);
+      if (found) {
+        initialStages = [found];
+      }
+    }
+    if (initialStages.length === 0) {
+      initialStages = shuffleArray(dungeonStages).slice(0, 3);
+    }
+    setActiveStages(initialStages);
     setGameStatus('playing');
   };
 

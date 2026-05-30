@@ -210,7 +210,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function HiddenAssumption({ onFinish, playSound, muted, toggleMute, mode }) {
+export default function HiddenAssumption({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
   const [showTutorial, setShowTutorial] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -227,13 +227,27 @@ export default function HiddenAssumption({ onFinish, playSound, muted, toggleMut
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? QUESTIONS.business : QUESTIONS.daily;
-    const shuffled = shuffleArray(rawData).slice(0, 5); // 5問抽出
-    setQuestions(shuffled);
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = QUESTIONS.daily.find(q => q.id === reviewQuestionId) || 
+                    QUESTIONS.business.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [found];
+        setShowTutorial(false);
+        setScanCompleted(true);
+      }
+    }
+    if (finalized.length === 0) {
+      finalized = shuffleArray(rawData).slice(0, 5);
+    }
+    setQuestions(finalized);
     setCurrentIdx(0);
     setStep(1);
     setSelectedOpt(null);
     setIsScanning(false);
-    setScanCompleted(false);
+    if (!reviewQuestionId) {
+      setScanCompleted(false);
+    }
     setIsStep1Solved(false);
     setIsStep2Solved(false);
     setHasRetriedStep1(false);
@@ -283,6 +297,9 @@ export default function HiddenAssumption({ onFinish, playSound, muted, toggleMut
         // 二段階誤答
         setIsStep1Solved(true);
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('hiddenAssumption', currentQ.id, `Step 1の誤回答: ${option.text} (正解: ${currentQ.assumptionOptions.find(o => o.isCorrect)?.text})`);
+        }
       }
     }
   };
@@ -313,6 +330,9 @@ export default function HiddenAssumption({ onFinish, playSound, muted, toggleMut
       } else {
         setIsStep2Solved(true);
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('hiddenAssumption', currentQ.id, `Step 2の誤回答: ${option.text} (正解: ${currentQ.rewriteOptions.find(o => o.isCorrect)?.text})`);
+        }
       }
     }
   };
@@ -323,16 +343,20 @@ export default function HiddenAssumption({ onFinish, playSound, muted, toggleMut
       setCurrentIdx(prev => prev + 1);
       setStep(1);
       setSelectedOpt(null);
-      setScanCompleted(false);
+      setScanCompleted(reviewQuestionId ? true : false);
       setIsStep1Solved(false);
       setIsStep2Solved(false);
       setHasRetriedStep1(false);
       setHasRetriedStep2(false);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('hiddenAssumption', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('hiddenAssumption', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('hiddenAssumption', finalScore, false);
+        playSound('success');
+      }
     }
   };
 

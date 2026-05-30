@@ -10,6 +10,9 @@ import EmpathyDialogue from './components/games/EmpathyDialogue';
 import HiddenAssumption from './components/games/HiddenAssumption';
 import CausalLoop from './components/games/CausalLoop';
 import AssertiveRewrite from './components/games/AssertiveRewrite';
+import FallacyHunter from './components/games/FallacyHunter';
+import TreeQuest from './components/games/TreeQuest';
+import EqSimulator from './components/games/EqSimulator';
 import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import Dashboard from './components/Dashboard';
@@ -52,7 +55,8 @@ const DEFAULT_STATE = {
   diagnosticScores: null,
   diagnosticType: null,
   diagnosticTypeId: "balancedThinker",
-  unlockedTypes: ["balancedThinker"]
+  unlockedTypes: ["balancedThinker"],
+  bugNote: []
 };
 
 // クラス進化（肩書き）の判定
@@ -212,7 +216,8 @@ export default function App() {
           ...DEFAULT_STATE.scores,
           ...(parsed.scores || {})
         },
-        unlockedTypes: initialUnlocked
+        unlockedTypes: initialUnlocked,
+        bugNote: parsed.bugNote || []
       };
     }
     
@@ -230,7 +235,7 @@ export default function App() {
     return DEFAULT_STATE;
   });
 
-  // 呪文入力とエラー状態
+  // ブレインコード入力とエラー状態
   const [spellInput, setSpellInput] = useState('');
   const [spellError, setSpellError] = useState('');
   const [spellSuccess, setSpellSuccess] = useState(false);
@@ -271,6 +276,99 @@ export default function App() {
     value: '',
     spell: ''
   });
+
+  // レビュー・復習セッションの状態
+  const [reviewQuestionId, setReviewQuestionId] = useState(null);
+
+  // 脳内バグノートへの記録処理
+  const handleLogBug = (gameId, questionId, wrongAnswerDetails) => {
+    setGameState(prev => {
+      const bugNote = prev.bugNote || [];
+      const existingBugIdx = bugNote.findIndex(b => b.gameId === gameId && b.questionId === questionId);
+      
+      const newBug = {
+        id: `${gameId}_${questionId}_${Date.now()}`,
+        gameId,
+        questionId,
+        mode,
+        wrongAnswerDetails: wrongAnswerDetails || '',
+        timestamp: Date.now(),
+        solved: false
+      };
+
+      let updatedBugNote = [...bugNote];
+      if (existingBugIdx !== -1) {
+        // すでに存在する場合は未解決にリセットして更新
+        updatedBugNote[existingBugIdx] = {
+          ...updatedBugNote[existingBugIdx],
+          wrongAnswerDetails: wrongAnswerDetails || '',
+          timestamp: Date.now(),
+          solved: false
+        };
+      } else {
+        updatedBugNote.push(newBug);
+      }
+
+      const updatedState = {
+        ...prev,
+        bugNote: updatedBugNote
+      };
+      
+      localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
+      return updatedState;
+    });
+  };
+
+  // 復習デバッグ完了処理
+  const handleFinishReview = (gameId, questionId) => {
+    playSound('success');
+    
+    setGameState(prev => {
+      const bugNote = prev.bugNote || [];
+      const updatedBugNote = bugNote.map(bug => {
+        if (bug.gameId === gameId && bug.questionId === questionId) {
+          return { ...bug, solved: true };
+        }
+        return bug;
+      });
+
+      // 復習デバッグ成功でボーナス 50 XP
+      const earnedXp = 50;
+      const newXp = prev.xp + earnedXp;
+      
+      const newLevel = Math.floor(newXp / 500) + 1;
+      const isLevelUp = newLevel > prev.level;
+
+      const updatedState = {
+        ...prev,
+        bugNote: updatedBugNote,
+        xp: newXp,
+        level: newLevel
+      };
+
+      localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
+
+      if (isLevelUp) {
+        setTimeout(() => {
+          playSound('success');
+          const currentSpell = encodeState(updatedState);
+          setRewardModal({
+            show: true,
+            type: 'level',
+            title: 'レベルアップ！',
+            value: `LEVEL ${newLevel}`,
+            spell: currentSpell
+          });
+        }, 800);
+      }
+
+      return updatedState;
+    });
+
+    setActiveGame(null);
+    setReviewQuestionId(null);
+    setActiveTab('bugNote'); // ダッシュボードのバグノートタブに戻る
+  };
 
   // ゲーム終了時のスコア・XP更新、レベルアップ・バッジ判定
   const handleGameFinish = (gameKey, score, shouldExit = true) => {
@@ -843,6 +941,9 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'logicalValidity' && (
@@ -852,6 +953,9 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'logicTree' && (
@@ -861,6 +965,9 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'fallacy' && (
@@ -870,6 +977,9 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'empathyDialogue' && (
@@ -879,6 +989,9 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'hiddenAssumption' && (
@@ -888,6 +1001,9 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'causalLoop' && (
@@ -897,6 +1013,9 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'assertiveRewrite' && (
@@ -906,6 +1025,51 @@ export default function App() {
             muted={muted} 
             toggleMute={toggleMute} 
             mode={mode}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
+          />
+        )}
+        {activeGame === 'fallacyHunter' && (
+          <FallacyHunter 
+            onFinish={(score) => {
+              handleGameFinish('fallacyHunter', score);
+            }}
+            playSound={playSound}
+            muted={muted}
+            toggleMute={toggleMute}
+            onBack={() => setActiveGame(null)}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
+          />
+        )}
+        {activeGame === 'treeQuest' && (
+          <TreeQuest 
+            onFinish={(score) => {
+              handleGameFinish('treeQuest', score);
+            }}
+            playSound={playSound}
+            muted={muted}
+            toggleMute={toggleMute}
+            onBack={() => setActiveGame(null)}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
+          />
+        )}
+        {activeGame === 'eqSimulator' && (
+          <EqSimulator 
+            onFinish={(score) => {
+              handleGameFinish('eqSimulator', score);
+            }}
+            playSound={playSound}
+            muted={muted}
+            toggleMute={toggleMute}
+            onBack={() => setActiveGame(null)}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
           />
         )}
         {activeGame === 'diagnostic' && (
@@ -957,6 +1121,11 @@ export default function App() {
             badgeDetails={badgeDetails}
             skillsData={skillsData}
             onUnlockType={handleUnlockType}
+            onStartReview={(gameId, questionId) => {
+              playSound('click');
+              setActiveGame(gameId);
+              setReviewQuestionId(questionId);
+            }}
           />
         )}
       </main>

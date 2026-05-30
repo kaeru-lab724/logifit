@@ -42,7 +42,8 @@ export default function Dashboard({
   setShowGuideModal,
   badgeDetails,
   skillsData,
-  onUnlockType
+  onUnlockType,
+  onStartReview
 }) {
   const [showToast, setShowToast] = useState(false);
   const [opponentSpell, setOpponentSpell] = useState('');
@@ -536,11 +537,12 @@ export default function Dashboard({
             >
               {[
                 { id: 'training', label: '🎯 トレーニングルーム', count: null },
+                { id: 'bugNote', label: '🐛 脳内バグノート', count: (gameState.bugNote || []).filter(b => !b.solved).length },
                 { id: 'encyclopedia', label: '📖 思考スキル図鑑', count: Object.values(gameState.scores).filter(s => s >= 80).length },
                 { id: 'bugEncyclopedia', label: '👾 脳内バグ図鑑', count: `${(gameState.unlockedTypes || ["balancedThinker"]).length}/12` },
                 { id: 'achievements', label: '🏆 獲得実績', count: gameState.badges.filter(Boolean).length }
               ].map(tab => {
-                const isTabLocked = !isFullUnlocked && tab.id !== 'training' && tab.id !== 'bugEncyclopedia';
+                const isTabLocked = !isFullUnlocked && tab.id !== 'training' && tab.id !== 'bugEncyclopedia' && tab.id !== 'bugNote';
                 return (
                   <button
                     key={tab.id}
@@ -1072,6 +1074,247 @@ export default function Dashboard({
                       );
                     })}
                   </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === 'bugNote' && (
+              <div className="fade-in" style={{ marginTop: '16px' }}>
+                <section style={{ textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                    <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                      <Brain size={20} style={{ color: 'var(--color-cyan)' }} />
+                      脳内バグノート
+                    </h2>
+                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
+                      未解決バグ: {(gameState.bugNote || []).filter(b => !b.solved).length} 件
+                    </span>
+                  </div>
+
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '24px' }}>
+                    トレーニングゲームや診断で間違えた問題、または強制突破（Force Solve）した問題が、自動的に「脳内バグ」として記録されます。
+                    各カードの「デバッグ起動」ボタンを押すと、その問題のみを対象とした1問限定のデバッグモード（復習）が始まります。
+                    デバッグに成功すると <b>+50 XP</b> のボーナスを獲得できます！
+                  </p>
+
+                  {/* 累積スタッツ & 弱点分析 */}
+                  {(() => {
+                    const bugs = gameState.bugNote || [];
+                    
+                    const getCategoryStats = (gameId) => {
+                      switch (gameId) {
+                        case 'factsOpinions':
+                        case 'logicalValidity':
+                          return { name: 'ロジカル思考', color: 'var(--color-cyan)', room: 'logical' };
+                        case 'fallacy':
+                        case 'hiddenAssumption':
+                        case 'fallacyHunter':
+                          return { name: 'クリティカル思考', color: 'var(--color-rose)', room: 'critical' };
+                        case 'logicTree':
+                        case 'causalLoop':
+                        case 'treeQuest':
+                          return { name: 'ラディカル思考', color: 'var(--color-amber)', room: 'radical' };
+                        case 'empathyDialogue':
+                        case 'assertiveRewrite':
+                        case 'eqSimulator':
+                          return { name: 'エモーショナル思考', color: 'var(--color-primary)', room: 'emotional' };
+                        default:
+                          return { name: 'その他', color: 'var(--text-muted)', room: 'other' };
+                      }
+                    };
+
+                    const categoryCounts = {
+                      logical: { active: 0, total: 0, name: 'ロジカル思考', color: 'var(--color-cyan)' },
+                      critical: { active: 0, total: 0, name: 'クリティカル思考', color: 'var(--color-rose)' },
+                      radical: { active: 0, total: 0, name: 'ラディカル思考', color: 'var(--color-amber)' },
+                      emotional: { active: 0, total: 0, name: 'エモーショナル思考', color: 'var(--color-primary)' }
+                    };
+
+                    bugs.forEach(b => {
+                      const cat = getCategoryStats(b.gameId);
+                      if (categoryCounts[cat.room]) {
+                        categoryCounts[cat.room].total++;
+                        if (!b.solved) {
+                          categoryCounts[cat.room].active++;
+                        }
+                      }
+                    });
+
+                    const GAME_NAMES = {
+                      factsOpinions: '事実 vs 意見',
+                      logicalValidity: '論理の妥当性',
+                      logicTree: 'ロジックツリー',
+                      fallacy: '論理的誤謬の特定',
+                      hiddenAssumption: '前提・隠れた仮定のデバッグ',
+                      causalLoop: '因果ループ＆ボトルネック',
+                      empathyDialogue: '共感対話トレーニング',
+                      assertiveRewrite: 'アサーティブ・リライター',
+                      fallacyHunter: 'Fallacy Hunter (ラボ)',
+                      treeQuest: 'Tree Quest (ラボ)',
+                      eqSimulator: 'EQ・共感対話シミュレーター'
+                    };
+
+                    if (bugs.length === 0) {
+                      return (
+                        <div className="glass-panel" style={{ padding: '32px', textAlign: 'center', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                          <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>✨</span>
+                          <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>脳内バグは検出されていません</h3>
+                          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: 0, maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', lineHeight: '1.6' }}>
+                            現在、すべての思考回路が正常に動作しています。トレーニングルームやラボのゲームで不正解になると、自動的にバグが検出されここに記録されます。
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        {/* カテゴリー別集計バー */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
+                          {Object.entries(categoryCounts).map(([key, value]) => {
+                            const percent = value.total > 0 ? Math.round(((value.total - value.active) / value.total) * 100) : 100;
+                            return (
+                              <div key={key} className="glass-panel" style={{ padding: '16px', background: 'var(--glass-bg)', border: '1px solid var(--border-color)', borderRadius: '12px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                  <span style={{ fontSize: '13px', fontWeight: 'bold', color: value.color }}>{value.name}</span>
+                                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>デバッグ率: {percent}%</span>
+                                </div>
+                                <div style={{ fontSize: '18px', fontWeight: '800', margin: '4px 0', display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                  {value.active} <span style={{ fontSize: '11px', fontWeight: 'normal', color: 'var(--text-muted)' }}>件未解決 / {value.total} 件検出</span>
+                                </div>
+                                <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden', marginTop: '8px' }}>
+                                  <div style={{ height: '100%', background: value.color, width: `${percent}%`, borderRadius: '3px', transition: 'width 0.5s ease' }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* バグ一覧リスト */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          <h3 style={{ fontSize: '15px', fontWeight: 'bold', margin: '8px 0 0 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>📋 デバッグ対象のバグ一覧</span>
+                            <span style={{ fontSize: '11px', fontWeight: 'normal', color: 'var(--text-muted)' }}>(未解決バグを優先表示)</span>
+                          </h3>
+                          
+                          {/* ソート: solved が false のものを上に、日付順（新しいものを上に） */}
+                          {[...bugs].sort((a, b) => {
+                            if (a.solved !== b.solved) {
+                              return a.solved ? 1 : -1;
+                            }
+                            return b.timestamp - a.timestamp;
+                          }).map(bug => {
+                            const cat = getCategoryStats(bug.gameId);
+                            const gameName = GAME_NAMES[bug.gameId] || bug.gameId;
+                            const formattedTime = new Date(bug.timestamp).toLocaleString('ja-JP', {
+                              year: 'numeric', month: '2-digit', day: '2-digit',
+                              hour: '2-digit', minute: '2-digit'
+                            });
+
+                            return (
+                              <div 
+                                key={bug.id} 
+                                className="glass-panel" 
+                                style={{ 
+                                  padding: '20px', 
+                                  background: bug.solved ? 'rgba(255,255,255,0.01)' : 'var(--glass-bg)',
+                                  border: bug.solved ? '1px solid rgba(255,255,255,0.05)' : `1px solid ${cat.color}`,
+                                  borderLeft: `5px solid ${bug.solved ? 'var(--text-muted)' : cat.color}`,
+                                  borderRadius: '12px',
+                                  transition: 'all 0.3s ease',
+                                  opacity: bug.solved ? 0.7 : 1
+                                }}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                                  <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                      <span 
+                                        style={{ 
+                                          fontSize: '11px', 
+                                          fontWeight: 'bold', 
+                                          color: bug.solved ? 'var(--text-muted)' : cat.color,
+                                          background: bug.solved ? 'rgba(255,255,255,0.05)' : `${cat.color}15`,
+                                          padding: '2px 8px',
+                                          borderRadius: '4px'
+                                        }}
+                                      >
+                                        {cat.name}
+                                      </span>
+                                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                                        検出日時: {formattedTime}
+                                      </span>
+                                    </div>
+                                    <h4 style={{ fontSize: '16px', fontWeight: 'bold', margin: '8px 0 0 0', color: bug.solved ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                                      {gameName} <span style={{ fontSize: '12px', fontWeight: 'normal', color: 'var(--text-muted)' }}>(ID: {bug.questionId})</span>
+                                    </h4>
+                                  </div>
+
+                                  <div>
+                                    {bug.solved ? (
+                                      <span style={{ fontSize: '11px', color: 'var(--color-emerald)', background: 'rgba(16,185,129,0.1)', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                        ✅ デバッグ完了 (+50 XP)
+                                      </span>
+                                    ) : (
+                                      <span style={{ fontSize: '11px', color: cat.color, background: `${cat.color}15`, padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                        👾 バグアクティブ
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* エラー詳細ターミナル */}
+                                <div style={{ marginTop: '12px' }}>
+                                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px', fontFamily: 'monospace' }}>
+                                    $ logifit-scanner --check-error
+                                  </div>
+                                  <div 
+                                    style={{ 
+                                      background: 'rgba(0,0,0,0.25)', 
+                                      border: '1px solid var(--border-color)', 
+                                      borderRadius: '8px', 
+                                      padding: '12px', 
+                                      fontFamily: 'monospace', 
+                                      fontSize: '12px', 
+                                      color: bug.solved ? 'var(--text-muted)' : 'var(--color-cyan)', 
+                                      whiteSpace: 'pre-wrap',
+                                      lineHeight: '1.5'
+                                    }}
+                                  >
+                                    {bug.wrongAnswerDetails || '原因コード: スキャン失敗 / 判定タイムアウト'}
+                                  </div>
+                                </div>
+
+                                {/* デバッグ起動ボタン */}
+                                {!bug.solved && (
+                                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                                    <button
+                                      onClick={() => onStartReview(bug.gameId, bug.questionId)}
+                                      className="btn btn-primary"
+                                      style={{
+                                        background: `linear-gradient(135deg, ${cat.color} 0%, #7c3aed 100%)`,
+                                        boxShadow: `0 0 12px ${cat.color}35`,
+                                        fontSize: '12.5px',
+                                        padding: '8px 20px',
+                                        borderRadius: '8px',
+                                        border: 'none',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px'
+                                      }}
+                                    >
+                                      <span>⚡ デバッグ起動 (復習)</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </section>
               </div>
             )}

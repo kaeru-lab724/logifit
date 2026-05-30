@@ -12,7 +12,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleMute, mode }) {
+export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
   const [showTutorial, setShowTutorial] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -26,12 +26,23 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? logicTreesBusiness : logicTreesDaily;
-    const shuffled = shuffleArray(rawData).slice(0, 2); // ロジックツリーは1プレイ2問抽出
-    const finalized = shuffled.map(q => ({
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = logicTreesDaily.find(q => q.id === reviewQuestionId) || 
+                    logicTreesBusiness.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [found];
+        setShowTutorial(false);
+      }
+    }
+    if (finalized.length === 0) {
+      finalized = shuffleArray(rawData).slice(0, 2);
+    }
+    const mapped = finalized.map(q => ({
       ...q,
       options: shuffleArray(q.options) // パーツの並び順もシャッフルして固定順を防止
     }));
-    setQuestions(finalized);
+    setQuestions(mapped);
     setCurrentIdx(0);
     setPlacedItems({});
     setSelectedOptionId(null);
@@ -135,6 +146,14 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
       playSound('correct');
     } else {
       playSound('incorrect');
+      if (onLogBug && !reviewQuestionId) {
+        const wrongList = currentTheme.correctStructure.slots.map(slot => {
+          const placedOptId = placedItems[slot.id];
+          const placedOpt = currentTheme.options.find(o => o.id === placedOptId);
+          return `${slot.label}: [配置: ${placedOpt ? placedOpt.text : '未配置'} (正解: ${slot.expectedText})]`;
+        }).join(', ');
+        onLogBug('logicTree', currentTheme.id, `誤配置: ${wrongList}`);
+      }
     }
   };
 
@@ -144,9 +163,13 @@ export default function LogicTreeAssembler({ onFinish, playSound, muted, toggleM
       setCurrentIdx(prev => prev + 1);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('logicTree', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('logicTree', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('logicTree', finalScore, false);
+        playSound('success');
+      }
     }
   };
 

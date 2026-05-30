@@ -12,7 +12,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, mode }) {
+export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
   const [showTutorial, setShowTutorial] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -24,8 +24,19 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? factsOpinionsBusiness : factsOpinionsDaily;
-    const shuffled = shuffleArray(rawData).slice(0, 5); // 毎回ランダムに5問抽出
-    setQuestions(shuffled);
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = factsOpinionsDaily.find(q => q.id === reviewQuestionId) || 
+                    factsOpinionsBusiness.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [found];
+        setShowTutorial(false);
+      }
+    }
+    if (finalized.length === 0) {
+      finalized = shuffleArray(rawData).slice(0, 5);
+    }
+    setQuestions(finalized);
     setCurrentIdx(0);
     setSelectedAnswer(null);
     setIsAnswered(false);
@@ -48,7 +59,7 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
     if (currentQuestion.isFact) {
       return "💡 ヒント: この記述の中に、誰が検証しても同じ値・結果になるような「客観的な数値や証拠（測定値、公式発表、実績データなど）」が含まれていませんか？";
     } else {
-      return "💡 ヒント: この記述の中に、「格好いい」「使いやすい」「美味しい」「高額すぎる」など、個人の好みや感情、主観的な価値判断・解釈を表す言葉が含まれていませんか？";
+      return "💡 ヒント: この記述の中に、「格好いい」「使いやすい」「美味しい」「高額すぎる」など、個人の好みや感情、主観的な价值判断・解釈を表す言葉が含まれていませんか？";
     }
   };
 
@@ -73,6 +84,9 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
       } else {
         setIsAnswered(true);
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('factsOpinions', currentQuestion.id, `あなたの選択: ${answer ? '事実' : '意見'} (正解: ${currentQuestion.isFact ? '事実' : '意見'})`);
+        }
       }
     }
   };
@@ -86,9 +100,13 @@ export default function FactsOpinions({ onFinish, playSound, muted, toggleMute, 
       setHasRetried(false);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('factsOpinions', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('factsOpinions', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('factsOpinions', finalScore, false);
+        playSound('success');
+      }
     }
   };
 

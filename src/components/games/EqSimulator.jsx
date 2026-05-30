@@ -835,7 +835,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function EqSimulator({ onFinish, playSound, muted, toggleMute, onBack }) {
+export default function EqSimulator({ onFinish, playSound, muted, toggleMute, onBack, onLogBug, reviewQuestionId, onFinishReview }) {
   // ゲーム進行用ステート
   const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'select' | 'playing' | 'clear'
   const [selectedScenario, setSelectedScenario] = useState(null);
@@ -904,6 +904,15 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
       ]);
     }, 1200);
   };
+
+  useEffect(() => {
+    if (reviewQuestionId) {
+      const found = scenarios.find(s => s.id === reviewQuestionId);
+      if (found) {
+        handleSelectScenario(found);
+      }
+    }
+  }, [reviewQuestionId]);
 
   const currentStep = selectedScenario?.tree[currentStepKey];
 
@@ -1002,10 +1011,16 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
       setTimeout(() => setTrustChangeNotify(null), 1500);
 
       setTrust(prev => Math.min(100, Math.max(0, prev + actualTrustChange)));
+      if (onLogBug && !reviewQuestionId && !isUp) {
+        onLogBug('eqSimulator', selectedScenario.id, `対話エラー: ${choice.text} (信頼度変化: ${choice.trustChange})`);
+      }
     } else if (isBlocked) {
       setTimeout(() => playSound('incorrect'), 300);
       setTrustChangeNotify({ val: 'SHIELD BLOCK', isUp: false });
       setTimeout(() => setTrustChangeNotify(null), 1500);
+      if (onLogBug && !reviewQuestionId) {
+        onLogBug('eqSimulator', selectedScenario.id, `対話エラー: ${choice.text} (防衛シールドブロック)`);
+      }
     }
 
     // 感情ステートの更新
@@ -1064,7 +1079,11 @@ export default function EqSimulator({ onFinish, playSound, muted, toggleMute, on
   };
 
   const handleFinishGame = () => {
-    onFinish(trust);
+    if (reviewQuestionId && onFinishReview) {
+      onFinishReview('eqSimulator', reviewQuestionId);
+    } else {
+      onFinish(trust);
+    }
   };
 
   const startTraining = () => {

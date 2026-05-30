@@ -12,7 +12,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function FallacyDetective({ onFinish, playSound, muted, toggleMute, mode }) {
+export default function FallacyDetective({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
   const [showTutorial, setShowTutorial] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -25,12 +25,23 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? fallaciesBusiness : fallaciesDaily;
-    const shuffled = shuffleArray(rawData).slice(0, 4); // 毎回ランダムに4問抽出
-    const finalized = shuffled.map(q => ({
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = fallaciesDaily.find(q => q.id === reviewQuestionId) || 
+                    fallaciesBusiness.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [found];
+        setShowTutorial(false);
+      }
+    }
+    if (finalized.length === 0) {
+      finalized = shuffleArray(rawData).slice(0, 4);
+    }
+    const mapped = finalized.map(q => ({
       ...q,
-      choices: shuffleArray(q.choices) // 選択肢自体もシャッフルして「常に1番目が正解」を防止
+      choices: shuffleArray(q.choices)
     }));
-    setQuestions(finalized);
+    setQuestions(mapped);
     setCurrentIdx(0);
     setSelectedChoiceIdx(null);
     setIsAnswered(false);
@@ -77,6 +88,9 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
         setWrongChoices(prev => [...prev, choiceIdx]);
         setIsAnswered(true);
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('fallacy', currentQuestion.id, `あなたの選択: ${currentQuestion.choices[choiceIdx].text} (正解: ${currentQuestion.choices.find(c => c.isCorrect)?.text})`);
+        }
       }
     }
   };
@@ -91,9 +105,13 @@ export default function FallacyDetective({ onFinish, playSound, muted, toggleMut
       setWrongChoices([]);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('fallacy', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('fallacy', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('fallacy', finalScore, false);
+        playSound('success');
+      }
     }
   };
 

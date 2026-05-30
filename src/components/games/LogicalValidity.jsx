@@ -12,7 +12,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function LogicalValidity({ onFinish, playSound, muted, toggleMute, mode }) {
+export default function LogicalValidity({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
   const [showTutorial, setShowTutorial] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -24,8 +24,19 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? logicalValidityBusiness : logicalValidityDaily;
-    const shuffled = shuffleArray(rawData).slice(0, 5); // 毎回ランダムに5問抽出
-    setQuestions(shuffled);
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = logicalValidityDaily.find(q => q.id === reviewQuestionId) || 
+                    logicalValidityBusiness.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [found];
+        setShowTutorial(false);
+      }
+    }
+    if (finalized.length === 0) {
+      finalized = shuffleArray(rawData).slice(0, 5);
+    }
+    setQuestions(finalized);
     setCurrentIdx(0);
     setSelectedAnswer(null);
     setIsAnswered(false);
@@ -73,6 +84,9 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
       } else {
         setIsAnswered(true);
         playSound('incorrect');
+        if (onLogBug && !reviewQuestionId) {
+          onLogBug('logicalValidity', currentQuestion.id, `あなたの選択: ${answer ? '妥当' : '非妥当'} (正解: ${currentQuestion.isValid ? '妥当' : '非妥当'})`);
+        }
       }
     }
   };
@@ -86,9 +100,13 @@ export default function LogicalValidity({ onFinish, playSound, muted, toggleMute
       setHasRetried(false);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('logicalValidity', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('logicalValidity', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('logicalValidity', finalScore, false);
+        playSound('success');
+      }
     }
   };
 

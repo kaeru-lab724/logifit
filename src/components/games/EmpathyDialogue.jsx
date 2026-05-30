@@ -29,8 +29,8 @@ const getReactionText = (scenarioType, isCorrect, speaker) => {
   }
 };
 
-export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute, mode }) {
-  const [showTutorial, setShowTutorial] = useState(true);
+export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
+  const [showTutorial, setShowTutorial] = useState(!reviewQuestionId);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedIdx, setSelectedIdx] = useState(null); // 0-3 index
@@ -46,11 +46,24 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
 
   const initializeQuestions = () => {
     const rawData = mode === 'business' ? empathyDialoguesBusiness : empathyDialoguesDaily;
-    const shuffled = shuffleArray(rawData).slice(0, 5); // 毎回ランダムに5問抽出
-    const finalized = shuffled.map(q => ({
-      ...q,
-      choices: shuffleArray(q.choices) // 選択肢自体もシャッフルして「常に2番目が正解」を防止
-    }));
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = empathyDialoguesDaily.find(q => q.id === reviewQuestionId) || 
+                    empathyDialoguesBusiness.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [{
+          ...found,
+          choices: shuffleArray(found.choices)
+        }];
+      }
+    }
+    if (finalized.length === 0) {
+      const shuffled = shuffleArray(rawData).slice(0, 5);
+      finalized = shuffled.map(q => ({
+        ...q,
+        choices: shuffleArray(q.choices)
+      }));
+    }
     setQuestions(finalized);
     setCurrentIdx(0);
     setSelectedIdx(null);
@@ -64,6 +77,12 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
     initializeQuestions();
   }, [mode]);
 
+  useEffect(() => {
+    if (questions.length > 0 && !showTutorial && chatLog.length === 0) {
+      loadQuestion(0, questions);
+    }
+  }, [questions, showTutorial]);
+
   // チャットの自動スクロール
   useEffect(() => {
     if (chatEndRef.current) {
@@ -76,11 +95,24 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
     playSound('click');
     setShowTutorial(false);
     const rawData = mode === 'business' ? empathyDialoguesBusiness : empathyDialoguesDaily;
-    const shuffled = shuffleArray(rawData).slice(0, 5);
-    const finalized = shuffled.map(q => ({
-      ...q,
-      choices: shuffleArray(q.choices)
-    }));
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = empathyDialoguesDaily.find(q => q.id === reviewQuestionId) || 
+                    empathyDialoguesBusiness.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [{
+          ...found,
+          choices: shuffleArray(found.choices)
+        }];
+      }
+    }
+    if (finalized.length === 0) {
+      const shuffled = shuffleArray(rawData).slice(0, 5);
+      finalized = shuffled.map(q => ({
+        ...q,
+        choices: shuffleArray(q.choices)
+      }));
+    }
     setQuestions(finalized);
     loadQuestion(0, finalized);
   };
@@ -141,6 +173,9 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
       setTimeout(() => playSound('correct'), 300);
     } else {
       setTimeout(() => playSound('incorrect'), 300);
+      if (onLogBug && !reviewQuestionId) {
+        onLogBug('empathyDialogue', question.id, `あなたの選択: ${choice.text} (正解: ${question.choices.find(c => c.isCorrect)?.text})`);
+      }
     }
 
     // 相手のリアクションをタイピングで追加
@@ -172,9 +207,13 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
       loadQuestion(nextIdx);
     } else {
       setCompleted(true);
-      const finalScore = Math.round((score / questions.length) * 100);
-      onFinish('empathyDialogue', finalScore, false);
-      playSound('success');
+      if (reviewQuestionId && onFinishReview) {
+        onFinishReview('empathyDialogue', reviewQuestionId);
+      } else {
+        const finalScore = Math.round((score / questions.length) * 100);
+        onFinish('empathyDialogue', finalScore, false);
+        playSound('success');
+      }
     }
   };
 
@@ -532,7 +571,13 @@ export default function EmpathyDialogue({ onFinish, playSound, muted, toggleMute
               </a>
 
               <button 
-                onClick={() => onFinish('empathyDialogue', Math.round((score / questions.length) * 100))} 
+                onClick={() => {
+                  if (reviewQuestionId && onFinishReview) {
+                    onFinishReview('empathyDialogue', reviewQuestionId);
+                  } else {
+                    onFinish('empathyDialogue', Math.round((score / questions.length) * 100));
+                  }
+                }} 
                 className="btn btn-primary" 
                 style={{ 
                   background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', 

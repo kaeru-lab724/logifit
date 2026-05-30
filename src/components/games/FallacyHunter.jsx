@@ -481,7 +481,7 @@ const shuffleArray = (array) => {
   return arr;
 };
 
-export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, onBack }) {
+export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, onBack, onLogBug, reviewQuestionId, onFinishReview }) {
   // ゲーム進行用ステート
   const [gameStatus, setGameStatus] = useState('tutorial'); // 'tutorial' | 'playing' | 'clear'
   const [wave, setWave] = useState(1); // 1, 2, 3 (モンスター/デバッグ対象の難易度レベル)
@@ -511,19 +511,29 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
 
   // 1. クイズの初期化
   const initializeGame = () => {
-    // 30問からランダムにシャッフルして、昭和15問・令和15問の偏りを防ぎつつ、
-    // 昭和から3問、令和から3問の計6問をピックアップしてバランス良い診断にする
     const shuffled = shuffleArray(arenaQuestions);
-    const showaQs = shuffled.filter(q => q.biasType === 'showa').slice(0, 3);
-    const reiwaQs = shuffled.filter(q => q.biasType === 'reiwa').slice(0, 3);
-    
-    // ピックアップした6問をさらにシャッフル
-    const sessionQs = shuffleArray([...showaQs, ...reiwaQs]).map(q => ({
-      ...q,
-      choices: shuffleArray(q.choices)
-    }));
+    let finalized = [];
+    if (reviewQuestionId) {
+      const found = arenaQuestions.find(q => q.id === reviewQuestionId);
+      if (found) {
+        finalized = [{
+          ...found,
+          choices: shuffleArray(found.choices)
+        }];
+        setGameStatus('playing');
+      }
+    }
+    if (finalized.length === 0) {
+      const showaQs = shuffled.filter(q => q.biasType === 'showa').slice(0, 3);
+      const reiwaQs = shuffled.filter(q => q.biasType === 'reiwa').slice(0, 3);
+      finalized = shuffleArray([...showaQs, ...reiwaQs]).map(q => ({
+        ...q,
+        choices: shuffleArray(q.choices)
+      }));
+      setGameStatus('tutorial');
+    }
 
-    setQuestions(sessionQs);
+    setQuestions(finalized);
     setWave(1);
     setMonsterHp(100);
     setCurrentQuestionIdx(0);
@@ -604,6 +614,10 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
     const currentMonster = monsters[wave - 1] || monsters[0];
     setTotalTimeSpent(prev => prev + currentMonster.timeLimit);
 
+    if (onLogBug && !reviewQuestionId) {
+      onLogBug('fallacyHunter', currentQuestion.id, `時間切れ`);
+    }
+
     // 世代バイアス統計の更新
     const bias = currentQuestion.biasType;
     if (bias === 'showa') {
@@ -669,6 +683,10 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
       setScreenEffect('shake');
       triggerDamageNum('WARNING', 'player');
       setTimeout(() => setScreenEffect(null), 500);
+
+      if (onLogBug && !reviewQuestionId) {
+        onLogBug('fallacyHunter', currentQuestion.id, `あなたの選択: ${currentQuestion.choices[choiceIdx].text} (正解: ${currentQuestion.choices.find(c => c.isCorrect)?.text})`);
+      }
     }
   };
 
@@ -682,7 +700,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
     // 2問ごとにモンスター（難易度）を切り替える
     // 6問中の進行具合から wave を判定
     const nextQuestionIdx = currentQuestionIdx + 1;
-    if (nextQuestionIdx < 6) {
+    if (nextQuestionIdx < questions.length) {
       setCurrentQuestionIdx(nextQuestionIdx);
       const nextWave = Math.floor(nextQuestionIdx / 2) + 1;
       if (nextWave !== wave) {
@@ -704,8 +722,12 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
 
   // 9. ゲーム結果の記録
   const handleFinishGame = () => {
-    const accuracyScore = Math.round((totalCorrectAnswers / 6) * 100);
-    onFinish(accuracyScore);
+    if (reviewQuestionId && onFinishReview) {
+      onFinishReview('fallacyHunter', reviewQuestionId);
+    } else {
+      const accuracyScore = Math.round((totalCorrectAnswers / questions.length) * 100);
+      onFinish(accuracyScore);
+    }
   };
 
   const startDiagnostics = () => {
@@ -1232,7 +1254,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
             <div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>デバッグ成功数</div>
               <div style={{ fontSize: '22px', fontFamily: 'var(--font-display)', fontWeight: 'bold', color: 'var(--color-emerald)', marginTop: '4px' }}>
-                {totalCorrectAnswers} / 6 問
+                {totalCorrectAnswers} / {questions.length} 問
               </div>
             </div>
           </div>
