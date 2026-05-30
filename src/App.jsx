@@ -129,9 +129,18 @@ export default function App() {
   const [mode, setMode] = useState('daily');
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('logifit_color_theme') || 'dark';
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (window.gtag) {
@@ -593,48 +602,81 @@ export default function App() {
         className="glass-panel"
         style={{
           display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? '12px' : '0px',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px 24px',
+          alignItems: isMobile ? 'stretch' : 'center',
+          padding: isMobile ? '14px 16px' : '16px 24px',
           marginTop: '24px',
           borderRadius: '16px',
           borderWidth: '1px'
         }}
       >
-        <div 
-          onClick={() => { playSound('click'); setActiveGame(null); }}
-          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-        >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: isMobile ? '100%' : 'auto' }}>
           <div 
-            style={{ 
-              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-cyan) 100%)',
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(139, 92, 246, 0.4)'
-            }}
+            onClick={() => { playSound('click'); setActiveGame(null); }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
           >
-            <Brain size={20} color="#fff" />
+            <div 
+              style={{ 
+                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-cyan) 100%)',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 0 15px rgba(139, 92, 246, 0.4)'
+              }}
+            >
+              <Brain size={20} color="#fff" />
+            </div>
+            <span 
+              style={{ 
+                fontFamily: 'var(--font-display)', 
+                fontWeight: '800', 
+                fontSize: '22px', 
+                letterSpacing: '1px',
+                background: 'linear-gradient(135deg, var(--text-primary) 30%, var(--text-secondary) 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}
+            >
+              LogiFit
+            </span>
           </div>
-          <span 
-            style={{ 
-              fontFamily: 'var(--font-display)', 
-              fontWeight: '800', 
-              fontSize: '22px', 
-              letterSpacing: '1px',
-              background: 'linear-gradient(135deg, var(--text-primary) 30%, var(--text-secondary) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}
-          >
-            LogiFit
-          </span>
+
+          {/* スマホ時のみ、ヘッダー上部の右側にテーマ切り替えと音量ボタンを配置 */}
+          {isMobile && (
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button 
+                onClick={() => { playSound('click'); setTheme(prev => prev === 'dark' ? 'light' : 'dark'); }}
+                className="btn btn-secondary" 
+                style={{ padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px' }}
+                title={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
+              <button 
+                onClick={toggleMute}
+                className="btn btn-secondary" 
+                style={{ padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px' }}
+              >
+                {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              </button>
+            </div>
+          )}
         </div>
 
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <div style={{ 
+          display: 'flex', 
+          gap: isMobile ? '10px' : '16px', 
+          alignItems: 'center',
+          justifyContent: isMobile ? 'space-between' : 'flex-end',
+          width: isMobile ? '100%' : 'auto',
+          flexWrap: 'wrap'
+        }}>
           {/* Mode Switcher */}
           <div 
             className="glass-panel" 
@@ -665,7 +707,8 @@ export default function App() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                cursor: activeGame !== null ? 'not-allowed' : 'pointer'
+                cursor: activeGame !== null ? 'not-allowed' : 'pointer',
+                whiteSpace: 'nowrap'
               }}
               title={activeGame !== null ? "ゲーム中は切り替えられません" : "日常モード (入門)"}
             >
@@ -688,7 +731,8 @@ export default function App() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                cursor: activeGame !== null ? 'not-allowed' : 'pointer'
+                cursor: activeGame !== null ? 'not-allowed' : 'pointer',
+                whiteSpace: 'nowrap'
               }}
               title={activeGame !== null ? "ゲーム中は切り替えられません" : "ビジネスモード (中級)"}
             >
@@ -698,7 +742,7 @@ export default function App() {
 
           {/* XP & Level */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Level</span>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>Level</span>
             <div 
               style={{ 
                 background: 'rgba(139, 92, 246, 0.15)',
@@ -707,33 +751,38 @@ export default function App() {
                 fontWeight: 'bold',
                 padding: '4px 10px',
                 borderRadius: '8px',
-                fontFamily: 'var(--font-display)'
+                fontFamily: 'var(--font-display)',
+                whiteSpace: 'nowrap'
               }}
             >
               {gameState.level}
             </div>
-            <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontFamily: 'var(--font-display)' }}>
+            <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', whiteSpace: 'nowrap' }}>
               ({gameState.xp} XP)
             </span>
           </div>
 
-          {/* Theme Toggle (Light/Dark) */}
-          <button 
-            onClick={() => { playSound('click'); setTheme(prev => prev === 'dark' ? 'light' : 'dark'); }}
-            className="btn btn-secondary" 
-            style={{ padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            title={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          {/* PC時のみ、右端にテーマ切り替えと音量ボタンを配置 */}
+          {!isMobile && (
+            <>
+              <button 
+                onClick={() => { playSound('click'); setTheme(prev => prev === 'dark' ? 'light' : 'dark'); }}
+                className="btn btn-secondary" 
+                style={{ padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                title={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
 
-          <button 
-            onClick={toggleMute}
-            className="btn btn-secondary" 
-            style={{ padding: '8px', borderRadius: '50%' }}
-          >
-            {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-          </button>
+              <button 
+                onClick={toggleMute}
+                className="btn btn-secondary" 
+                style={{ padding: '8px', borderRadius: '50%' }}
+              >
+                {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              </button>
+            </>
+          )}
         </div>
       </header>
 
