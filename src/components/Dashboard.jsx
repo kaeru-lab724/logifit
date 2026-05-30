@@ -132,25 +132,6 @@ export default function Dashboard({
            ② 診断完了後フェーズ（PC2カラム・ダッシュボードレイアウト）
            ======================================================== */
         <>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-            <button
-              onClick={() => { playSound('click'); setShowIntroduction(!showIntroduction); }}
-              className="btn btn-secondary"
-              style={{
-                padding: '8px 16px',
-                fontSize: '12px',
-                borderRadius: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid var(--border-color)',
-                color: 'var(--text-secondary)'
-              }}
-            >
-              <span>{showIntroduction ? '💡 コンセプト説明を閉じる' : '💡 LogiFitのコンセプト説明を読む'}</span>
-            </button>
-          </div>
 
           {showIntroduction && (
             <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
