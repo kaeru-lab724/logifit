@@ -11,7 +11,9 @@ import {
   Unlock,
   KeyRound,
   Search,
-  Sword
+  Sword,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import RakutenWidget from './common/RakutenWidget';
 import { decodeState, calculateFriction } from '../data/spellHelper';
@@ -381,25 +383,75 @@ export default function Dashboard({
                           )}
                         </div>
 
-                        {/* Dot Indicators */}
-                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                          {slides.map((_, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => { playSound('click'); setActiveSlide(idx); }}
-                              style={{
-                                width: '8px',
-                                height: '8px',
-                                borderRadius: '50%',
-                                background: idx === activeSlide ? 'var(--color-cyan)' : 'rgba(255,255,255,0.15)',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: 0,
-                                transition: 'all 0.3s ease'
-                              }}
-                              title={slides[idx].badge}
-                            />
-                          ))}
+                        {/* Dot & Arrow Indicators */}
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <button
+                            onClick={() => {
+                              playSound('click');
+                              setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: 'rgba(255, 255, 255, 0.4)',
+                              cursor: 'pointer',
+                              padding: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '4px',
+                              transition: 'all 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-cyan)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'; e.currentTarget.style.background = 'transparent'; }}
+                            title="前へ"
+                          >
+                            <ChevronLeft size={16} />
+                          </button>
+
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            {slides.map((_, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => { playSound('click'); setActiveSlide(idx); }}
+                                style={{
+                                  width: '8px',
+                                  height: '8px',
+                                  borderRadius: '50%',
+                                  background: idx === activeSlide ? 'var(--color-cyan)' : 'rgba(255,255,255,0.15)',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                  transition: 'all 0.3s ease'
+                                }}
+                                title={slides[idx].badge}
+                              />
+                            ))}
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              playSound('click');
+                              setActiveSlide((prev) => (prev + 1) % slides.length);
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: 'rgba(255, 255, 255, 0.4)',
+                              cursor: 'pointer',
+                              padding: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '4px',
+                              transition: 'all 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-cyan)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'; e.currentTarget.style.background = 'transparent'; }}
+                            title="次へ"
+                          >
+                            <ChevronRight size={16} />
+                          </button>
                         </div>
                       </div>
 
