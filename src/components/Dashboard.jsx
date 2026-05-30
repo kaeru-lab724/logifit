@@ -393,7 +393,8 @@ export default function Dashboard({
                             style={{
                               background: 'transparent',
                               border: 'none',
-                              color: 'rgba(255, 255, 255, 0.4)',
+                              color: 'var(--text-muted)',
+                              opacity: 0.5,
                               cursor: 'pointer',
                               padding: '4px',
                               display: 'flex',
@@ -402,8 +403,16 @@ export default function Dashboard({
                               borderRadius: '4px',
                               transition: 'all 0.2s ease',
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-cyan)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'; e.currentTarget.style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { 
+                              e.currentTarget.style.color = 'var(--color-cyan)'; 
+                              e.currentTarget.style.opacity = '1';
+                              e.currentTarget.style.background = 'var(--color-cyan-soft)'; 
+                            }}
+                            onMouseLeave={(e) => { 
+                              e.currentTarget.style.color = 'var(--text-muted)'; 
+                              e.currentTarget.style.opacity = '0.5';
+                              e.currentTarget.style.background = 'transparent'; 
+                            }}
                             title="前へ"
                           >
                             <ChevronLeft size={16} />
@@ -418,7 +427,8 @@ export default function Dashboard({
                                   width: '8px',
                                   height: '8px',
                                   borderRadius: '50%',
-                                  background: idx === activeSlide ? 'var(--color-cyan)' : 'rgba(255,255,255,0.15)',
+                                  background: idx === activeSlide ? 'var(--color-cyan)' : 'var(--text-muted)',
+                                  opacity: idx === activeSlide ? 1 : 0.3,
                                   border: 'none',
                                   cursor: 'pointer',
                                   padding: 0,
@@ -437,7 +447,8 @@ export default function Dashboard({
                             style={{
                               background: 'transparent',
                               border: 'none',
-                              color: 'rgba(255, 255, 255, 0.4)',
+                              color: 'var(--text-muted)',
+                              opacity: 0.5,
                               cursor: 'pointer',
                               padding: '4px',
                               display: 'flex',
@@ -446,8 +457,16 @@ export default function Dashboard({
                               borderRadius: '4px',
                               transition: 'all 0.2s ease',
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-cyan)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'; e.currentTarget.style.background = 'transparent'; }}
+                            onMouseEnter={(e) => { 
+                              e.currentTarget.style.color = 'var(--color-cyan)'; 
+                              e.currentTarget.style.opacity = '1';
+                              e.currentTarget.style.background = 'var(--color-cyan-soft)'; 
+                            }}
+                            onMouseLeave={(e) => { 
+                              e.currentTarget.style.color = 'var(--text-muted)'; 
+                              e.currentTarget.style.opacity = '0.5';
+                              e.currentTarget.style.background = 'transparent'; 
+                            }}
                             title="次へ"
                           >
                             <ChevronRight size={16} />
