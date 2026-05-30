@@ -60,6 +60,10 @@ export default function Dashboard({
     return () => clearInterval(interval);
   }, [isHovered]);
 
+  useEffect(() => {
+    setShowBugDetails(false);
+  }, [activeSlide]);
+
   const onCopyClick = () => {
     handleCopySpell(currentSpell);
     setShowToast(true);
@@ -308,7 +312,7 @@ export default function Dashboard({
                   tagline: "HPや制限時間によるゲームオーバーを撤廃しました",
                   desc: (
                     <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
-                      アリーナバトルでの『へりくつ魔獣討伐』を廃止し、本質的な思考デバッグ（バグの特定とスキャン）へリニューアル！Manaの枯渇や即時終了ペナルティをなくし、納得いくまで解説を読んで思考力を磨ける仕様になりました。
+                      『へりくつ魔獣討伐』を廃止し、本質的な思考デバッグへリニューアル！HP・制限時間によるゲームオーバーをなくし、納得いくまで解説を読んで思考力を磨ける仕様になりました。
                     </p>
                   ),
                   actions: (
@@ -340,6 +344,8 @@ export default function Dashboard({
                 }
               ];
 
+              const isAccordionOpen = activeSlide === 0 && showBugDetails;
+
               return (
                 <div 
                   className="glass-panel"
@@ -357,8 +363,10 @@ export default function Dashboard({
                     justifyContent: 'space-between',
                     background: 'var(--hero-bg)',
                     position: 'relative',
-                    minHeight: '340px',
-                    overflow: 'visible'
+                    minHeight: '370px',
+                    height: isAccordionOpen ? 'auto' : '370px',
+                    overflow: 'visible',
+                    transition: 'border-left-color 0.3s ease'
                   }}
                 >
                   <div 
