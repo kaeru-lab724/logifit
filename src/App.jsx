@@ -7,6 +7,9 @@ import LogicalValidity from './components/games/LogicalValidity';
 import LogicTreeAssembler from './components/games/LogicTreeAssembler';
 import FallacyDetective from './components/games/FallacyDetective';
 import EmpathyDialogue from './components/games/EmpathyDialogue';
+import HiddenAssumption from './components/games/HiddenAssumption';
+import CausalLoop from './components/games/CausalLoop';
+import AssertiveRewrite from './components/games/AssertiveRewrite';
 import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import Dashboard from './components/Dashboard';
@@ -40,7 +43,10 @@ const DEFAULT_STATE = {
     logicalValidity: 0,
     logicTree: 0,
     fallacy: 0,
-    empathyDialogue: 0
+    empathyDialogue: 0,
+    hiddenAssumption: 0,
+    causalLoop: 0,
+    assertiveRewrite: 0
   },
   badges: [false, false, false, false, false],
   diagnosticScores: null,
@@ -51,13 +57,22 @@ const DEFAULT_STATE = {
 
 // クラス進化（肩書き）の判定
 const getCharacterClass = (scores, level) => {
-  const { factsOpinions: fo, logicalValidity: lv, logicTree: lt, fallacy: fa, empathyDialogue: ed = 0 } = scores;
-  const avg = (fo + lv + lt + fa + ed) / 5;
+  const { 
+    factsOpinions: fo, 
+    logicalValidity: lv, 
+    logicTree: lt, 
+    fallacy: fa, 
+    empathyDialogue: ed = 0,
+    hiddenAssumption: ha = 0,
+    causalLoop: cl = 0,
+    assertiveRewrite: ar = 0
+  } = scores;
+  const avg = (fo + lv + lt + fa + ed + ha + cl + ar) / 8;
   
   if (avg === 0) return { title: '思考の初心者', desc: 'まだ思考の筋トレを始めていません。いずれかのトレーニングに挑戦しましょう！' };
   
   // 新しい最高称号：共感と論理の両立
-  if (fo >= 80 && lv >= 80 && lt >= 80 && fa >= 80 && ed >= 80) {
+  if (fo >= 80 && lv >= 80 && lt >= 80 && fa >= 80 && ed >= 80 && ha >= 80 && cl >= 80 && ar >= 80) {
     return { title: 'ロジカル＆エモーショナル賢者 (超越者)', desc: '鋭い論理的分析力と、豊かな共感対話力を兼ね備えた、知性と感性のハイブリッド。対立を調和へ導きます。' };
   }
   if (avg >= 95) return { title: '超越した論理知性 (超人類)', desc: 'すべての論理領域で極限に達した、未来の思考者。隙のない完璧なロジックを展開します。' };
@@ -79,7 +94,7 @@ const getCharacterClass = (scores, level) => {
 
 // 自動推奨ゲームのキー選定
 const getRecommendedGameKey = (scores) => {
-  const keys = ['factsOpinions', 'logicalValidity', 'logicTree', 'fallacy', 'empathyDialogue'];
+  const keys = ['factsOpinions', 'logicalValidity', 'logicTree', 'fallacy', 'empathyDialogue', 'hiddenAssumption', 'causalLoop', 'assertiveRewrite'];
   
   // 1. 未プレイ（0%）を優先
   for (const key of keys) {
@@ -118,7 +133,10 @@ const getGameName = (key) => {
     factsOpinions: '事実 vs 意見',
     logicalValidity: '論理の妥当性',
     logicTree: 'ロジックツリー',
-    fallacy: '論理的誤謬の特定'
+    fallacy: '論理的誤謬の特定',
+    hiddenAssumption: '前提のデバッグ',
+    causalLoop: '因果ループ',
+    assertiveRewrite: 'アサーティブ'
   };
   return names[key] || '';
 };
@@ -542,6 +560,16 @@ export default function App() {
             ? '会話の中に潜む「ストローマン（藁人形論法）」や「対人攻撃」などのへりくつを検知・特定する。'
             : 'ビジネス交渉やメディアの主張に隠された論点のすり替えや、都合の良い相関関係の罠を見抜く。',
           difficulty: mode === 'daily' ? '初級' : '中級'
+        },
+        {
+          id: 'hiddenAssumption',
+          scoreKey: 'hiddenAssumption',
+          moduleNum: 'MODULE 03 [2nd]',
+          name: '前提・隠れた仮定のデバッグ',
+          desc: mode === 'daily'
+            ? '日常のSNSや会話に潜む「無意識の思い込みや前提」をスキャンし、健全な表現へデバッグする。'
+            : 'ビジネスの意思決定や分析の裏にある「暗黙の仮定」を可視化し、現実的なロジックにリライトする。',
+          difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
     },
@@ -562,6 +590,16 @@ export default function App() {
             ? '身近な課題（「健康を維持する」など）を要素に分解し、最適なアクションマップを作成する。'
             : '新規事業の売上低迷など、ビジネスの重要課題をMECEに分解し、真のボトルネックを特定する。',
           difficulty: mode === 'daily' ? '初級' : '中級'
+        },
+        {
+          id: 'causalLoop',
+          scoreKey: 'causalLoop',
+          moduleNum: 'MODULE 04 [2nd]',
+          name: '因果ループ＆ボトルネック',
+          desc: mode === 'daily'
+            ? '生活習慣や貯金問題などの「悪循環ループ」を特定し、ボトルネックに介入して安定化させる。'
+            : '人材流出や広告費依存など、複雑なビジネス問題の悪循環を断ち切るレバレッジポイントを見抜く。',
+          difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
     },
@@ -581,6 +619,16 @@ export default function App() {
           desc: mode === 'daily'
             ? '日常の不満や悩みの相談に対し、正論で論破せず、感情に寄り添う返答を選ぶトレーニング。'
             : '職場の後輩や部下、同僚の相談に対して、信頼関係を築くアクティブリスニング（傾聴）を学ぶ。',
+          difficulty: mode === 'daily' ? '初級' : '中級'
+        },
+        {
+          id: 'assertiveRewrite',
+          scoreKey: 'assertiveRewrite',
+          moduleNum: 'MODULE 05 [2nd]',
+          name: 'アサーティブ・リライター',
+          desc: mode === 'daily'
+            ? '友達や家族に対する攻撃的・受動的な会話を、DESC法を用いて誠実かつ対等な表現にリライトする。'
+            : '部下への指導や顧客からの無理な要望への対応を、対立を避けて建設的に合意する表現にコンパイルする。',
           difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
@@ -826,6 +874,33 @@ export default function App() {
         )}
         {activeGame === 'empathyDialogue' && (
           <EmpathyDialogue 
+            onFinish={handleGameFinish} 
+            playSound={playSound} 
+            muted={muted} 
+            toggleMute={toggleMute} 
+            mode={mode}
+          />
+        )}
+        {activeGame === 'hiddenAssumption' && (
+          <HiddenAssumption 
+            onFinish={handleGameFinish} 
+            playSound={playSound} 
+            muted={muted} 
+            toggleMute={toggleMute} 
+            mode={mode}
+          />
+        )}
+        {activeGame === 'causalLoop' && (
+          <CausalLoop 
+            onFinish={handleGameFinish} 
+            playSound={playSound} 
+            muted={muted} 
+            toggleMute={toggleMute} 
+            mode={mode}
+          />
+        )}
+        {activeGame === 'assertiveRewrite' && (
+          <AssertiveRewrite 
             onFinish={handleGameFinish} 
             playSound={playSound} 
             muted={muted} 

@@ -55,6 +55,22 @@ export default function Dashboard({
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+  const getCriticalScore = () => {
+    const f = displayScores.fallacy || 0;
+    const ha = displayScores.hiddenAssumption !== undefined ? displayScores.hiddenAssumption : f;
+    return Math.round((f + ha) / 2);
+  };
+  const getRadicalScore = () => {
+    const lt = displayScores.logicTree || 0;
+    const cl = displayScores.causalLoop !== undefined ? displayScores.causalLoop : lt;
+    return Math.round((lt + cl) / 2);
+  };
+  const getEmotionalScore = () => {
+    const ed = displayScores.empathyDialogue || 0;
+    const ar = displayScores.assertiveRewrite !== undefined ? displayScores.assertiveRewrite : ed;
+    return Math.round((ed + ar) / 2);
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -1182,8 +1198,8 @@ export default function Dashboard({
                 {/* Scores */}
                 <text x="160" y="58" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{displayScores.factsOpinions}%</text>
                 <text x="248" y="168" textAnchor="start" fill="var(--text-secondary)" fontSize="10">{displayScores.logicalValidity}%</text>
-                <text x="160" y="266" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{displayScores.logicTree}%</text>
-                <text x="72" y="168" textAnchor="end" fill="var(--text-secondary)" fontSize="10">{displayScores.fallacy}%</text>
+                <text x="160" y="266" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{getRadicalScore()}%</text>
+                <text x="72" y="168" textAnchor="end" fill="var(--text-secondary)" fontSize="10">{getCriticalScore()}%</text>
 
                 <circle cx="160" cy="150" r="3" fill="var(--text-muted)" />
 
@@ -1191,8 +1207,8 @@ export default function Dashboard({
                   points={(() => {
                     const s1 = displayScores.factsOpinions || 10;
                     const s2 = displayScores.logicalValidity || 10;
-                    const s3 = displayScores.logicTree || 10;
-                    const s4 = displayScores.fallacy || 10;
+                    const s3 = getRadicalScore() || 10;
+                    const s4 = getCriticalScore() || 10;
                     return `160,${150 - 80 * (s1 / 100)} ${160 + 80 * (s2 / 100)},150 160,${150 + 80 * (s3 / 100)} ${160 - 80 * (s4 / 100)},150`;
                   })()} 
                   fill="rgba(139, 92, 246, 0.25)" 
@@ -1203,8 +1219,8 @@ export default function Dashboard({
                 
                 {displayScores.factsOpinions > 0 && <circle cx="160" cy={150 - 80 * (displayScores.factsOpinions / 100)} r="4" fill="var(--color-cyan)" />}
                 {displayScores.logicalValidity > 0 && <circle cx={160 + 80 * (displayScores.logicalValidity / 100)} cy="150" r="4" fill="var(--color-emerald)" />}
-                {displayScores.logicTree > 0 && <circle cx="160" cy={150 + 80 * (displayScores.logicTree / 100)} r="4" fill="var(--color-amber)" />}
-                {displayScores.fallacy > 0 && <circle cx={160 - 80 * (displayScores.fallacy / 100)} cy="150" r="4" fill="var(--color-rose)" />}
+                {getRadicalScore() > 0 && <circle cx="160" cy={150 + 80 * (getRadicalScore() / 100)} r="4" fill="var(--color-amber)" />}
+                {getCriticalScore() > 0 && <circle cx={160 - 80 * (getCriticalScore() / 100)} cy="150" r="4" fill="var(--color-rose)" />}
               </svg>
               <div 
                 style={{ 
@@ -1221,14 +1237,14 @@ export default function Dashboard({
                     EQ共感対話力
                   </span>
                   <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                    {displayScores.empathyDialogue || 0}%
+                    {getEmotionalScore()}%
                   </span>
                 </div>
                 <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
                   <div 
                     style={{ 
                       height: '100%', 
-                      width: `${displayScores.empathyDialogue || 0}%`, 
+                      width: `${getEmotionalScore()}%`, 
                       background: 'linear-gradient(90deg, var(--color-primary) 0%, #a78bfa 100%)',
                       borderRadius: '4px',
                       boxShadow: '0 0 8px var(--color-primary-glow)',
