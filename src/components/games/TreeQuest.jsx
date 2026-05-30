@@ -219,6 +219,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
 
   const placeOption = (optionId, slotId) => {
     playSound('click');
+    setScanResult(null); // Clear previous scan result
     setPlacedItems(prev => {
       const next = { ...prev };
       // 他のスロットから既存配置を除去
@@ -238,6 +239,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
     } else {
       if (placedItems[slotId]) {
         playSound('click');
+        setScanResult(null); // Clear previous scan result
         setPlacedItems(prev => {
           const next = { ...prev };
           delete next[slotId];
@@ -799,10 +801,18 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
             <div>
               {scanResult !== 'success' && !isScanning && (
                 <button 
-                  onClick={() => setPlacedItems({})} 
+                  onClick={() => {
+                    setPlacedItems({});
+                    setScanResult(null);
+                  }} 
                   className="btn btn-secondary"
                   disabled={Object.keys(placedItems).length === 0}
-                  style={{ padding: '8px 18px', fontSize: '13px' }}
+                  style={{ 
+                    padding: '8px 18px', 
+                    fontSize: '13px',
+                    opacity: Object.keys(placedItems).length === 0 ? 0.5 : 1,
+                    cursor: Object.keys(placedItems).length === 0 ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   リセット
                 </button>
@@ -822,8 +832,21 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
                   style={{ 
                     padding: '10px 24px', 
                     fontSize: '13.5px',
-                    background: 'linear-gradient(135deg, var(--color-amber) 0%, #d97706 100%)', 
-                    boxShadow: '0 4px 15px var(--color-amber-glow)' 
+                    background: Object.keys(placedItems).length < currentStage.correctStructure.slots.length
+                      ? 'var(--bg-inner-box)'
+                      : 'linear-gradient(135deg, var(--color-amber) 0%, #d97706 100%)', 
+                    border: Object.keys(placedItems).length < currentStage.correctStructure.slots.length
+                      ? '1px solid var(--border-color)'
+                      : 'none',
+                    color: Object.keys(placedItems).length < currentStage.correctStructure.slots.length
+                      ? 'var(--text-muted)'
+                      : '#0a0b10',
+                    boxShadow: Object.keys(placedItems).length < currentStage.correctStructure.slots.length
+                      ? 'none'
+                      : '0 4px 15px var(--color-amber-glow)',
+                    cursor: Object.keys(placedItems).length < currentStage.correctStructure.slots.length
+                      ? 'not-allowed'
+                      : 'pointer'
                   }}
                   disabled={Object.keys(placedItems).length < currentStage.correctStructure.slots.length}
                 >
