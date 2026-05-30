@@ -89,7 +89,9 @@ export default function Dashboard({
   }, [isHovered]);
 
   useEffect(() => {
-    setShowBugDetails(false);
+    if (activeSlide !== 0) {
+      setShowBugDetails(false);
+    }
   }, [activeSlide]);
 
   const onCopyClick = () => {
@@ -338,7 +340,11 @@ export default function Dashboard({
                         👾 脳内バグ図鑑を見る
                       </button>
                       <button 
-                        onClick={() => { playSound('click'); setShowBugDetails(!showBugDetails); }} 
+                        onClick={() => { 
+                          playSound('click'); 
+                          setActiveSlide(0); 
+                          setShowBugDetails(true); 
+                        }} 
                         className="btn btn-secondary"
                         style={{
                           flex: 1,
