@@ -48,6 +48,7 @@ export default function Dashboard({
   const [matchError, setMatchError] = useState('');
   const [showBugDetails, setShowBugDetails] = useState(false);
   const [selectedBugId, setSelectedBugId] = useState(null);
+  const [showIntroduction, setShowIntroduction] = useState(false);
 
   const onCopyClick = () => {
     handleCopySpell(currentSpell);
@@ -97,252 +98,57 @@ export default function Dashboard({
     ? diagnosticTypes[gameState.diagnosticTypeId] 
     : (gameState.diagnosticType || null);
 
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="fade-in">
       {isNewUser ? (
         /* ========================================================
            ① 新規未受診フェーズ（診断ファースト誘導）
            ======================================================== */
-        <>
-          {/* ① 新規向けHero（高インパクト・コピー） */}
-          <div 
-            className="glass-panel"
-            style={{
-              padding: '56px 32px',
-              textAlign: 'center',
-              background: 'var(--hero-bg)',
-              borderLeft: '4px solid var(--color-cyan)',
-              position: 'relative',
-              overflow: 'hidden',
-              marginBottom: '16px'
-            }}
-          >
-            <div className="scan-bg-glow"></div>
-            <div style={{ marginBottom: "16px" }}>
-              <span className="game-badge" style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#06b6d4", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold", letterSpacing: '1px' }}>
-                🔬 COGNITIVE DEBUG SYSTEM
-              </span>
-            </div>
-            <h1 className="text-glow" style={{ fontFamily: 'var(--font-display)', fontWeight: '900', fontSize: '32px', letterSpacing: '-0.5px', marginBottom: '18px', marginTop: 0, lineHeight: '1.35' }}>
-              「なぜか話が噛み合わない…」<br />その脳内のバグ、スキャンしませんか？
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', fontSize: '15px', marginBottom: '36px', maxWidth: '680px', margin: '0 auto 36px auto' }}>
-              LogiFit（ロジフィット）は、アタマのレントゲン（思考診断）であなたの認知の偏りを暴き、<br />
-              ゲーム感覚で脳内OSをアップデートする総合思考トレーニングジムです。
-            </p>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
-              <button 
-                onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
-                className="btn btn-primary"
-                style={{
-                  background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
-                  boxShadow: '0 4px 20px rgba(6, 182, 212, 0.4)',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  padding: '16px 44px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                }}
-              >
-                <span>🧠 思考のレントゲン（診断）をはじめる</span>
-              </button>
-            </div>
-          </div>
-
-          {/* ② 脳内の「思考バグ」共感エリア (Pain Points) */}
-          <div className="glass-panel" style={{ padding: '36px 28px', border: '1px solid var(--border-color)', borderRadius: '16px', marginBottom: '16px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)', textAlign: 'center' }}>
-              日常生活や仕事で、こんな「思考バグ」ありませんか？
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', marginBottom: '28px' }}>
-              私たちは無意識のうちに、自分特有の認知バイアス（思考の偏り）をシステムに読み込んでしまっています。
-            </p>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-              <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '24px 20px', borderRadius: '12px', textAlign: 'left' }}>
-                <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>💥</span>
-                <h3 style={{ fontSize: '14.5px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
-                  ロジハラ型（正論エラー）
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
-                  「正しいこと（正論）」を言っているはずなのに、なぜか相手の反発を招いたり、人間関係をフリーズさせてしまうバグ。
-                </p>
-              </div>
-
-              <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '24px 20px', borderRadius: '12px', textAlign: 'left' }}>
-                <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>👴</span>
-                <h3 style={{ fontSize: '14.5px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
-                  昭和バイアス（過去基準エラー）
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
-                  「自分の若い頃は〜」「普通は〜」と、無意識のうちに過去の精神論やマイルールを現代の環境に押し付けてしまうバグ。
-                </p>
-              </div>
-
-              <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '24px 20px', borderRadius: '12px', textAlign: 'left' }}>
-                <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>📱</span>
-                <h3 style={{ fontSize: '14.5px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
-                  令和バイアス（効率過信エラー）
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
-                  合理性やタイパ（時間対効果）を極端に重視するあまり、感情のプロセスを省いて冷たい印象を与え、対話を崩壊させるバグ。
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* ③ 得られるメリット (Benefits/Values) */}
-          <div className="glass-panel" style={{ padding: '36px 28px', border: '1px solid var(--border-color)', borderRadius: '16px', marginBottom: '16px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)', textAlign: 'center' }}>
-              LogiFitでデバッグする「4つの論理・感情回路」
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', marginBottom: '28px' }}>
-              診断結果からアタマの傾向をレーダー可視化。偏りを見極め、4つのルームでデバッグ学習を行います。
-            </p>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', textAlign: 'left' }}>
-              <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.1)', color: 'var(--color-cyan)', fontSize: '22px', flexShrink: 0 }}>📊</div>
-                <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>ロジカル思考（事実と結論の整理）</h4>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>個人の「意見・解釈」と客観的な「事実」を正しく切り分け、飛躍のないクリアな筋道を組み立てる力。</p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(244, 63, 94, 0.1)', color: 'var(--color-rose)', fontSize: '22px', flexShrink: 0 }}>🔍</div>
-                <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>クリティカル思考（バイアスと誤謬の検知）</h4>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>相手の論点すり替えや、自分自身の無意識の歪みに素早く気づき、詭弁やヘリくつを無効化する力。</p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.1)', color: 'var(--color-amber)', fontSize: '22px', flexShrink: 0 }}>🌳</div>
-                <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>ラディカル思考（本質的な課題のMECE分解）</h4>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>複雑な重要問題を漏れなくダブりなく（MECE）因数分解し、真のボトルネックを見つけ出す構造化能力。</p>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(139, 92, 246, 0.1)', color: 'var(--color-primary)', fontSize: '22px', flexShrink: 0 }}>🤝</div>
-                <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>エモーショナル思考（共感と受容の傾聴）</h4>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>正論で論破するのではなく、相手の感情に優しく寄り添うことで、深い信頼のネットワークを築く力。</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ④ 3 STEP PLAY GUIDE CONTAINER */}
-          <div 
-            className="glass-panel"
-            style={{
-              padding: '32px 24px',
-              border: '1px solid var(--border-color)',
-              borderRadius: '16px',
-              textAlign: 'center',
-              marginBottom: '16px'
-            }}
-          >
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', marginBottom: '24px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <Sparkles size={18} style={{ color: 'var(--color-cyan)' }} />
-              脳内OSをアップデートする 3 STEP
-            </h2>
-            <div 
-              style={{ 
-                display: 'flex', 
-                gap: '24px', 
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                textAlign: 'left'
-              }}
-            >
-              {/* Step 1 */}
-              <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-cyan) 0%, #0891b2 100%)', color: 'var(--bg-dark)', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                  STEP 01
-                </div>
-                <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  🧠 アタマをスキャンする
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
-                  「アタマのレントゲン（診断）」を受け、あなたの思考の偏り（ロジカル、クリティカル、ラディカル、エモーショナル）を暴きます。
-                </p>
-              </div>
-
-              {/* Step 2 */}
-              <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                  STEP 02
-                </div>
-                <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  🎯 弱点をデバッグする
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
-                  診断で見つかった「思考のバグ（弱点）」を克服するトレーニングゲーム（事実vs意見、誤謬特定など）に挑戦します。
-                </p>
-              </div>
-
-              {/* Step 3 */}
-              <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
-                  STEP 03
-                </div>
-                <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  🚀 脳内OSをアップデート
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
-                  トレーニングのベストスコアが蓄積され、パラメータ（レーダーチャート）とあなたの「進化クラス（肩書き）」が成長します。
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Spell entry for returning users */}
-          <div style={{ maxWidth: '400px', margin: '32px auto 0 auto', width: '100%' }}>
-            <div className="glass-panel" style={{ padding: '20px' }}>
-              <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-                <KeyRound size={16} style={{ color: 'var(--color-primary)' }} />
-                ブレインコードをインポートしてデータを復元
-              </h3>
-              <form onSubmit={handleRestoreSpell} style={{ display: 'flex', gap: '8px' }}>
-                <input 
-                  type="text" 
-                  value={spellInput}
-                  onChange={(e) => setSpellInput(e.target.value)}
-                  placeholder="英数字12文字を入力"
-                  style={{
-                    flex: 1,
-                    background: 'var(--bg-inner-box)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    fontSize: '13px'
-                  }}
-                />
-                <button type="submit" className="btn btn-primary" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px' }}>
-                  インポート
-                </button>
-              </form>
-              {spellError && <p style={{ color: 'var(--color-rose)', fontSize: '11px', marginTop: '6px', textAlign: 'center' }}>❌ {spellError}</p>}
-            </div>
-          </div>
-        </>
+        <LandingPage 
+          showCTA={true}
+          playSound={playSound}
+          setActiveGame={setActiveGame}
+          handleRestoreSpell={handleRestoreSpell}
+          spellInput={spellInput}
+          setSpellInput={setSpellInput}
+          spellError={spellError}
+        />
       ) : (
         /* ========================================================
            ② 診断完了後フェーズ（PC2カラム・ダッシュボードレイアウト）
            ======================================================== */
-        <div className="dashboard-grid-layout">
+        <>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+            <button
+              onClick={() => { playSound('click'); setShowIntroduction(!showIntroduction); }}
+              className="btn btn-secondary"
+              style={{
+                padding: '8px 16px',
+                fontSize: '12px',
+                borderRadius: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              <span>{showIntroduction ? '💡 コンセプト説明を閉じる' : '💡 LogiFitのコンセプト説明を読む'}</span>
+            </button>
+          </div>
+
+          {showIntroduction && (
+            <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+              <LandingPage 
+                showCTA={false}
+                playSound={playSound}
+                setActiveGame={setActiveGame}
+              />
+            </div>
+          )}
+
+          <div className="dashboard-grid-layout">
           
           {/* 左メインカラム（マイプロファイル ＆ タブナビゲーション・コンテンツ） */}
           <div className="dashboard-main-column">
@@ -1500,7 +1306,7 @@ export default function Dashboard({
 
           </div>
         </div>
-      )}
+      </>)}
       {showToast && (
         <div className="copy-toast">
           <Sparkles size={16} style={{ color: 'var(--color-primary)' }} />
@@ -1508,5 +1314,256 @@ export default function Dashboard({
         </div>
       )}
     </div>
+  );
+}
+
+function LandingPage({
+  showCTA,
+  playSound,
+  setActiveGame,
+  handleRestoreSpell,
+  spellInput,
+  setSpellInput,
+  spellError
+}) {
+  return (
+    <>
+      {/* ① 新規向けHero（高インパクト・コピー） */}
+      <div 
+        className="glass-panel"
+        style={{
+          padding: showCTA ? '56px 32px' : '40px 24px',
+          textAlign: 'center',
+          background: 'var(--hero-bg)',
+          borderLeft: '4px solid var(--color-cyan)',
+          position: 'relative',
+          overflow: 'hidden',
+          marginBottom: '16px'
+        }}
+      >
+        <div className="scan-bg-glow"></div>
+        <div style={{ marginBottom: "16px" }}>
+          <span className="game-badge" style={{ background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#06b6d4", padding: "6px 16px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold", letterSpacing: '1px' }}>
+            🔬 COGNITIVE DEBUG SYSTEM
+          </span>
+        </div>
+        <h1 className="text-glow" style={{ fontFamily: 'var(--font-display)', fontWeight: '900', fontSize: showCTA ? '32px' : '26px', letterSpacing: '-0.5px', marginBottom: '18px', marginTop: 0, lineHeight: '1.35' }}>
+          「なぜか話が噛み合わない…」<br />その脳内のバグ、スキャンしませんか？
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', fontSize: showCTA ? '15px' : '13.5px', marginBottom: showCTA ? '36px' : '0px', maxWidth: '680px', margin: '0 auto' }}>
+          LogiFit（ロジフィット）は、アタマのレントゲン（思考診断）であなたの認知の偏りを暴き、<br />
+          ゲーム感覚で脳内OSをアップデートする総合思考トレーニングジムです。
+        </p>
+        {showCTA && (
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center', marginTop: '36px' }}>
+            <button 
+              onClick={() => { playSound('click'); setActiveGame('diagnostic'); }} 
+              className="btn btn-primary"
+              style={{
+                background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                boxShadow: '0 4px 20px rgba(6, 182, 212, 0.4)',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                padding: '16px 44px',
+                borderRadius: '12px',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+            >
+              <span>🧠 思考のレントゲン（診断）をはじめる</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ② 脳内の「思考バグ」共感エリア (Pain Points) */}
+      <div className="glass-panel" style={{ padding: '36px 28px', border: '1px solid var(--border-color)', borderRadius: '16px', marginBottom: '16px' }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)', textAlign: 'center' }}>
+          日常生活や仕事で、こんな「思考バグ」ありませんか？
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', marginBottom: '28px' }}>
+          私たちは無意識のうちに、自分特有の認知バイアス（思考の偏り）をシステムに読み込んでしまっています。
+        </p>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '24px 20px', borderRadius: '12px', textAlign: 'left' }}>
+            <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>💥</span>
+            <h3 style={{ fontSize: '14.5px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+              ロジハラ型（正論エラー）
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
+              「正しいこと（正論）」を言っているはずなのに、なぜか相手の反発を招いたり、人間関係をフリーズさせてしまうバグ。
+            </p>
+          </div>
+
+          <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '24px 20px', borderRadius: '12px', textAlign: 'left' }}>
+            <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>👴</span>
+            <h3 style={{ fontSize: '14.5px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+              昭和バイアス（過去基準エラー）
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
+              「自分の若い頃は〜」「普通は〜」と、無意識のうちに過去の精神論やマイルールを現代の環境に押し付けてしまうバグ。
+            </p>
+          </div>
+
+          <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-color)', padding: '24px 20px', borderRadius: '12px', textAlign: 'left' }}>
+            <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>📱</span>
+            <h3 style={{ fontSize: '14.5px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+              令和バイアス（効率過信エラー）
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
+              合理性やタイパ（時間対効果）を極端に重視するあまり、感情のプロセスを省いて冷たい印象を与え、対話を崩壊させるバグ。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ③ 得られるメリット (Benefits/Values) */}
+      <div className="glass-panel" style={{ padding: '36px 28px', border: '1px solid var(--border-color)', borderRadius: '16px', marginBottom: '16px' }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)', textAlign: 'center' }}>
+          LogiFitでデバッグする「4つの論理・感情回路」
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', marginBottom: '28px' }}>
+          診断結果からアタマの傾向をレーダー可視化。偏りを見極め、4つのルームでデバッグ学習を行います。
+        </p>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', textAlign: 'left' }}>
+          <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.1)', color: 'var(--color-cyan)', fontSize: '22px', flexShrink: 0 }}>📊</div>
+            <div>
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>ロジカル思考（事実と結論の整理）</h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>個人の「意見・解釈」と客観的な「事実」を正しく切り分け、飛躍のないクリアな筋道を組み立てる力。</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(244, 63, 94, 0.1)', color: 'var(--color-rose)', fontSize: '22px', flexShrink: 0 }}>🔍</div>
+            <div>
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>クリティカル思考（バイアスと誤謬の検知）</h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>相手の論点すり替えや、自分自身の無意識の歪みに素早く気づき、詭弁やヘリくつを無効化する力。</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.1)', color: 'var(--color-amber)', fontSize: '22px', flexShrink: 0 }}>🌳</div>
+            <div>
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>ラディカル思考（本質的な課題のMECE分解）</h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>複雑な重要問題を漏れなくダブりなく（MECE）因数分解し、真のボトルネックを見つけ出す構造化能力。</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', borderRadius: '10px', background: 'rgba(139, 92, 246, 0.1)', color: 'var(--color-primary)', fontSize: '22px', flexShrink: 0 }}>🤝</div>
+            <div>
+              <h4 style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 4px 0', color: 'var(--text-primary)' }}>エモーショナル思考（共感と受容の傾聴）</h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>正論で論破するのではなく、相手の感情に優しく寄り添うことで、深い信頼のネットワークを築く力。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ④ 3 STEP PLAY GUIDE CONTAINER */}
+      <div 
+        className="glass-panel"
+        style={{
+          padding: '32px 24px',
+          border: '1px solid var(--border-color)',
+          borderRadius: '16px',
+          textAlign: 'center',
+          marginBottom: '16px'
+        }}
+      >
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', marginBottom: '24px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <Sparkles size={18} style={{ color: 'var(--color-cyan)' }} />
+          脳内OSをアップデートする 3 STEP
+        </h2>
+        <div 
+          style={{ 
+            display: 'flex', 
+            gap: '24px', 
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            textAlign: 'left'
+          }}
+        >
+          {/* Step 1 */}
+          <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-cyan) 0%, #0891b2 100%)', color: 'var(--bg-dark)', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
+              STEP 01
+            </div>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              🧠 アタマをスキャンする
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
+              「アタマのレントゲン（診断）」を受け、あなたの思考の偏り（ロジカル、クリティカル、ラディカル、エモーショナル）を暴きます。
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
+              STEP 02
+            </div>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              🎯 弱点をデバッグする
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
+              診断で見つかった「思考のバグ（弱点）」を克服するトレーニングゲーム（事実vs意見、誤謬特定など）に挑戦します。
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div style={{ flex: '1 1 250px', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '20px', borderRadius: '12px', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-12px', left: '20px', background: 'linear-gradient(135deg, var(--color-emerald) 0%, #059669 100%)', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px' }}>
+              STEP 03
+            </div>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '4px', marginBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              🚀 脳内OSをアップデート
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
+              トレーニングのベストスコアが蓄積され、パラメータ（レーダーチャート）とあなたの「進化クラス（肩書き）」が成長します。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Spell entry for returning users */}
+      {showCTA && (
+        <div style={{ maxWidth: '400px', margin: '32px auto 0 auto', width: '100%' }}>
+          <div className="glass-panel" style={{ padding: '20px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+              <KeyRound size={16} style={{ color: 'var(--color-primary)' }} />
+              ブレインコードをインポートしてデータを復元
+            </h3>
+            <form onSubmit={handleRestoreSpell} style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                value={spellInput}
+                onChange={(e) => setSpellInput(e.target.value)}
+                placeholder="英数字12文字を入力"
+                style={{
+                  flex: 1,
+                  background: 'var(--bg-inner-box)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  color: 'var(--text-primary)',
+                  outline: 'none',
+                  fontSize: '13px'
+                }}
+              />
+              <button type="submit" className="btn btn-primary" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px' }}>
+                インポート
+              </button>
+            </form>
+            {spellError && <p style={{ color: 'var(--color-rose)', fontSize: '11px', marginTop: '6px', textAlign: 'center' }}>❌ {spellError}</p>}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
