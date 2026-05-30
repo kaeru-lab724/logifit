@@ -511,7 +511,7 @@ export default function App() {
           desc: mode === 'daily' 
             ? '身近な会話やニュースから主観的な「意見」と客観的な「事実」を切り分ける入門トレーニング。'
             : '提案書やデータ分析で、個人の「解釈」と客観的な「事実」を正しく選別する実戦トレーニング。',
-          difficulty: '初級'
+          difficulty: mode === 'daily' ? '初級' : '中級'
         },
         {
           id: 'logicalValidity',
@@ -521,7 +521,7 @@ export default function App() {
           desc: mode === 'daily' 
             ? '日常の議論や会話のやり取りから、三段論法などの推論が正しい道筋を通っているかを検証。'
             : 'ビジネスの提案や主張に対して、前提から結論への論理展開に飛躍がないかを厳密にチェック。',
-          difficulty: '中級'
+          difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
     },
@@ -541,7 +541,7 @@ export default function App() {
           desc: mode === 'daily' 
             ? '会話の中に潜む「ストローマン（藁人形論法）」や「対人攻撃」などのへりくつを検知・特定する。'
             : 'ビジネス交渉やメディアの主張に隠された論点のすり替えや、都合の良い相関関係の罠を見抜く。',
-          difficulty: '上級'
+          difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
     },
@@ -561,7 +561,7 @@ export default function App() {
           desc: mode === 'daily' 
             ? '身近な課題（「健康を維持する」など）を要素に分解し、最適なアクションマップを作成する。'
             : '新規事業の売上低迷など、ビジネスの重要課題をMECEに分解し、真のボトルネックを特定する。',
-          difficulty: '中級'
+          difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
     },
@@ -581,7 +581,7 @@ export default function App() {
           desc: mode === 'daily'
             ? '日常の不満や悩みの相談に対し、正論で論破せず、感情に寄り添う返答を選ぶトレーニング。'
             : '職場の後輩や部下、同僚の相談に対して、信頼関係を築くアクティブリスニング（傾聴）を学ぶ。',
-          difficulty: '中級'
+          difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
     }
