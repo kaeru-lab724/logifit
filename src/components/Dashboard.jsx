@@ -71,6 +71,9 @@ export default function Dashboard({
     const ar = displayScores.assertiveRewrite !== undefined ? displayScores.assertiveRewrite : ed;
     return Math.round((ed + ar) / 2);
   };
+  const getStrategicScore = () => {
+    return displayScores.strategic !== undefined ? displayScores.strategic : 0;
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -1421,55 +1424,81 @@ export default function Dashboard({
                 height="auto" 
                 style={{ maxWidth: '320px', overflow: 'visible' }}
               >
-                <polygon points="160,70 240,150 160,230 80,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
-                <polygon points="160,102 208,150 160,198 112,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
-                <polygon points="160,126 184,150 160,174 136,150" fill="none" stroke="var(--border-color)" strokeWidth="1" />
+                {/* Background grid pentagons */}
+                <polygon points="160,70 236.1,125.3 207,214.7 113,214.7 83.9,125.3" fill="none" stroke="var(--border-color)" strokeWidth="1" />
+                <polygon points="160,102 205.7,135.2 188.2,188.8 131.8,188.8 114.3,135.2" fill="none" stroke="var(--border-color)" strokeWidth="1" />
+                <polygon points="160,126 182.8,142.6 174.1,169.4 145.9,169.4 137.2,142.6" fill="none" stroke="var(--border-color)" strokeWidth="1" />
 
-                <line x1="160" y1="70" x2="160" y2="230" stroke="var(--border-color)" strokeDasharray="3,3" />
-                <line x1="80" y1="150" x2="240" y2="150" stroke="var(--border-color)" strokeDasharray="3,3" />
+                {/* Grid axis lines */}
+                <line x1="160" y1="150" x2="160" y2="70" stroke="var(--border-color)" strokeDasharray="3,3" />
+                <line x1="160" y1="150" x2="236.1" y2="125.3" stroke="var(--border-color)" strokeDasharray="3,3" />
+                <line x1="160" y1="150" x2="207" y2="214.7" stroke="var(--border-color)" strokeDasharray="3,3" />
+                <line x1="160" y1="150" x2="113" y2="214.7" stroke="var(--border-color)" strokeDasharray="3,3" />
+                <line x1="160" y1="150" x2="83.9" y2="125.3" stroke="var(--border-color)" strokeDasharray="3,3" />
 
                 {/* Labels */}
-                <text x="160" y="44" textAnchor="middle" fill="var(--color-cyan)" fontSize="11" fontWeight="bold">
+                <text x="160" y="32" textAnchor="middle" fill="var(--color-cyan)" fontSize="11" fontWeight="bold">
                   事実分析 <tspan fill="var(--text-muted)" fontSize="9" fontWeight="normal">(FACT)</tspan>
                 </text>
-                <text x="248" y="138" textAnchor="start" fill="var(--color-emerald)" fontSize="11" fontWeight="bold">
+                <text x="245" y="118" textAnchor="start" fill="var(--color-emerald)" fontSize="11" fontWeight="bold">
                   演繹・推論
-                  <tspan x="248" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(LOGIC)</tspan>
+                  <tspan x="245" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(LOGIC)</tspan>
                 </text>
-                <text x="160" y="252" textAnchor="middle" fill="var(--color-amber)" fontSize="11" fontWeight="bold">
-                  構造化 <tspan fill="var(--text-muted)" fontSize="9" fontWeight="normal">(MECE)</tspan>
+                <text x="215" y="245" textAnchor="start" fill="#818cf8" fontSize="11" fontWeight="bold">
+                  戦略思考
+                  <tspan x="215" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(STRATEGY)</tspan>
                 </text>
-                <text x="72" y="138" textAnchor="end" fill="var(--color-rose)" fontSize="11" fontWeight="bold">
+                <text x="105" y="245" textAnchor="end" fill="var(--color-amber)" fontSize="11" fontWeight="bold">
+                  構造化
+                  <tspan x="105" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(MECE)</tspan>
+                </text>
+                <text x="75" y="118" textAnchor="end" fill="var(--color-rose)" fontSize="11" fontWeight="bold">
                   批判思考
-                  <tspan x="72" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(FALLACY)</tspan>
+                  <tspan x="75" dy="14" fill="var(--text-muted)" fontSize="9" fontWeight="normal">(FALLACY)</tspan>
                 </text>
 
-                {/* Scores */}
-                <text x="160" y="58" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{displayScores.factsOpinions}%</text>
-                <text x="248" y="168" textAnchor="start" fill="var(--text-secondary)" fontSize="10">{displayScores.logicalValidity}%</text>
-                <text x="160" y="266" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{getRadicalScore()}%</text>
-                <text x="72" y="168" textAnchor="end" fill="var(--text-secondary)" fontSize="10">{getCriticalScore()}%</text>
+                {/* Scores text values */}
+                <text x="160" y="46" textAnchor="middle" fill="var(--text-secondary)" fontSize="10">{displayScores.factsOpinions}%</text>
+                <text x="245" y="146" textAnchor="start" fill="var(--text-secondary)" fontSize="10">{displayScores.logicalValidity}%</text>
+                <text x="215" y="273" textAnchor="start" fill="var(--text-secondary)" fontSize="10">{getStrategicScore()}%</text>
+                <text x="105" y="273" textAnchor="end" fill="var(--text-secondary)" fontSize="10">{getRadicalScore()}%</text>
+                <text x="75" y="146" textAnchor="end" fill="var(--text-secondary)" fontSize="10">{getCriticalScore()}%</text>
 
                 <circle cx="160" cy="150" r="3" fill="var(--text-muted)" />
 
+                {/* Interactive user scores polygon */}
                 <polygon 
                   points={(() => {
                     const s1 = displayScores.factsOpinions || 10;
                     const s2 = displayScores.logicalValidity || 10;
-                    const s3 = getRadicalScore() || 10;
-                    const s4 = getCriticalScore() || 10;
-                    return `160,${150 - 80 * (s1 / 100)} ${160 + 80 * (s2 / 100)},150 160,${150 + 80 * (s3 / 100)} ${160 - 80 * (s4 / 100)},150`;
+                    const s3 = getStrategicScore() || 10;
+                    const s4 = getRadicalScore() || 10;
+                    const s5 = getCriticalScore() || 10;
+
+                    const p1x = 160;
+                    const p1y = 150 - 80 * (s1 / 100);
+                    const p2x = 160 + 80 * (s2 / 100) * 0.9511;
+                    const p2y = 150 - 80 * (s2 / 100) * 0.3090;
+                    const p3x = 160 + 80 * (s3 / 100) * 0.5878;
+                    const p3y = 150 + 80 * (s3 / 100) * 0.8090;
+                    const p4x = 160 - 80 * (s4 / 100) * 0.5878;
+                    const p4y = 150 + 80 * (s4 / 100) * 0.8090;
+                    const p5x = 160 - 80 * (s5 / 100) * 0.9511;
+                    const p5y = 150 - 80 * (s5 / 100) * 0.3090;
+
+                    return `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y} ${p5x},${p5y}`;
                   })()} 
-                  fill="rgba(139, 92, 246, 0.25)" 
-                  stroke="var(--color-primary)" 
+                  fill="rgba(99, 102, 241, 0.25)" 
+                  stroke="#6366f1" 
                   strokeWidth="2.5"
                   style={{ transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' }}
                 />
                 
                 {displayScores.factsOpinions > 0 && <circle cx="160" cy={150 - 80 * (displayScores.factsOpinions / 100)} r="4" fill="var(--color-cyan)" />}
-                {displayScores.logicalValidity > 0 && <circle cx={160 + 80 * (displayScores.logicalValidity / 100)} cy="150" r="4" fill="var(--color-emerald)" />}
-                {getRadicalScore() > 0 && <circle cx="160" cy={150 + 80 * (getRadicalScore() / 100)} r="4" fill="var(--color-amber)" />}
-                {getCriticalScore() > 0 && <circle cx={160 - 80 * (getCriticalScore() / 100)} cy="150" r="4" fill="var(--color-rose)" />}
+                {displayScores.logicalValidity > 0 && <circle cx={160 + 80 * (displayScores.logicalValidity / 100) * 0.9511} cy={150 - 80 * (displayScores.logicalValidity / 100) * 0.3090} r="4" fill="var(--color-emerald)" />}
+                {getStrategicScore() > 0 && <circle cx={160 + 80 * (getStrategicScore() / 100) * 0.5878} cy={150 + 80 * (getStrategicScore() / 100) * 0.8090} r="4" fill="#6366f1" />}
+                {getRadicalScore() > 0 && <circle cx={160 - 80 * (getRadicalScore() / 100) * 0.5878} cy={150 + 80 * (getRadicalScore() / 100) * 0.8090} r="4" fill="var(--color-amber)" />}
+                {getCriticalScore() > 0 && <circle cx={160 - 80 * (getCriticalScore() / 100) * 0.9511} cy={150 - 80 * (getCriticalScore() / 100) * 0.3090} r="4" fill="var(--color-rose)" />}
               </svg>
               <div 
                 style={{ 

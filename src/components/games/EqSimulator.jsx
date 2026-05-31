@@ -823,6 +823,167 @@ const scenarios = [
         choices: []
       }
     }
+  },
+  {
+    id: 'miki',
+    name: 'ミキ（完璧主義すぎるデザイナー）',
+    avatar: '🎨',
+    initialEmotion: '妥協への恐れ・こだわり',
+    initialEmotionColor: '#f59e0b',
+    initialDesc: 'クオリティと納期の板挟みに苦しむ完璧主義のデザイナー。',
+    tree: {
+      t1: {
+        text: '「今回の新規アプリのデザイン、どうしても細かいUIのアニメーションや影の表現に納得がいかなくて…。でも納期は来週だし、このまま妥協して中途半端なものを世に出すくらいなら、提出を遅らせてでもクオリティを極めたいんです……」',
+        choices: [
+          {
+            text: '「こだわりたい気持ち、すごくよく分かるよ。作り手として良いものを届けたいという責任感があるからこそ、妥協するのが怖いし、葛藤するんだよね。」',
+            type: 'empathy',
+            bias: 'none',
+            trustChange: 20,
+            nextEmotion: '安心・共感',
+            nextEmotionColor: '#10b981',
+            nextStep: 't2_empathy'
+          },
+          {
+            text: '「仕事は納期を守るのが大前提だよ。クオリティを言い訳にして遅れるのはプロ失格。どこかで妥協点を見つけてスケジュール通りに提出して。」',
+            type: 'logic',
+            bias: 'reiwa',
+            trustChange: -20,
+            nextEmotion: '防衛・拒絶',
+            nextEmotionColor: '#ef4444',
+            nextStep: 't2_logic'
+          },
+          {
+            text: '「僕たちの若い頃なんて、徹夜してでもクオリティと納期の両方を根性で間に合わせたもんだよ！迷っている時間があるなら手を動かそう！」',
+            type: 'self',
+            bias: 'showa',
+            trustChange: -10,
+            nextEmotion: '疎外感・迷い',
+            nextEmotionColor: '#f59e0b',
+            nextStep: 't2_self'
+          }
+        ]
+      },
+      t2_empathy: {
+        text: '「そうなんです！ただの自己満足だと言われるかもしれませんが、ユーザーの体験を左右する重要なディテールだと思っていて…。妥協しろと言われるのが一番辛かったです。」',
+        choices: [
+          {
+            text: '「いきなりクオリティを落とすんじゃなくて、どの部分が今回の本質的な価値なのか、そこを外さない形で現実的な着地点を一緒に探っていこう。」',
+            type: 'empathy',
+            bias: 'none',
+            trustChange: 25,
+            nextEmotion: '信頼・心を開く',
+            nextEmotionColor: '#10b981',
+            nextStep: 't3_success'
+          },
+          {
+            text: '「気持ちを分かってもらえたなら、まずは仕様書通りに機能する最小限のモックを作ろう。それからブラッシュアップする時間を考えよう。」',
+            type: 'logic',
+            bias: 'reiwa',
+            trustChange: -15,
+            nextEmotion: '焦り・防衛',
+            nextEmotionColor: '#ef4444',
+            nextStep: 't3_normal'
+          }
+        ]
+      },
+      t2_logic: {
+        text: '「プロ失格ですか……。スケジュールが大事なのはわかりますが、妥協した低品質なデザインを世に出すことも、プロダクトとユーザーに対する不誠実ではないでしょうか？」',
+        choices: [
+          {
+            text: '「そうだよね。頭では納期優先と分かっていても、細部までこだわり抜いてこそ自分の仕事だというプライドがあるから、簡単に割り切れないんだよね。」',
+            type: 'empathy',
+            bias: 'none',
+            trustChange: 20,
+            nextEmotion: '安堵・対話意欲',
+            nextEmotionColor: '#10b981',
+            nextStep: 't3_normal'
+          },
+          {
+            text: '「スケジュール遅延の影響範囲をわかってる？他部署のエンジニアの予定も全部狂うんだよ。言い訳をせず、今あるものをすぐ提出して。」',
+            type: 'logic',
+            bias: 'showa',
+            trustChange: -25,
+            nextEmotion: 'フリーズ・拒絶',
+            nextEmotionColor: '#ef4444',
+            nextStep: 't3_fail'
+          }
+        ]
+      },
+      t2_self: {
+        text: '「徹夜ですか……。私の健康や働き方を無視して、昔のやり方を押し付けられても困ります。そういう根性論では根本的な解決になりません。」',
+        choices: [
+          {
+            text: '「ごめん、根性論を押し付けるような言い方をしてしまったね。今の限られたリソースの中で、ミキさんがどれだけ最高の成果を出そうと葛藤しているか、もっと配慮すべきだった。」',
+            type: 'empathy',
+            bias: 'none',
+            trustChange: 25,
+            nextEmotion: '信頼・納得',
+            nextEmotionColor: '#10b981',
+            nextStep: 't3_normal'
+          },
+          {
+            text: '「とにかく、今のやり方のままだと確実に遅延するよ。自分のこだわりは一旦脇に置いて、指示通りに効率重視で進めて。」',
+            type: 'logic',
+            bias: 'reiwa',
+            trustChange: -20,
+            nextEmotion: '拒絶',
+            nextEmotionColor: '#ef4444',
+            nextStep: 't3_fail'
+          }
+        ]
+      },
+      t3_success: {
+        text: '「本質的な価値……そうですね。まずは最優先のユーザーフローに絞って磨き上げるのなら、納得して進められそうです。少し整理してみます。」',
+        choices: [
+          {
+            text: '「うん、まずは今回のデザインで最もユーザーに伝えたいコアな体験だけに集中して、その他の装飾はフェーズ2に回すように調整しよう。クライアントへの交渉は僕がやるから任せて。」',
+            type: 'empathy',
+            bias: 'none',
+            trustChange: 15,
+            nextEmotion: '超信頼・安堵',
+            nextEmotionColor: '#10b981',
+            nextStep: 'finish'
+          },
+          {
+            text: '「じゃあ、今日中にコア機能のデザインだけを仕上げて、残りの部分は明日中に進捗を見せてね。スケジュールをマイルストーンに落とし込もう。」',
+            type: 'logic',
+            bias: 'reiwa',
+            trustChange: -10,
+            nextEmotion: '緊張・プレッシャー',
+            nextEmotionColor: '#f59e0b',
+            nextStep: 'finish'
+          }
+        ]
+      },
+      t3_normal: {
+        text: '「分かりました。少し悔しさは残りますが、今回はスケジュールを優先しつつ、できる範囲で調整してみます。」',
+        choices: [
+          {
+            text: '「クオリティへの熱意があることは、チームにとって素晴らしい強みだよ。無理のない範囲で、まずはコアの部分を形にしてみよう。何かあればいつでもサポートするからね。」',
+            type: 'empathy',
+            bias: 'none',
+            trustChange: 15,
+            nextEmotion: '信頼・安心',
+            nextEmotionColor: '#10b981',
+            nextStep: 'finish'
+          },
+          {
+            text: '「分かった。では次のチェックポイントを明日の朝イチに設定するね。そこまでの進捗をチームで確認しましょう。」',
+            type: 'logic',
+            bias: 'showa',
+            trustChange: -15,
+            nextEmotion: '緊張・防衛',
+            nextEmotionColor: '#f59e0b',
+            nextStep: 'finish'
+          }
+        ]
+      },
+      t3_fail: {
+        text: '「……すみません、やはり自分だけで考えることにします。お時間いただきありがとうございました。」（相手の心が完全にフリーズしました）',
+        choices: []
+      }
+    }
   }
 ];
 

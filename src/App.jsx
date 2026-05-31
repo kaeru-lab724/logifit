@@ -13,6 +13,7 @@ import AssertiveRewrite from './components/games/AssertiveRewrite';
 import FallacyHunter from './components/games/FallacyHunter';
 import TreeQuest from './components/games/TreeQuest';
 import EqSimulator from './components/games/EqSimulator';
+import StrategicCompiler from './components/games/StrategicCompiler';
 import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import Dashboard from './components/Dashboard';
@@ -49,7 +50,8 @@ const DEFAULT_STATE = {
     empathyDialogue: 0,
     hiddenAssumption: 0,
     causalLoop: 0,
-    assertiveRewrite: 0
+    assertiveRewrite: 0,
+    strategic: 0
   },
   badges: [false, false, false, false, false],
   diagnosticScores: null,
@@ -69,27 +71,29 @@ const getCharacterClass = (scores, level) => {
     empathyDialogue: ed = 0,
     hiddenAssumption: ha = 0,
     causalLoop: cl = 0,
-    assertiveRewrite: ar = 0
+    assertiveRewrite: ar = 0,
+    strategic: st = 0
   } = scores;
-  const avg = (fo + lv + lt + fa + ed + ha + cl + ar) / 8;
+  const avg = (fo + lv + lt + fa + ed + ha + cl + ar + st) / 9;
   
   if (avg === 0) return { title: '思考の初心者', desc: 'まだ思考の筋トレを始めていません。いずれかのトレーニングに挑戦しましょう！' };
   
   // 新しい最高称号：共感と論理の両立
-  if (fo >= 80 && lv >= 80 && lt >= 80 && fa >= 80 && ed >= 80 && ha >= 80 && cl >= 80 && ar >= 80) {
+  if (fo >= 80 && lv >= 80 && lt >= 80 && fa >= 80 && ed >= 80 && ha >= 80 && cl >= 80 && ar >= 80 && st >= 80) {
     return { title: 'ロジカル＆エモーショナル賢者 (超越者)', desc: '鋭い論理的分析力と、豊かな共感対話力を兼ね備えた、知性と感性のハイブリッド。対立を調和へ導きます。' };
   }
   if (avg >= 95) return { title: '超越した論理知性 (超人類)', desc: 'すべての論理領域で極限に達した、未来の思考者。隙のない完璧なロジックを展開します。' };
   if (fo >= 80 && lv >= 80 && lt >= 80 && fa >= 80) return { title: '万能 of ロジシャン', desc: '分析・推論・構造化・批判思考のすべてを高い水準で兼ね備えた、論理のオールラウンダー。' };
   
   // 特定分野が突出している場合
-  const maxScore = Math.max(fo, lv, lt, fa, ed);
+  const maxScore = Math.max(fo, lv, lt, fa, ed, st);
   if (maxScore >= 75) {
     if (maxScore === ed) return { title: '心に寄り添う共感のメンター', desc: '正論による論破ではなく、相手の感情に優しくチューナーを合わせ、深い信頼関係を築く対話の達人。' };
-    if (maxScore === fo && fo >= maxScore - 5) return { title: 'データ主義の科学的探偵', desc: '主観や推測を排除し、冷徹な客観的「事実」のみを証拠として積み上げる分析のスペシャリスト。' };
+    if (maxScore === fo && fo >= maxScore - 5) return { title: 'データ主義 of ファクト探偵', desc: '主観や推測を排除し、冷徹な客観的「事実」のみを証拠として積み上げる分析のスペシャリスト。' };
     if (maxScore === lv && lv >= maxScore - 5) return { title: '論理の絶対守護者 (司法官)', desc: '寸の狂いもない三段論法と推論規則を駆使し、議論に正しい道筋を示すロジックの使い手。' };
     if (maxScore === lt && lt >= maxScore - 5) return { title: '思考の構造化アーキテクト', desc: '複雑に絡み合った課題をMECEに分解し、一目で全体像と原因を整理してしまう構造化の達人。' };
     if (maxScore === fa && fa >= maxScore - 5) return { title: '詭弁を暴くサイバーハンター', desc: '対話や文章の小さなほころび、ストローマン等の論理的誤謬を決して見逃さない批判思考の探偵。' };
+    if (maxScore === st && st >= maxScore - 5) return { title: '二律背反を解くコンパイラー', desc: 'ジレンマとトレードオフの構造を分析し、両立させる介入戦略パッチを華麗に適用する戦略思考の達人。' };
   }
   
   if (level >= 5) return { title: '鍛え上げられた思考の兵士', desc: '日々の筋トレを継続し、思考の体力を身につけた実戦的な論理のプレイヤー。' };
@@ -98,7 +102,7 @@ const getCharacterClass = (scores, level) => {
 
 // 自動推奨ゲームのキー選定
 const getRecommendedGameKey = (scores) => {
-  const keys = ['factsOpinions', 'logicalValidity', 'logicTree', 'fallacy', 'empathyDialogue', 'hiddenAssumption', 'causalLoop', 'assertiveRewrite'];
+  const keys = ['factsOpinions', 'logicalValidity', 'logicTree', 'fallacy', 'empathyDialogue', 'hiddenAssumption', 'causalLoop', 'assertiveRewrite', 'strategic'];
   
   // 1. 未プレイ（0%）を優先
   for (const key of keys) {
@@ -140,7 +144,8 @@ const getGameName = (key) => {
     fallacy: '論理的誤謬の特定',
     hiddenAssumption: '前提のデバッグ',
     causalLoop: '因果ループ',
-    assertiveRewrite: 'アサーティブ'
+    assertiveRewrite: 'アサーティブ',
+    strategic: '戦略コンパイラー'
   };
   return names[key] || '';
 };
@@ -730,6 +735,26 @@ export default function App() {
           difficulty: mode === 'daily' ? '初級' : '中級'
         }
       ]
+    },
+    {
+      id: 'strategic',
+      title: '戦略的思考ルーム',
+      borderColor: '#6366f1',
+      textColor: '#818cf8',
+      badgeColor: 'rgba(99, 102, 241, 0.1)',
+      description: '二律背反（トレードオフ）を解消し、両立させる「戦略的介入パッチ」を適用する部屋。',
+      games: [
+        {
+          id: 'strategic',
+          scoreKey: 'strategic',
+          moduleNum: 'MODULE 06',
+          name: '戦略コンパイラー',
+          desc: mode === 'daily'
+            ? '日常の選択におけるジレンマを見抜き、二律背反を両立させる戦略パッチをコンパイルする。'
+            : '開発、セキュリティ、集客等のビジネス上のトレードオフを解消し、両立させる最適パッチを適用する。',
+          difficulty: mode === 'daily' ? '初級' : '中級'
+        }
+      ]
     }
   ];
 
@@ -1067,6 +1092,18 @@ export default function App() {
             muted={muted}
             toggleMute={toggleMute}
             onBack={() => setActiveGame(null)}
+            onLogBug={handleLogBug}
+            reviewQuestionId={reviewQuestionId}
+            onFinishReview={handleFinishReview}
+          />
+        )}
+        {activeGame === 'strategic' && (
+          <StrategicCompiler 
+            onFinish={handleGameFinish}
+            playSound={playSound}
+            muted={muted}
+            toggleMute={toggleMute}
+            mode={mode}
             onLogBug={handleLogBug}
             reviewQuestionId={reviewQuestionId}
             onFinishReview={handleFinishReview}
