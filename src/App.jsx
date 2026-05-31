@@ -18,6 +18,7 @@ import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import Dashboard from './components/Dashboard';
 import DebugLab from './components/DebugLab';
+import MindTuning from './components/games/MindTuning';
 import { 
   Award, 
   Brain, 
@@ -58,7 +59,9 @@ const DEFAULT_STATE = {
   diagnosticType: null,
   diagnosticTypeId: "balancedThinker",
   unlockedTypes: ["balancedThinker"],
-  bugNote: []
+  bugNote: [],
+  tuningLog: [],
+  lastTuningDate: null
 };
 
 // クラス進化（肩書き）の判定
@@ -222,7 +225,9 @@ export default function App() {
           ...(parsed.scores || {})
         },
         unlockedTypes: initialUnlocked,
-        bugNote: parsed.bugNote || []
+        bugNote: parsed.bugNote || [],
+        tuningLog: parsed.tuningLog || [],
+        lastTuningDate: parsed.lastTuningDate || null
       };
     }
     
@@ -319,6 +324,43 @@ export default function App() {
         bugNote: updatedBugNote
       };
       
+      localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
+      return updatedState;
+    });
+  };
+
+  // 思考調律ログの保存処理
+  const handleSaveTuningLog = (logEntry) => {
+    const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD
+    setGameState(prev => {
+      const currentLog = prev.tuningLog || [];
+      const newLog = [
+        {
+          id: 'mt_' + Date.now(),
+          timestamp: Date.now(),
+          ...logEntry
+        },
+        ...currentLog
+      ].slice(0, 7); // 直近7日分を保持
+
+      // 思考調律完了でボーナス 100 XP
+      const earnedXp = 100;
+      const newXp = prev.xp + earnedXp;
+      const newLevel = Math.floor(newXp / 500) + 1;
+      const isLevelUp = newLevel > prev.level;
+
+      const updatedState = {
+        ...prev,
+        tuningLog: newLog,
+        lastTuningDate: todayStr,
+        xp: newXp,
+        level: newLevel
+      };
+
+      if (isLevelUp) {
+        playSound('success');
+      }
+
       localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
       return updatedState;
     });
@@ -1129,6 +1171,14 @@ export default function App() {
             onBack={() => setActiveGame(null)}
             muted={muted}
             toggleMute={toggleMute}
+          />
+        )}
+
+        {activeGame === 'mindTuning' && (
+          <MindTuning 
+            onBack={() => setActiveGame(null)}
+            playSound={playSound}
+            onSaveLog={handleSaveTuningLog}
           />
         )}
 

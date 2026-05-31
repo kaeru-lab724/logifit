@@ -258,7 +258,7 @@ export default function Dashboard({
                         }} 
                         className="btn btn-primary"
                         style={{
-                          flex: 1,
+                          flex: 1.2,
                           background: isFullUnlocked 
                             ? 'linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)' 
                             : 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
@@ -276,8 +276,58 @@ export default function Dashboard({
                         className="btn btn-secondary"
                         style={{ flex: 0.8, fontSize: '13px', padding: '10px 14px' }}
                       >
-                        再スキャン/他者スキャン
+                        再スキャン
                       </button>
+                      {(() => {
+                        const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD
+                        const isTuningCompletedToday = gameState.lastTuningDate === todayStr;
+                        return isTuningCompletedToday ? (
+                          <button 
+                            onClick={() => { 
+                              playSound('click'); 
+                              setActiveTab('mindTuningLog'); 
+                              setTimeout(() => {
+                                document.getElementById('tuning-log-section')?.scrollIntoView({ behavior: 'smooth' });
+                              }, 100);
+                            }}
+                            className="btn btn-secondary"
+                            style={{ 
+                              flex: 1, 
+                              fontSize: '13px', 
+                              padding: '10px 14px', 
+                              border: '1px solid #10b981', 
+                              color: '#10b981', 
+                              background: 'rgba(16, 185, 129, 0.05)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <span>✅ 調律完了 (履歴)</span>
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => { playSound('click'); setActiveGame('mindTuning'); }} 
+                            className="btn btn-secondary hover-lift"
+                            style={{ 
+                              flex: 1, 
+                              fontSize: '13px', 
+                              padding: '10px 14px', 
+                              border: '1px solid var(--color-cyan)', 
+                              color: 'var(--color-cyan)', 
+                              background: 'rgba(6, 182, 212, 0.05)',
+                              boxShadow: '0 0 10px rgba(6, 182, 212, 0.15)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <span>🧠 本日の思考調律 (未)</span>
+                          </button>
+                        );
+                      })()}
                     </div>
                   )
                 },
@@ -547,11 +597,12 @@ export default function Dashboard({
               {[
                 { id: 'training', label: '🎯 トレーニングルーム', count: null },
                 { id: 'bugNote', label: '🐛 脳内バグノート', count: (gameState.bugNote || []).filter(b => !b.solved).length },
+                { id: 'mindTuningLog', label: '🧠 思考調律ログ', count: (gameState.tuningLog || []).length },
                 { id: 'encyclopedia', label: '📖 思考スキル図鑑', count: Object.values(gameState.scores).filter(s => s >= 80).length },
                 { id: 'bugEncyclopedia', label: '👾 脳内バグ図鑑', count: `${(gameState.unlockedTypes || ["balancedThinker"]).length}/12` },
                 { id: 'achievements', label: '🏆 獲得実績', count: gameState.badges.filter(Boolean).length }
               ].map(tab => {
-                const isTabLocked = !isFullUnlocked && tab.id !== 'training' && tab.id !== 'bugEncyclopedia' && tab.id !== 'bugNote';
+                const isTabLocked = !isFullUnlocked && tab.id !== 'training' && tab.id !== 'bugEncyclopedia' && tab.id !== 'bugNote' && tab.id !== 'mindTuningLog';
                 return (
                   <button
                     key={tab.id}
@@ -1324,6 +1375,118 @@ export default function Dashboard({
                       </div>
                     );
                   })()}
+                </section>
+              </div>
+            )}
+
+            {activeTab === 'mindTuningLog' && (
+              <div id="tuning-log-section" className="fade-in" style={{ marginTop: '16px' }}>
+                <section style={{ textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                    <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                      <Brain size={20} style={{ color: 'var(--color-cyan)' }} />
+                      脳内デバッグ・思考調律ログ
+                    </h2>
+                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
+                      調律回数: {(gameState.tuningLog || []).length} 回
+                    </span>
+                  </div>
+
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '24px' }}>
+                    日々のイライラ、モヤモヤ、落ち込み等の感情ノイズをスキャンし、客観的「事実」ベースにリファクタリング（デバッグ）した履歴です。
+                    過去7日分のデバッグ記録を遡って振り返ることができます。
+                  </p>
+
+                  {(!gameState.tuningLog || gameState.tuningLog.length === 0) ? (
+                    <div className="glass-panel" style={{ padding: '32px', textAlign: 'center', background: 'var(--bg-inner-box)', border: '1px solid var(--border-color)', borderRadius: '16px' }}>
+                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📝</span>
+                      <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>調律ログはまだ記録されていません</h3>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: 0, maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto', lineHeight: '1.6' }}>
+                        プロファイルカード内の「本日の思考調律」から最初のジャーナリングデバッグを行うと、ここにBefore/Afterの対比ログが蓄積されていきます。
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      {gameState.tuningLog.map((log) => {
+                        const formattedTime = new Date(log.timestamp).toLocaleDateString('ja-JP', {
+                          year: 'numeric', month: '2-digit', day: '2-digit',
+                          hour: '2-digit', minute: '2-digit'
+                        });
+                        const vibeIcons = {
+                          anxious: '🌀',
+                          irritated: '😤',
+                          sad: '🌧️',
+                          rushed: '⏰',
+                          flat: '🍵'
+                        };
+                        const vibeLabels = {
+                          anxious: 'モヤモヤ・不安',
+                          irritated: 'イライラ・不満',
+                          sad: '落ち込み・後悔',
+                          rushed: '焦り・義務感',
+                          flat: '特にない（フラット）'
+                        };
+
+                        return (
+                          <div 
+                            key={log.id} 
+                            className="glass-panel" 
+                            style={{ 
+                              padding: '20px', 
+                              background: 'var(--glass-bg)',
+                              border: '1px solid var(--border-color)',
+                              borderLeft: `5px solid ${log.vibe === 'anxious' ? 'var(--color-cyan)' : log.vibe === 'irritated' ? 'var(--color-rose)' : log.vibe === 'sad' ? '#818cf8' : log.vibe === 'rushed' ? 'var(--color-amber)' : '#10b981'}`,
+                              borderRadius: '12px',
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ fontSize: '18px' }}>{vibeIcons[log.vibe] || '📝'}</span>
+                                <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                                  {vibeLabels[log.vibe] || '思考調律'}
+                                </span>
+                                {log.biases && log.biases.map((bias, bIdx) => (
+                                  <span 
+                                    key={bIdx}
+                                    style={{ 
+                                      fontSize: '10px', 
+                                      fontWeight: 'bold', 
+                                      color: 'var(--color-rose)', 
+                                      background: 'rgba(244, 63, 94, 0.08)',
+                                      border: '1px solid rgba(244, 63, 94, 0.15)',
+                                      padding: '1px 6px',
+                                      borderRadius: '4px'
+                                    }}
+                                  >
+                                    {bias}
+                                  </span>
+                                ))}
+                              </div>
+                              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                                {formattedTime}
+                              </span>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                              <div style={{ background: 'rgba(244, 63, 94, 0.02)', padding: '12px 14px', borderRadius: '8px', borderLeft: '3px solid #f43f5e' }}>
+                                <span style={{ display: 'block', fontSize: '10.5px', color: '#f43f5e', fontWeight: 'bold', marginBottom: '4px' }}>🔴 デバッグ前 (生の本音)</span>
+                                <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.5', fontStyle: 'italic' }}>
+                                  「{log.rawText}」
+                                </p>
+                              </div>
+                              <div style={{ background: 'rgba(16, 185, 129, 0.04)', padding: '12px 14px', borderRadius: '8px', borderLeft: '3px solid #10b981' }}>
+                                <span style={{ display: 'block', fontSize: '10.5px', color: '#10b981', fontWeight: 'bold', marginBottom: '4px' }}>🟢 デバッグ後 (事実ベース)</span>
+                                <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)', lineHeight: '1.5', fontWeight: '500' }}>
+                                  「{log.refactoredText}」
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </section>
               </div>
             )}
