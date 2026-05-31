@@ -55,10 +55,10 @@ const ensureAudioContext = () => {
   return globalAudioCtx;
 };
 
-// 自然で本格的な雨音シンセサイザー (こもった重低音ノイズを除去したすっきり版)
+// シネマティック3バンド雨音シンセサイザー（低音のモヤモヤ・高音の不快感を完全解消）
 const startRain = (ctx, targetNode) => {
   if (rainNode) return;
-  console.log("useSound: Starting clean rumble-free rain synthesizer...");
+  console.log("useSound: Starting 3-band cinematic rain synthesizer...");
   
   try {
     // 高音質ピンクノイズバッファの作成（4秒ループ）
@@ -77,52 +77,75 @@ const startRain = (ctx, targetNode) => {
       b4 = 0.55000 * b4 + white * 0.5329522;
       b5 = -0.7616 * b5 - white * 0.0168980;
       data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-      data[i] *= 0.11; // 音量レベルのノーマライズ
+      data[i] *= 0.11;
       b6 = white * 0.115926;
     }
 
-    // 【層1】メインの雨音（低域の「ゴー」というこもり音をハイパスでカット、高域の「シャー」をローパスでカット）
+    // 【層1】遠くの雨の心地よい温かみ（180Hzのバンドパスで「ゴー」音を防ぎつつ、深みだけを残す）
     const source1 = ctx.createBufferSource();
     source1.buffer = buffer;
     source1.loop = true;
     
-    const hp1 = ctx.createBiquadFilter();
-    hp1.type = 'highpass';
-    hp1.frequency.setValueAtTime(360, ctx.currentTime); // 360Hz以下をカット（これで「ゴー」というエンジン音が消えます）
-    
-    const lp1 = ctx.createBiquadFilter();
-    lp1.type = 'lowpass';
-    lp1.frequency.setValueAtTime(1400, ctx.currentTime); // 1400Hz以上をカット（これで耳障りなヒス音が消え、優しくなります）
+    const bp1 = ctx.createBiquadFilter();
+    bp1.type = 'bandpass';
+    bp1.frequency.setValueAtTime(180, ctx.currentTime);
+    bp1.Q.setValueAtTime(0.5, ctx.currentTime); // 適度な広さ
     
     const gain1 = ctx.createGain();
-    gain1.gain.setValueAtTime(0.45, ctx.currentTime);
+    gain1.gain.setValueAtTime(0.15, ctx.currentTime); // 非常に小さな音量で空気感のみ付与
 
-    source1.connect(hp1);
-    hp1.connect(lp1);
-    lp1.connect(gain1);
+    source1.connect(bp1);
+    bp1.connect(gain1);
     gain1.connect(targetNode);
 
-    // 【層2】木の葉や窓を濡らす、サラサラとした軽やかな雨の音（広域の雨だれ表現）
+    // 【層2】雨音のメインボディ（450Hz〜1800Hzの中音域）
     const source2 = ctx.createBufferSource();
     source2.buffer = buffer;
     source2.loop = true;
-
-    const bp2 = ctx.createBiquadFilter();
-    bp2.type = 'bandpass';
-    bp2.frequency.setValueAtTime(1150, ctx.currentTime);
-    bp2.Q.setValueAtTime(0.3, ctx.currentTime); // Q値を極端に小さくして、耳障りな共振を徹底排除
-
+    
+    const hp2 = ctx.createBiquadFilter();
+    hp2.type = 'highpass';
+    hp2.frequency.setValueAtTime(450, ctx.currentTime); // 低周波のこもりを完全排除
+    
+    const lp2 = ctx.createBiquadFilter();
+    lp2.type = 'lowpass';
+    lp2.frequency.setValueAtTime(1800, ctx.currentTime); // 高域の不快なシャー音を完全カット
+    
     const gain2 = ctx.createGain();
-    gain2.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain2.gain.setValueAtTime(0.28, ctx.currentTime);
 
-    source2.connect(bp2);
-    bp2.connect(gain2);
+    source2.connect(hp2);
+    hp2.connect(lp2);
+    lp2.connect(gain2);
     gain2.connect(targetNode);
 
+    // 【層3】木の葉や地面を濡らす、サラサラとした微細な雨のしぶき（2.2kHz〜5.0kHzの極高音域）
+    const source3 = ctx.createBufferSource();
+    source3.buffer = buffer;
+    source3.loop = true;
+    
+    const hp3 = ctx.createBiquadFilter();
+    hp3.type = 'highpass';
+    hp3.frequency.setValueAtTime(2200, ctx.currentTime);
+
+    const lp3 = ctx.createBiquadFilter();
+    lp3.type = 'lowpass';
+    lp3.frequency.setValueAtTime(5000, ctx.currentTime);
+    
+    const gain3 = ctx.createGain();
+    gain3.gain.setValueAtTime(0.04, ctx.currentTime); // 非常に控えめな初期値
+
+    source3.connect(hp3);
+    hp3.connect(lp3);
+    lp3.connect(gain3);
+    gain3.connect(targetNode);
+
+    // すべてのソースの再生を開始
     source1.start(0);
     source2.start(0);
+    source3.start(0);
 
-    // 【風・強弱の再現】800msごとに中高域の音量をゆっくり波打たせる
+    // 【風によるしぶき変調】1000msごとに高音しぶきレイヤーをゆっくりゆらして風の質感を表現 (LFO)
     let lfoStep = 0;
     const lfoInterval = setInterval(() => {
       if (globalBgmType !== 'rain' || globalMuted) {
@@ -131,18 +154,25 @@ const startRain = (ctx, targetNode) => {
       }
       try {
         const now = ctx.currentTime;
-        const modVolume = 0.12 + Math.sin(lfoStep) * 0.03;
-        gain2.gain.linearRampToValueAtTime(modVolume, now + 0.7);
+        // しぶきの音量を 0.02 から 0.07 の間でゆっくり波立たせる
+        const modVolume = 0.045 + Math.sin(lfoStep) * 0.025;
+        gain3.gain.linearRampToValueAtTime(modVolume, now + 0.9);
 
-        const modFreq = 1150 + Math.cos(lfoStep * 0.8) * 90;
-        bp2.frequency.linearRampToValueAtTime(modFreq, now + 0.7);
+        // しぶきフィルターのカットオフ周波数を揺らすことで、雨粒が風で舞う様子を再現
+        const modFreq = 2200 + Math.cos(lfoStep * 0.6) * 300;
+        hp3.frequency.linearRampToValueAtTime(modFreq, now + 0.9);
 
-        lfoStep += 0.3;
+        lfoStep += 0.25;
       } catch (e) {}
-    }, 800);
+    }, 1000);
 
-    rainNode = { source1, source2, hp1, lp1, bp2, gain1, gain2, lfoInterval };
-    console.log("useSound: Cozy rumble-free pink-noise rain active.");
+    rainNode = { 
+      source1, source2, source3, 
+      bp1, hp2, lp2, hp3, lp3, 
+      gain1, gain2, gain3, 
+      lfoInterval 
+    };
+    console.log("useSound: Cozy 3-band rain active.");
   } catch (err) {
     console.error("useSound: Failed to start rain sound:", err);
   }
@@ -159,11 +189,16 @@ const stopRain = () => {
       rainNode.source1.disconnect();
       rainNode.source2.stop();
       rainNode.source2.disconnect();
-      rainNode.hp1.disconnect();
-      rainNode.lp1.disconnect();
-      rainNode.bp2.disconnect();
+      rainNode.source3.stop();
+      rainNode.source3.disconnect();
+      rainNode.bp1.disconnect();
+      rainNode.hp2.disconnect();
+      rainNode.lp2.disconnect();
+      rainNode.hp3.disconnect();
+      rainNode.lp3.disconnect();
       rainNode.gain1.disconnect();
       rainNode.gain2.disconnect();
+      rainNode.gain3.disconnect();
     } catch (e) {}
     rainNode = null;
   }
@@ -330,7 +365,7 @@ export function useSound() {
       else if (type === 'keyboard') {
         if (!globalKeyboardEnabled) return;
         
-        // メカニカルキーボードのタイピングクリック音の合成
+        // メカニカルキーボード of タイピングクリック音の合成
         const clickOsc = ctx.createOscillator();
         const noise = ctx.createBufferSource();
         const filter = ctx.createBiquadFilter();
@@ -356,7 +391,7 @@ export function useSound() {
         noise.connect(filter);
         filter.connect(clickGain);
         clickOsc.connect(clickGain);
-        gain.connect(ctx.destination); // 修正: clickGainがctx.destinationに接続されるよう統一
+        clickGain.connect(ctx.destination);
 
         clickGain.gain.setValueAtTime(0.03, now);
         clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
