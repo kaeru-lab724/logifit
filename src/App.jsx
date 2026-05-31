@@ -225,7 +225,12 @@ export default function App() {
           ...(parsed.scores || {})
         },
         unlockedTypes: initialUnlocked,
-        bugNote: parsed.bugNote || [],
+        bugNote: (parsed.bugNote || []).map(bug => {
+          if (bug.gameId === 'strategicCompiler') {
+            return { ...bug, gameId: 'strategic' };
+          }
+          return bug;
+        }),
         tuningLog: parsed.tuningLog || [],
         lastTuningDate: parsed.lastTuningDate || null
       };
@@ -1152,7 +1157,7 @@ export default function App() {
             onFinishReview={handleFinishReview}
           />
         )}
-        {activeGame === 'strategic' && (
+        {(activeGame === 'strategic' || activeGame === 'strategicCompiler') && (
           <StrategicCompiler 
             onFinish={handleGameFinish}
             playSound={playSound}
@@ -1162,6 +1167,7 @@ export default function App() {
             onLogBug={handleLogBug}
             reviewQuestionId={reviewQuestionId}
             onFinishReview={handleFinishReview}
+            onBack={() => setActiveGame(null)}
           />
         )}
         {activeGame === 'diagnostic' && (
@@ -1224,7 +1230,8 @@ export default function App() {
             onUnlockType={handleUnlockType}
             onStartReview={(gameId, questionId) => {
               playSound('click');
-              setActiveGame(gameId);
+              const mappedGameId = gameId === 'strategicCompiler' ? 'strategic' : gameId;
+              setActiveGame(mappedGameId);
               setReviewQuestionId(questionId);
             }}
           />

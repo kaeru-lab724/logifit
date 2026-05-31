@@ -11,7 +11,8 @@ import {
   Volume2, 
   VolumeX, 
   ShieldAlert,
-  Play
+  Play,
+  ChevronLeft
 } from 'lucide-react';
 import RecoveryGearSection from '../common/RecoveryGearSection';
 
@@ -250,8 +251,9 @@ const strategicBusiness = [
   }
 ];
 
-export default function StrategicCompiler({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview }) {
+export default function StrategicCompiler({ onFinish, playSound, muted, toggleMute, mode, onLogBug, reviewQuestionId, onFinishReview, onBack }) {
   const [showTutorial, setShowTutorial] = useState(true);
+  const [showHelp, setShowHelp] = useState(reviewQuestionId ? true : false);
   const [scenarios, setScenarios] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   
@@ -341,7 +343,7 @@ export default function StrategicCompiler({ onFinish, playSound, muted, toggleMu
       // log bug on second failure
       if (tries >= 2 && onLogBug && !reviewQuestionId) {
         onLogBug(
-          'strategicCompiler', 
+          'strategic', 
           currentScenario.id, 
           `対立構造特定失敗 (Scenario: ${currentScenario.title}) - 選択: "${choice.text}"`
         );
@@ -379,7 +381,7 @@ export default function StrategicCompiler({ onFinish, playSound, muted, toggleMu
       // log bug on second failure
       if (tries >= 2 && onLogBug && !reviewQuestionId) {
         onLogBug(
-          'strategicCompiler', 
+          'strategic', 
           currentScenario.id, 
           `戦略パッチ適用失敗 (Scenario: ${currentScenario.title}) - 選択: "${choice.text}"`
         );
@@ -418,6 +420,27 @@ export default function StrategicCompiler({ onFinish, playSound, muted, toggleMu
 
   return (
     <div className={`game-container fade-in ${shakeActive ? 'incorrect-shake' : ''}`}>
+      {/* 戻るナビゲーション */}
+      {onBack && (
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '16px' }}>
+          <button 
+            onClick={() => { playSound('click'); onBack(); }}
+            className="btn btn-secondary"
+            style={{
+              padding: '8px 16px',
+              fontSize: '13px',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <ChevronLeft size={16} />
+            ダッシュボードへ戻る
+          </button>
+        </div>
+      )}
+
       <div 
         className="glass-panel" 
         style={{ 
@@ -440,6 +463,25 @@ export default function StrategicCompiler({ onFinish, playSound, muted, toggleMu
             </h2>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            {!showTutorial && !completed && (
+              <button 
+                onClick={() => { playSound('click'); setShowHelp(prev => !prev); }}
+                className="btn btn-secondary" 
+                style={{ 
+                  padding: '6px 12px', 
+                  fontSize: '12px', 
+                  borderRadius: '8px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '4px',
+                  background: showHelp ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255, 255, 255, 0.02)',
+                  border: showHelp ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  color: showHelp ? '#a5b4fc' : 'var(--text-secondary)'
+                }}
+              >
+                💡 {showHelp ? 'ヘルプを閉じる' : '遊び方'}
+              </button>
+            )}
             <button 
               onClick={toggleMute}
               className="btn btn-secondary" 
@@ -499,6 +541,45 @@ export default function StrategicCompiler({ onFinish, playSound, muted, toggleMu
           </div>
         ) : !completed ? (
           <div>
+            {/* 遊び方解説ヘルプカード */}
+            {showHelp && (
+              <div 
+                className="fade-in"
+                style={{
+                  background: 'rgba(99, 102, 241, 0.06)',
+                  border: '1px dashed rgba(99, 102, 241, 0.3)',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  marginBottom: '20px',
+                  fontSize: '12.5px',
+                  color: 'var(--text-secondary)',
+                  lineHeight: '1.6',
+                  textAlign: 'left',
+                  position: 'relative'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#818cf8', fontWeight: 'bold', marginBottom: '8px', fontSize: '13.5px' }}>
+                  <Cpu size={15} />
+                  <span>💡 戦略コンパイラーの目的と進め方</span>
+                </div>
+                このトレーニングは、<strong>「やりたいこと」と「制約・相反する目的」の板挟み（トレードオフ）</strong>に対して、単にどちらかを犠牲にする「妥協」ではなく、仕組みやアプローチを変えて<strong>双方を両立させる「戦略的解決」</strong>を選択する思考訓練です。
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '10px', background: 'rgba(0, 0, 0, 0.2)', padding: '10px 14px', borderRadius: '8px' }}>
+                  <div>
+                    <span style={{ color: '#818cf8', fontWeight: 'bold' }}>STEP 01: 対立構造の特定</span>
+                    <span style={{ display: 'block', fontSize: '11.5px', marginTop: '2px', color: 'var(--text-muted)' }}>
+                      問題文（DESCRIPTION）を読み、２つの相反する資源や目的の本質的な対立点（ジレンマの根本構造）を特定します。
+                    </span>
+                  </div>
+                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '6px' }}>
+                    <span style={{ color: '#34d399', fontWeight: 'bold' }}>STEP 02: 戦略パッチの適用（コンパイル）</span>
+                    <span style={{ display: 'block', fontSize: '11.5px', marginTop: '2px', color: 'var(--text-muted)' }}>
+                      トレードオフを解消し、両目的を高いレベルで統合・両立する「最適なパッチ（解決手法）」を選択します。
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Scenario terminal header */}
             <div style={{ 
               background: 'rgba(0, 0, 0, 0.4)', 
