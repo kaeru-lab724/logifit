@@ -429,17 +429,6 @@ export default function StrategicCompiler({ onFinish, playSound, muted, toggleMu
             : '0 8px 32px 0 rgba(0,0,0,0.5)'
         }}
       >
-        {/* Neon scan-line style indicator */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '2px',
-          background: 'linear-gradient(90deg, transparent, #6366f1, transparent)',
-          animation: 'scan-move 3s ease-in-out infinite'
-        }} />
-
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
