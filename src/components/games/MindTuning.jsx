@@ -109,12 +109,37 @@ const VIBE_DATA = {
 };
 
 export default function MindTuning({ onBack, playSound, onSaveLog }) {
-  const [step, setStep] = useState('vibeSelect'); // 'vibeSelect' | 'writeRaw' | 'scanning' | 'refactor' | 'success'
+  const [step, setStep] = useState('vibeSelect'); // 'vibeSelect' | 'writeRaw' | 'scanning' | 'refactor' | 'compiling' | 'success'
   const [selectedVibe, setSelectedVibe] = useState(null);
   const [rawText, setRawText] = useState('');
   const [detectedBiases, setDetectedBiases] = useState([]);
   const [refactoredText, setRefactoredText] = useState('');
   const [charLimitWarning, setCharLimitWarning] = useState(false);
+
+  // 新規追加: クローズアウト演出・呼吸瞑想用の状態変数
+  const [compileLogs, setCompileLogs] = useState([]);
+  const [ramUsage, setRamUsage] = useState(92);
+  const [breathingPhase, setBreathingPhase] = useState('吸う (Inhale)');
+  const [stars] = useState(() => {
+    return Array.from({ length: 45 }).map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      size: Math.random() * 2 + 0.8,
+      delay: `${Math.random() * 6}s`,
+      duration: `${4 + Math.random() * 6}s`
+    }));
+  });
+
+  // 呼吸の4秒サイクルを同期
+  useEffect(() => {
+    if (step === 'success') {
+      const interval = setInterval(() => {
+        setBreathingPhase(prev => prev === '吸う (Inhale)' ? '吐く (Exhale)' : '吸う (Inhale)');
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [step]);
 
   // Vibe選択時のハンドラ
   const handleSelectVibe = (key) => {
@@ -167,22 +192,51 @@ export default function MindTuning({ onBack, playSound, onSaveLog }) {
     }, 1800);
   };
 
-  // デバッグ完了 (保存とコンパイル)
+  // デバッグ完了 (保存とコンパイル - メモリ解放ゲージを経由)
   const handleCompile = () => {
     if (!refactoredText.trim()) return;
 
-    playSound('success');
-    setStep('success');
+    playSound('click');
+    setStep('compiling');
+    setCompileLogs([]);
+    setRamUsage(92);
 
-    // 親コンポーネントにセーブデータを引き渡す
-    if (onSaveLog) {
-      onSaveLog({
-        vibe: selectedVibe,
-        rawText,
-        refactoredText,
-        biases: detectedBiases.map(b => b.name)
-      });
-    }
+    const logs = [
+      '[OK] Initiating logic refactoring compiler...',
+      '[OK] Purging cognitive bias vulnerabilities...',
+      '[OK] Freezing System 1 emotional loop...',
+      '[OK] Releasing working memory (RAM)...',
+      '[SUCCESS] All components patched successfully.'
+    ];
+
+    logs.forEach((log, index) => {
+      setTimeout(() => {
+        setCompileLogs(prev => [...prev, log]);
+        if (index === 0) setRamUsage(75);
+        if (index === 1) setRamUsage(48);
+        if (index === 2) setRamUsage(28);
+        if (index === 3) setRamUsage(12);
+        if (index === 4) {
+          setRamUsage(6);
+          playSound('success');
+        }
+      }, index * 550);
+    });
+
+    // 3.2秒後に成功（宇宙呼吸瞑想）画面に遷移
+    setTimeout(() => {
+      setStep('success');
+
+      // 親コンポーネントにセーブデータを引き渡す
+      if (onSaveLog) {
+        onSaveLog({
+          vibe: selectedVibe,
+          rawText,
+          refactoredText,
+          biases: detectedBiases.map(b => b.name)
+        });
+      }
+    }, 3200);
   };
 
   // テキスト中の該当バイアスワードを赤くハイライトして表示するヘルパー
@@ -592,59 +646,167 @@ export default function MindTuning({ onBack, playSound, onSaveLog }) {
         </div>
       )}
 
-      {/* 5. コンパイル成功（完了）フェーズ */}
-      {step === 'success' && currentVibeInfo && (
+      {/* 4.5. コンパイル中（メモリ解放）フェーズ */}
+      {step === 'compiling' && currentVibeInfo && (
         <div className="glass-panel fade-in" style={{ padding: '40px 32px', textAlign: 'center', background: 'var(--hero-bg)' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-            <div style={{ 
-              width: '72px', 
-              height: '72px', 
-              borderRadius: '50%', 
-              background: 'rgba(16, 185, 129, 0.1)', 
-              border: '2px solid #10b981',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)'
-            }}>
-              <CheckCircle size={36} style={{ color: '#10b981' }} />
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+            <RotateCcw size={48} className="spin-slow" style={{ color: '#10b981' }} />
           </div>
 
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 'bold', color: '#10b981', margin: '0 0 8px 0', textShadow: '0 0 10px rgba(16, 185, 129, 0.2)' }}>
-            COMPILE SUCCESSFUL
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '13.5px', margin: '0 0 32px 0' }}>
-            脳内の認知バグがパッチされ、ワーキングメモリが解放されました。
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 8px 0' }}>
+            脳内メモリ（RAM）を解放中...
+          </h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '24px' }}>
+            認知バグのパッチを適用し、ワーキングメモリ領域をクリーンアップしています。
           </p>
 
-          {/* 対比表示 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '600px', margin: '0 auto 32px auto', textAlign: 'left' }}>
-            <div style={{ background: 'rgba(244, 63, 94, 0.02)', border: '1px solid rgba(244, 63, 94, 0.1)', padding: '16px', borderRadius: '8px' }}>
-              <span style={{ fontSize: '11px', color: '#f43f5e', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🔴 バグのあった思考</span>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.5', fontStyle: 'italic' }}>「{rawText}」</p>
+          {/* RAM空き容量メーター */}
+          <div style={{ maxWidth: '400px', margin: '0 auto 24px auto', textAlign: 'left' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', fontSize: '12px' }}>
+              <span style={{ color: 'var(--text-secondary)' }}>CPU使用率 / 脳内メモリ負荷</span>
+              <span style={{ color: ramUsage > 50 ? '#f43f5e' : '#10b981', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                {ramUsage}%
+              </span>
             </div>
-            
-            <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>⬇</div>
-
-            <div style={{ background: 'rgba(16, 185, 129, 0.04)', border: '1px solid rgba(16, 185, 129, 0.15)', padding: '16px', borderRadius: '8px' }}>
-              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🟢 デバッグ済みの思考（調律完了）</span>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)', lineHeight: '1.5', fontWeight: '500' }}>「{refactoredText}」</p>
+            <div style={{
+              width: '100%',
+              height: '8px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <div style={{
+                width: `${ramUsage}%`,
+                height: '100%',
+                background: ramUsage > 50 
+                  ? 'linear-gradient(90deg, #f43f5e 0%, #e11d48 100%)' 
+                  : 'linear-gradient(90deg, #10b981 0%, #34d399 100%)',
+                boxShadow: ramUsage > 50 ? '0 0 10px rgba(244, 63, 94, 0.4)' : '0 0 10px rgba(16, 185, 129, 0.4)',
+                borderRadius: '4px',
+                transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+              }} />
             </div>
           </div>
 
-          <button 
-            onClick={onBack} 
-            className="btn btn-primary" 
-            style={{ 
-              fontSize: '13.5px', 
-              padding: '12px 32px',
-              background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
-              boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)'
-            }}
-          >
-            ダッシュボードへ戻る
-          </button>
+          {/* コンソール風出力 */}
+          <div style={{
+            maxWidth: '400px',
+            margin: '0 auto',
+            background: 'rgba(10, 11, 16, 0.85)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '8px',
+            padding: '16px',
+            fontFamily: 'monospace',
+            fontSize: '11px',
+            color: '#10b981',
+            textAlign: 'left',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+            minHeight: '120px'
+          }}>
+            {compileLogs.map((log, idx) => (
+              <div key={idx} className="typewriter-log" style={{ opacity: 0, animation: 'fadeInLog 0.2s forwards' }}>
+                {log}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5. コンパイル成功 ＆ 宇宙呼吸瞑想フェーズ */}
+      {step === 'success' && currentVibeInfo && (
+        <div 
+          className="glass-panel fade-in meditation-container" 
+          style={{ 
+            padding: '48px 32px', 
+            textAlign: 'center', 
+            background: 'radial-gradient(circle at center, #0b0f19 0%, #030508 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.02)',
+            borderRadius: '24px',
+            position: 'relative',
+            overflow: 'hidden',
+            minHeight: '520px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '24px'
+          }}
+        >
+          {/* 星屑パーティクル背景 */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 0 }}>
+            {stars.map(star => (
+              <div 
+                key={star.id} 
+                className="floating-star"
+                style={{
+                  position: 'absolute',
+                  left: star.left,
+                  top: star.top,
+                  width: `${star.size}px`,
+                  height: `${star.size}px`,
+                  background: '#fff',
+                  borderRadius: '50%',
+                  boxShadow: `0 0 ${star.size * 2}px #fff`,
+                  animation: `float-star ${star.duration} linear infinite, pulse-star ${star.delay} ease-in-out infinite`
+                }}
+              />
+            ))}
+          </div>
+
+          {/* コンテンツ本体 */}
+          <div style={{ zIndex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '28px', maxWidth: '600px' }}>
+            
+            <div>
+              <span className="game-badge" style={{ background: 'rgba(6, 182, 212, 0.1)', border: '1px solid rgba(6, 182, 212, 0.2)', color: 'var(--color-cyan)', fontSize: '11px', fontWeight: 'bold', padding: '4px 12px', borderRadius: '12px' }}>
+                🌌 MIND TUNING COMPLETE
+              </span>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 'bold', color: '#fff', margin: '8px 0 0 0' }}>
+                脳内デバッグ完了（RAM解放）
+              </h2>
+            </div>
+
+            {/* 調律された美しい事実 */}
+            <div>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
+                デバッグ済みの客観的思考
+              </div>
+              <p className="meditation-thought">
+                「 {refactoredText} 」
+              </p>
+            </div>
+
+            {/* 呼吸サークルガイド */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', margin: '8px 0' }}>
+              <div className="breathing-ring-outer">
+                <div className="breathing-ring">
+                  <span className="breathing-text">{breathingPhase}</span>
+                </div>
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '12px', margin: 0, maxWidth: '340px', lineHeight: '1.5' }}>
+                光の輪の大きさに合わせて、ゆっくりと深呼吸をしながら、今日デバッグした事実を見つめ直しましょう。
+              </p>
+            </div>
+
+            {/* 完了して戻るボタン */}
+            <button 
+              onClick={onBack} 
+              className="btn btn-primary hover-lift" 
+              style={{ 
+                fontSize: '13.5px', 
+                padding: '12px 36px',
+                background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
+                borderRadius: '12px',
+                border: 'none',
+                marginTop: '12px'
+              }}
+            >
+              今日の調律をクローズして眠る
+            </button>
+          </div>
         </div>
       )}
       
@@ -657,6 +819,88 @@ export default function MindTuning({ onBack, playSound, onSaveLog }) {
         @keyframes scanner-beam-vertical {
           0%, 100% { top: 0%; }
           50% { top: 95%; }
+        }
+        .spin-slow {
+          animation: spin 8s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes fadeInLog {
+          to { opacity: 1; }
+        }
+        @keyframes float-star {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+          100% { transform: translateY(0px); }
+        }
+        @keyframes pulse-star {
+          0%, 100% { opacity: 0.15; }
+          50% { opacity: 0.85; }
+        }
+        @keyframes breathing-thought-glow {
+          0%, 100% {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2), 0 0 20px rgba(6, 182, 212, 0.1);
+            color: #cbd5e1;
+          }
+          50% {
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 35px rgba(6, 182, 212, 0.35);
+            color: #ffffff;
+          }
+        }
+        .meditation-thought {
+          font-size: 16px;
+          font-weight: 500;
+          color: #cbd5e1;
+          line-height: 1.8;
+          max-width: 520px;
+          text-align: center;
+          animation: breathing-thought-glow 8s ease-in-out infinite;
+          margin: 0;
+          padding: 14px 28px;
+          background: rgba(255, 255, 255, 0.01);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.03);
+          box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.01);
+        }
+        .breathing-ring-outer {
+          width: 160px;
+          height: 160px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @keyframes breathing-scale {
+          0%, 100% {
+            transform: scale(0.85);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.4);
+            background: rgba(6, 182, 212, 0.02);
+          }
+          50% {
+            transform: scale(1.15);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.5);
+            border-color: rgba(6, 182, 212, 0.8);
+            background: rgba(6, 182, 212, 0.08);
+          }
+        }
+        .breathing-ring {
+          width: 120px;
+          height: 120px;
+          border: 2px solid rgba(6, 182, 212, 0.4);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: breathing-scale 8s ease-in-out infinite;
+          transition: all 0.3s ease;
+        }
+        .breathing-text {
+          font-size: 13px;
+          font-weight: bold;
+          color: var(--color-cyan);
+          text-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+          letter-spacing: 0.5px;
         }
       `}</style>
     </div>
