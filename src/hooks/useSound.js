@@ -3,7 +3,6 @@ import { useCallback, useState, useEffect } from 'react';
 // モジュールスコープのシングルトン変数（グローバルな音声状態を同期）
 let globalAudioCtx = null;
 let rainNode = null;
-let rainPatterTimeout = null;
 let padInterval = null;
 let padNodes = [];
 let globalBgmVolumeNode = null;
@@ -56,124 +55,112 @@ const ensureAudioContext = () => {
   return globalAudioCtx;
 };
 
-// 単一の雨粒（パチパチ音）をステレオ空間に動的合成
-const playRaindrop = (ctx, targetNode) => {
-  if (!globalAudioCtx || globalMuted || globalBgmType !== 'rain') return;
-  
-  try {
-    const now = ctx.currentTime;
-    const dropGain = ctx.createGain();
-    dropGain.connect(targetNode);
-    
-    // 雨粒の特性をランダムに揺らして自然な響きに
-    const duration = 0.012 + Math.random() * 0.022; // 12ms〜34msの極小バースト
-    const volume = 0.005 + Math.random() * 0.015;   // 非常に微細な音量
-    const frequency = 1200 + Math.random() * 1600;  // 1.2kHz〜2.8kHzのピチピチ音
-    
-    dropGain.gain.setValueAtTime(0, now);
-    dropGain.gain.linearRampToValueAtTime(volume, now + 0.001);
-    dropGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-    
-    // 雨粒のノイズバーストバッファを作成
-    const bufferSize = ctx.sampleRate * duration;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-    
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
-    
-    // バンドパスフィルターで共鳴させて水滴感を強調
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(frequency, now);
-    filter.Q.setValueAtTime(4.0, now); // 高いQ値で音色を際立たせる
-    
-    // ステレオロケーションのランダム分散
-    if (ctx.createStereoPanner) {
-      const panner = ctx.createStereoPanner();
-      panner.pan.setValueAtTime(Math.random() * 1.6 - 0.8, now); // 左右-0.8〜0.8にパン
-      
-      noise.connect(filter);
-      filter.connect(panner);
-      panner.connect(dropGain);
-    } else {
-      noise.connect(filter);
-      filter.connect(dropGain);
-    }
-    
-    noise.start(now);
-    noise.stop(now + duration);
-  } catch (e) {
-    // 単発の雨粒の合成失敗は無視
-  }
-};
-
-// 1. 自然で心地よい雨音シンセサイザー (ブラウンノイズの雨の音響 + パチパチ雨粒)
+// 自然で本格的な雨音シンセサイザー (ピンクノイズの2層フィルタリング + ゆらぎ変調)
 const startRain = (ctx, targetNode) => {
   if (rainNode) return;
-  console.log("useSound: Starting soft rain synthesizer...");
+  console.log("useSound: Starting realistic pink-noise rain synthesizer...");
   
   try {
-    // 【レイヤー1】傘や屋根に当たる静かな雨音のベース（ブラウンノイズを生成）
-    const bufferSize = ctx.sampleRate * 4; // 4秒のループバッファ
+    // 高音質ピンクノイズバッファの作成（4秒ループ）
+    // ピンクノイズは周波数が高くなるほどエネルギーが減衰するため、ホワイトノイズよりも優しく自然な雨音になります。
+    const bufferSize = ctx.sampleRate * 4;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     
-    let lastOut = 0.0;
+    // KelletのRefined法によるピンクノイズ生成
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
     for (let i = 0; i < bufferSize; i++) {
       const white = Math.random() * 2 - 1;
-      // 一次ローパスフィルタを通すことでホワイトノイズを深く心地よいブラウンノイズに変換
-      data[i] = (lastOut + (0.02 * white)) / 1.02;
-      lastOut = data[i];
-      data[i] *= 3.8; // 減衰した音量を補正
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+      data[i] *= 0.11; // 音量レベルのノーマライズ
+      b6 = white * 0.115926;
     }
 
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-
-    // 低域を強調し、高域の耳障りなサー音を取り除くローパス
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.setValueAtTime(320, ctx.currentTime);
-
-    source.connect(lp);
-    lp.connect(targetNode);
-    source.start(0);
-
-    // 【レイヤー2】窓や地面にランダムに当たる雨粒（ピチピチ音）の自動生成ループ
-    const triggerNextDrop = () => {
-      if (globalBgmType !== 'rain' || globalMuted) return;
-      playRaindrop(ctx, targetNode);
-      
-      // 次の雨粒が降るまでの間隔をランダム化（15ms〜85ms）
-      const nextDelay = 15 + Math.random() * 70;
-      rainPatterTimeout = setTimeout(triggerNextDrop, nextDelay);
-    };
+    // 【層1】重みのある雨の全体音（低音寄りの雨音）
+    const source1 = ctx.createBufferSource();
+    source1.buffer = buffer;
+    source1.loop = true;
     
-    triggerNextDrop();
+    const lp1 = ctx.createBiquadFilter();
+    lp1.type = 'lowpass';
+    lp1.frequency.setValueAtTime(360, ctx.currentTime); // こもった柔らかな低音
+    
+    const gain1 = ctx.createGain();
+    gain1.gain.setValueAtTime(0.65, ctx.currentTime);
 
-    rainNode = { source, lp };
-    console.log("useSound: Soft rain synthesizer is fully active.");
+    source1.connect(lp1);
+    lp1.connect(gain1);
+    gain1.connect(targetNode);
+
+    // 【層2】木の葉や窓に当たるサラサラとした広域の雨音（中高域の雨音）
+    const source2 = ctx.createBufferSource();
+    source2.buffer = buffer;
+    source2.loop = true;
+
+    const bp2 = ctx.createBiquadFilter();
+    bp2.type = 'bandpass';
+    bp2.frequency.setValueAtTime(1050, ctx.currentTime);
+    bp2.Q.setValueAtTime(0.35, ctx.currentTime); // Q値を極めて低くして、金属的な響きや耳への違和感を排除
+
+    const gain2 = ctx.createGain();
+    gain2.gain.setValueAtTime(0.16, ctx.currentTime);
+
+    source2.connect(bp2);
+    bp2.connect(gain2);
+    gain2.connect(targetNode);
+
+    source1.start(0);
+    source2.start(0);
+
+    // 【風・強弱の再現】800msごとに雨の中高域の音量と定位をゆっくりゆらして、本物の雨の風情を再現する
+    let lfoStep = 0;
+    const lfoInterval = setInterval(() => {
+      if (globalBgmType !== 'rain' || globalMuted) {
+        clearInterval(lfoInterval);
+        return;
+      }
+      try {
+        const now = ctx.currentTime;
+        // 中高域の雨音の強さをゆっくりウェーブさせる (LFO)
+        const modVolume = 0.16 + Math.sin(lfoStep) * 0.05;
+        gain2.gain.linearRampToValueAtTime(modVolume, now + 0.7);
+
+        // フィルターの周波数も微小に動かして風のゆらぎを作る
+        const modFreq = 1050 + Math.cos(lfoStep * 0.8) * 120;
+        bp2.frequency.linearRampToValueAtTime(modFreq, now + 0.7);
+
+        lfoStep += 0.3;
+      } catch (e) {}
+    }, 800);
+
+    rainNode = { source1, source2, lp1, bp2, gain1, gain2, lfoInterval };
+    console.log("useSound: Breathable natural rain synthesizer started.");
   } catch (err) {
     console.error("useSound: Failed to start rain sound:", err);
   }
 };
 
 const stopRain = () => {
-  if (rainPatterTimeout) {
-    clearTimeout(rainPatterTimeout);
-    rainPatterTimeout = null;
-  }
   if (rainNode) {
     console.log("useSound: Stopping rain synthesizer...");
     try {
-      rainNode.source.stop();
-      rainNode.source.disconnect();
-      rainNode.lp.disconnect();
+      if (rainNode.lfoInterval) {
+        clearInterval(rainNode.lfoInterval);
+      }
+      rainNode.source1.stop();
+      rainNode.source1.disconnect();
+      rainNode.source2.stop();
+      rainNode.source2.disconnect();
+      rainNode.lp1.disconnect();
+      rainNode.bp2.disconnect();
+      rainNode.gain1.disconnect();
+      rainNode.gain2.disconnect();
     } catch (e) {}
     rainNode = null;
   }
