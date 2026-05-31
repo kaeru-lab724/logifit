@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Sparkles, 
-  MessageSquare, 
   RotateCcw, 
-  Send, 
   AlertCircle, 
   CheckCircle,
-  Brain,
-  HelpCircle,
-  Play
+  Brain
 } from 'lucide-react';
 
 // 日本語の簡易認知バイアススキャン規則

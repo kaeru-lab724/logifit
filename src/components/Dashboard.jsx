@@ -382,18 +382,18 @@ export default function Dashboard({
                   title: "脳のメモリを解放する「思考調律」",
                   tagline: "モヤモヤ・イライラをデバッグする、3分の新習慣",
                   desc: (
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '20px', textAlign: 'left' }}>
-                      <p style={{ margin: '0 0 10px 0' }}>
-                        日常生活や仕事で生じるモヤモヤ・イライラを頭の中でループさせると、脳の空きメモリ（RAM）が食い潰され、集中力や判断力が低下してしまいます。
+                    <div style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5', marginBottom: '14px', textAlign: 'left' }}>
+                      <p style={{ margin: '0 0 8px 0' }}>
+                        日常生活や仕事でのモヤモヤ・イライラは脳のメモリ（RAM）を浪費し、集中力や判断力を低下させます。
                       </p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: 'rgba(255, 255, 255, 0.02)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', background: 'rgba(255, 255, 255, 0.02)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.04)' }}>
                         <div>
                           <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: '11px' }}>👉 何をするの？</span>
-                          <span style={{ display: 'block', fontSize: '12px', marginTop: '2px' }}>感情に任せて愚痴や悩みを書き出し、脳内の「解釈エラー（認知の偏り）」をスキャンして客観的な「事実ベースの考え方」に書き換えます。</span>
+                          <span style={{ display: 'block', fontSize: '12px', marginTop: '1px' }}>本音を書き出して脳内の「認知の偏り」を検出し、客観的な「事実ベース」に書き換えます。</span>
                         </div>
                         <div>
                           <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: '11px' }}>👉 どうなるの？</span>
-                          <span style={{ display: 'block', fontSize: '12px', marginTop: '2px' }}>感情的なぐるぐる思考がストップし、脳の処理速度が回復して「今本当にやるべきこと」にクリアに集中できるようになります。</span>
+                          <span style={{ display: 'block', fontSize: '12px', marginTop: '1px' }}>感情的なループ思考が止まり、脳の処理能力が回復して「今やるべきこと」に集中できます。</span>
                         </div>
                       </div>
                     </div>
@@ -521,7 +521,7 @@ export default function Dashboard({
                     background: 'var(--hero-bg)',
                     position: 'relative',
                     minHeight: isMobile ? 'auto' : '370px',
-                    height: (isAccordionOpen || isMobile) ? 'auto' : '370px',
+                    height: (isAccordionOpen || activeSlide === 3 || isMobile) ? 'auto' : '370px',
                     overflow: 'visible',
                     transition: 'border-left-color 0.3s ease'
                   }}
