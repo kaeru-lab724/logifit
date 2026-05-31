@@ -6,23 +6,51 @@ let rainNode = null;
 let padInterval = null;
 let padNodes = [];
 let globalBgmVolumeNode = null;
+
+// ローカルストレージおよびグローバル状態の初期化
 let globalBgmType = localStorage.getItem('logifit_bgm_type') || 'none';
 let globalBgmVolume = parseFloat(localStorage.getItem('logifit_bgm_volume') ?? '0.3');
 let globalKeyboardEnabled = localStorage.getItem('logifit_keyboard_enabled') !== 'false';
+let globalMuted = localStorage.getItem('logifit_muted') === 'true';
+
+// 複数インスタンスのuseSound間で状態を同期するためのオブザーバー機構
+let listeners = [];
+const notifyAll = () => {
+  const state = {
+    muted: globalMuted,
+    bgmType: globalBgmType,
+    bgmVolume: globalBgmVolume,
+    keyboardEnabled: globalKeyboardEnabled
+  };
+  listeners.forEach(listener => listener(state));
+};
 
 // AudioContextの初期化と自動レジューム
 const ensureAudioContext = () => {
-  if (!globalAudioCtx) {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (AudioContextClass) {
-      globalAudioCtx = new AudioContextClass();
-      globalBgmVolumeNode = globalAudioCtx.createGain();
-      globalBgmVolumeNode.gain.value = globalBgmVolume;
-      globalBgmVolumeNode.connect(globalAudioCtx.destination);
+  try {
+    if (!globalAudioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        console.log("useSound: Creating new AudioContext...");
+        globalAudioCtx = new AudioContextClass();
+        globalBgmVolumeNode = globalAudioCtx.createGain();
+        globalBgmVolumeNode.gain.setValueAtTime(globalBgmVolume, globalAudioCtx.currentTime);
+        globalBgmVolumeNode.connect(globalAudioCtx.destination);
+        console.log("useSound: AudioContext and BGM Gain node successfully created.");
+      } else {
+        console.warn("useSound: Web Audio API is not supported in this browser.");
+      }
     }
-  }
-  if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
-    globalAudioCtx.resume();
+    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+      console.log("useSound: AudioContext is suspended. Attempting to resume...");
+      globalAudioCtx.resume().then(() => {
+        console.log("useSound: AudioContext successfully resumed. State:", globalAudioCtx.state);
+      }).catch(err => {
+        console.error("useSound: Failed to resume AudioContext:", err);
+      });
+    }
+  } catch (e) {
+    console.error("useSound: Error inside ensureAudioContext:", e);
   }
   return globalAudioCtx;
 };
@@ -30,40 +58,47 @@ const ensureAudioContext = () => {
 // 1. 雨音シンセサイザー
 const startRain = (ctx, targetNode) => {
   if (rainNode) return;
+  console.log("useSound: Starting rain synthesizer...");
   
-  // 2秒のホワイトノイズバッファを作成
-  const bufferSize = ctx.sampleRate * 2;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = Math.random() * 2 - 1;
+  try {
+    // 2秒のホワイトノイズバッファを作成
+    const bufferSize = ctx.sampleRate * 2;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    // 雨音用のバンドパスフィルター（こもったサーという音）
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(550, ctx.currentTime);
+    filter.Q.setValueAtTime(0.6, ctx.currentTime);
+
+    // 柔らかくするためのローパスフィルター
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(900, ctx.currentTime);
+
+    source.connect(filter);
+    filter.connect(lp);
+    lp.connect(targetNode);
+
+    source.start(0);
+    rainNode = { source, filter, lp };
+    console.log("useSound: Rain synthesizer is active.");
+  } catch (err) {
+    console.error("useSound: Failed to start rain sound:", err);
   }
-
-  const source = ctx.createBufferSource();
-  source.buffer = buffer;
-  source.loop = true;
-
-  // 雨音用のバンドパスフィルター（こもったサーという音）
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.value = 550;
-  filter.Q.value = 0.6;
-
-  // 柔らかくするためのローパスフィルター
-  const lp = ctx.createBiquadFilter();
-  lp.type = 'lowpass';
-  lp.frequency.value = 900;
-
-  source.connect(filter);
-  filter.connect(lp);
-  lp.connect(targetNode);
-
-  source.start(0);
-  rainNode = { source, filter, lp };
 };
 
 const stopRain = () => {
   if (rainNode) {
+    console.log("useSound: Stopping rain synthesizer...");
     try {
       rainNode.source.stop();
       rainNode.source.disconnect();
@@ -76,46 +111,53 @@ const stopRain = () => {
 
 // 2. 脳内チューニングパッド（Lofiアンビエント和音）
 const playPadChord = (ctx, targetNode, chordIdx) => {
-  // チルで美しいメジャー/マイナー9thコード進行
-  const progressions = [
-    [130.81, 196.00, 246.94, 293.66, 329.63], // Cmaj9 (C3, G3, B3, D4, E4)
-    [174.61, 220.00, 261.63, 329.63, 392.00], // Fmaj9 (F3, A3, C4, E4, G4)
-    [110.00, 164.81, 196.00, 261.63, 493.88], // Am9   (A2, E3, G3, C4, B4)
-    [98.00, 146.83, 246.94, 329.63, 440.00]   // G6/9  (G2, D3, B3, E4, A4)
-  ];
-  
-  const freqs = progressions[chordIdx % progressions.length];
-  const chordGain = ctx.createGain();
-  chordGain.connect(targetNode);
-  
-  const now = ctx.currentTime;
-  chordGain.gain.setValueAtTime(0, now);
-  chordGain.gain.linearRampToValueAtTime(0.035, now + 2.5); // ゆっくりアタック
-  chordGain.gain.setValueAtTime(0.035, now + 4.5);
-  chordGain.gain.exponentialRampToValueAtTime(0.0001, now + 8.5); // ゆっくりディザスタープ（減衰）
-  
-  const oscs = freqs.map(freq => {
-    const osc = ctx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now);
-    // コーラスのような温もりを与えるデチューン
-    osc.detune.setValueAtTime(Math.random() * 10 - 5, now);
-    osc.connect(chordGain);
-    osc.start(now);
-    osc.stop(now + 9);
-    return osc;
-  });
-  
-  const padObj = { oscs, gain: chordGain };
-  padNodes.push(padObj);
-  
-  setTimeout(() => {
-    padNodes = padNodes.filter(p => p !== padObj);
-  }, 9500);
+  try {
+    // チルで美しいメジャー/マイナー9thコード進行
+    const progressions = [
+      [130.81, 196.00, 246.94, 293.66, 329.63], // Cmaj9 (C3, G3, B3, D4, E4)
+      [174.61, 220.00, 261.63, 329.63, 392.00], // Fmaj9 (F3, A3, C4, E4, G4)
+      [110.00, 164.81, 196.00, 261.63, 493.88], // Am9   (A2, E3, G3, C4, B4)
+      [98.00, 146.83, 246.94, 329.63, 440.00]   // G6/9  (G2, D3, B3, E4, A4)
+    ];
+    
+    const freqs = progressions[chordIdx % progressions.length];
+    console.log(`useSound: Synthesizing pad chord #${chordIdx % progressions.length} (${freqs.join(', ')} Hz)`);
+    
+    const chordGain = ctx.createGain();
+    chordGain.connect(targetNode);
+    
+    const now = ctx.currentTime;
+    chordGain.gain.setValueAtTime(0, now);
+    chordGain.gain.linearRampToValueAtTime(0.035, now + 2.5); // ゆっくりアタック
+    chordGain.gain.setValueAtTime(0.035, now + 4.5);
+    chordGain.gain.exponentialRampToValueAtTime(0.0001, now + 8.5); // ゆっくり減衰
+    
+    const oscs = freqs.map(freq => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      // コーラスのような温もりを与えるデチューン
+      osc.detune.setValueAtTime(Math.random() * 10 - 5, now);
+      osc.connect(chordGain);
+      osc.start(now);
+      osc.stop(now + 9);
+      return osc;
+    });
+    
+    const padObj = { oscs, gain: chordGain };
+    padNodes.push(padObj);
+    
+    setTimeout(() => {
+      padNodes = padNodes.filter(p => p !== padObj);
+    }, 9500);
+  } catch (err) {
+    console.error("useSound: Error playing pad chord:", err);
+  }
 };
 
 const startPad = (ctx, targetNode) => {
   if (padInterval) return;
+  console.log("useSound: Starting pad BGM...");
   
   let chordIdx = 0;
   playPadChord(ctx, targetNode, chordIdx++);
@@ -128,6 +170,7 @@ const startPad = (ctx, targetNode) => {
 
 const stopPad = () => {
   if (padInterval) {
+    console.log("useSound: Stopping pad BGM...");
     clearInterval(padInterval);
     padInterval = null;
   }
@@ -145,11 +188,17 @@ const stopPad = () => {
 
 // バックグラウンドエンジンの再生切り替え
 const applyBgmType = (type) => {
+  console.log(`useSound: applyBgmType("${type}")`);
   const ctx = ensureAudioContext();
   if (!ctx || !globalBgmVolumeNode) return;
 
   stopRain();
   stopPad();
+
+  if (globalMuted) {
+    console.log("useSound: Audio is muted, skipping BGM execution.");
+    return;
+  }
 
   if (type === 'rain') {
     startRain(ctx, globalBgmVolumeNode);
@@ -159,32 +208,43 @@ const applyBgmType = (type) => {
 };
 
 export function useSound() {
-  const [muted, setMuted] = useState(false);
-  const [bgmType, setBgmTypeState] = useState(globalBgmType);
-  const [bgmVolume, setBgmVolumeState] = useState(globalBgmVolume);
-  const [keyboardEnabled, setKeyboardEnabledState] = useState(globalKeyboardEnabled);
+  const [localState, setLocalState] = useState({
+    muted: globalMuted,
+    bgmType: globalBgmType,
+    bgmVolume: globalBgmVolume,
+    keyboardEnabled: globalKeyboardEnabled
+  });
 
-  // マウント時に前回の設定を適用
+  // 他のコンポーネントでの状態変化に追従して同期する
   useEffect(() => {
-    // ユーザーインタラクションの前に自動再生がブロックされるのを防ぐため、
-    // 最初のクリックイベントなどで確実に起動するようにするが、初期設定だけ適用しておく
-    if (globalBgmType !== 'none') {
-      const handleFirstGesture = () => {
+    listeners.push(setLocalState);
+    return () => {
+      listeners = listeners.filter(l => l !== setLocalState);
+    };
+  }, []);
+
+  // マウント時にブラウザの音声制限を解除するためのジェスチャー検知を自動バインド
+  useEffect(() => {
+    const handleFirstGesture = () => {
+      console.log("useSound: User gesture detected on window. Unlocking AudioContext...");
+      const ctx = ensureAudioContext();
+      if (ctx && globalBgmType !== 'none' && !globalMuted) {
         applyBgmType(globalBgmType);
-        window.removeEventListener('click', handleFirstGesture);
-        window.removeEventListener('keydown', handleFirstGesture);
-      };
-      window.addEventListener('click', handleFirstGesture);
-      window.addEventListener('keydown', handleFirstGesture);
-      return () => {
-        window.removeEventListener('click', handleFirstGesture);
-        window.removeEventListener('keydown', handleFirstGesture);
-      };
-    }
+      }
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+    };
+
+    window.addEventListener('click', handleFirstGesture);
+    window.addEventListener('keydown', handleFirstGesture);
+    return () => {
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+    };
   }, []);
 
   const playSound = useCallback((type) => {
-    if (muted) return;
+    if (globalMuted) return;
 
     try {
       const ctx = ensureAudioContext();
@@ -197,6 +257,7 @@ export function useSound() {
       gain.connect(ctx.destination);
 
       const now = ctx.currentTime;
+      console.log(`useSound: playSound("${type}") triggered at ${now.toFixed(2)}`);
 
       if (type === 'click') {
         osc.type = 'sine';
@@ -207,7 +268,7 @@ export function useSound() {
         osc.stop(now + 0.1);
       } 
       else if (type === 'keyboard') {
-        if (!keyboardEnabled) return;
+        if (!globalKeyboardEnabled) return;
         
         // メカニカルキーボードのタイピングクリック音の合成
         const clickOsc = ctx.createOscillator();
@@ -225,7 +286,7 @@ export function useSound() {
         noise.buffer = buffer;
 
         filter.type = 'highpass';
-        filter.frequency.value = 1300;
+        filter.frequency.setValueAtTime(1300, now);
 
         clickOsc.type = 'triangle';
         const pitch = 260 + Math.random() * 120; // 毎回微妙にピッチを揺らしてリアルに
@@ -286,60 +347,65 @@ export function useSound() {
     } catch (e) {
       console.warn('Web Audio API play error:', e);
     }
-  }, [muted, keyboardEnabled]);
+  }, []);
 
   const toggleMute = useCallback(() => {
-    setMuted(prev => {
-      const next = !prev;
-      if (next) {
-        stopRain();
-        stopPad();
-      } else {
-        applyBgmType(globalBgmType);
-      }
-      return next;
-    });
+    const nextMuted = !globalMuted;
+    globalMuted = nextMuted;
+    localStorage.setItem('logifit_muted', nextMuted ? 'true' : 'false');
+    console.log(`useSound: Global mute toggled to: ${nextMuted}`);
+    
+    if (nextMuted) {
+      stopRain();
+      stopPad();
+    } else {
+      applyBgmType(globalBgmType);
+    }
+    notifyAll();
   }, []);
 
   // BGMタイプの切り替え
   const changeBgmType = useCallback((type) => {
     globalBgmType = type;
     localStorage.setItem('logifit_bgm_type', type);
-    setBgmTypeState(type);
+    console.log(`useSound: Global BGM type changed to: ${type}`);
     
-    if (!muted) {
+    if (!globalMuted) {
       applyBgmType(type);
     }
-  }, [muted]);
+    notifyAll();
+  }, []);
 
   // BGM音量の変更
   const changeBgmVolume = useCallback((volume) => {
     globalBgmVolume = volume;
     localStorage.setItem('logifit_bgm_volume', volume.toString());
-    setBgmVolumeState(volume);
+    console.log(`useSound: Global BGM volume changed to: ${volume}`);
 
     ensureAudioContext();
-    if (globalBgmVolumeNode) {
-      globalBgmVolumeNode.gain.value = volume;
+    if (globalBgmVolumeNode && globalAudioCtx) {
+      globalBgmVolumeNode.gain.setValueAtTime(volume, globalAudioCtx.currentTime);
     }
+    notifyAll();
   }, []);
 
   // キーボードASMRの切り替え
   const changeKeyboardEnabled = useCallback((enabled) => {
     globalKeyboardEnabled = enabled;
     localStorage.setItem('logifit_keyboard_enabled', enabled ? 'true' : 'false');
-    setKeyboardEnabledState(enabled);
+    console.log(`useSound: Global Keyboard ASMR toggled to: ${enabled}`);
+    notifyAll();
   }, []);
 
   return { 
     playSound, 
-    muted, 
+    muted: localState.muted, 
     toggleMute, 
-    bgmType, 
+    bgmType: localState.bgmType, 
     setBgmType: changeBgmType,
-    keyboardEnabled, 
+    keyboardEnabled: localState.keyboardEnabled, 
     setKeyboardEnabled: changeKeyboardEnabled,
-    bgmVolume,
+    bgmVolume: localState.bgmVolume,
     setBgmVolume: changeBgmVolume
   };
 }
