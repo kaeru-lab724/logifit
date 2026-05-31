@@ -366,6 +366,19 @@ export default function App() {
     });
   };
 
+  // テスト用: 本日の思考調律完了状態を解除
+  const handleClearTuningToday = () => {
+    setGameState(prev => {
+      const updatedState = {
+        ...prev,
+        lastTuningDate: null
+      };
+      localStorage.setItem('logifit_save_data', JSON.stringify(updatedState));
+      return updatedState;
+    });
+  };
+
+
   // 復習デバッグ完了処理
   const handleFinishReview = (gameId, questionId) => {
     playSound('success');
@@ -1193,6 +1206,7 @@ export default function App() {
             setActiveGame={setActiveGame}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
+            onClearTuningToday={handleClearTuningToday}
             mode={mode}
             displayScores={displayScores}
             primaryDebugCategory={primaryDebugCategory}

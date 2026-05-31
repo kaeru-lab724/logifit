@@ -44,7 +44,8 @@ export default function Dashboard({
   badgeDetails,
   skillsData,
   onUnlockType,
-  onStartReview
+  onStartReview,
+  onClearTuningToday
 }) {
   const [showToast, setShowToast] = useState(false);
   const [opponentSpell, setOpponentSpell] = useState('');
@@ -403,29 +404,78 @@ export default function Dashboard({
                         const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD
                         const isTuningCompletedToday = gameState.lastTuningDate === todayStr;
                         return isTuningCompletedToday ? (
-                          <button 
-                            onClick={() => { 
-                              playSound('click'); 
-                              setActiveTab('mindTuningLog'); 
-                              setTimeout(() => {
-                                document.getElementById('tuning-log-section')?.scrollIntoView({ behavior: 'smooth' });
-                              }, 100);
-                            }}
-                            className="btn btn-primary"
-                            style={{ 
-                              flex: 1, 
-                              fontSize: '13.5px', 
-                              padding: '10px 18px', 
-                              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
-                              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '6px'
-                            }}
-                          >
-                            <span>✅ 本日の調律完了 (履歴を見る)</span>
-                          </button>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                            <div style={{ display: 'flex', gap: '8px', width: '100%', flexWrap: 'wrap' }}>
+                              <button 
+                                onClick={() => { 
+                                  playSound('click'); 
+                                  setActiveTab('mindTuningLog'); 
+                                  setTimeout(() => {
+                                    document.getElementById('tuning-log-section')?.scrollIntoView({ behavior: 'smooth' });
+                                  }, 100);
+                                }}
+                                className="btn btn-secondary"
+                                style={{ 
+                                  flex: 1.2, 
+                                  fontSize: '12px', 
+                                  padding: '10px 12px', 
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '4px',
+                                  background: 'rgba(16, 185, 129, 0.1)',
+                                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                                  color: '#10b981',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                <span>✅ 本日の調律完了 (履歴へ)</span>
+                              </button>
+                              <button 
+                                onClick={() => { playSound('click'); setActiveGame('mindTuning'); }} 
+                                className="btn btn-primary hover-lift"
+                                style={{ 
+                                  flex: 1, 
+                                  fontSize: '12px', 
+                                  padding: '10px 12px', 
+                                  background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                                  boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '4px',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                <span>🔄 もう一度調律する</span>
+                              </button>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                              <button 
+                                onClick={() => {
+                                  playSound('click');
+                                  if (onClearTuningToday) {
+                                    onClearTuningToday();
+                                  }
+                                }}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: 'rgba(255, 255, 255, 0.35)',
+                                  fontSize: '10.5px',
+                                  cursor: 'pointer',
+                                  textDecoration: 'underline',
+                                  padding: '2px 0 0 0',
+                                  transition: 'color 0.2s',
+                                  outline: 'none'
+                                }}
+                                onMouseEnter={(e) => e.target.style.color = 'var(--color-cyan)'}
+                                onMouseLeave={(e) => e.target.style.color = 'rgba(255, 255, 255, 0.35)'}
+                              >
+                                🧪 [デバッグ] 本日の調律完了状態を解除
+                              </button>
+                            </div>
+                          </div>
                         ) : (
                           <button 
                             onClick={() => { playSound('click'); setActiveGame('mindTuning'); }} 
