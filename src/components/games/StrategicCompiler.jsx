@@ -460,7 +460,7 @@ export default function StrategicCompiler({ onFinish, playSound, muted, toggleMu
         {showTutorial ? (
           <div style={{ textAlign: 'left' }} className="fade-in">
             <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', color: '#818cf8', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Terminal size={18} /> 思考バグ「妥協・思考停止」をコンパイルせよ
+              <Cpu size={18} /> 思考バグ「妥協・思考停止」をコンパイルせよ
             </h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
