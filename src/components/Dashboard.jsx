@@ -86,7 +86,7 @@ export default function Dashboard({
   useEffect(() => {
     if (isHovered) return;
     const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % 3);
+      setActiveSlide((prev) => (prev + 1) % 4);
     }, 5500);
     return () => clearInterval(interval);
   }, [isHovered]);
@@ -276,58 +276,8 @@ export default function Dashboard({
                         className="btn btn-secondary"
                         style={{ flex: 0.8, fontSize: '13px', padding: '10px 14px' }}
                       >
-                        再スキャン
+                        再スキャン/他者スキャン
                       </button>
-                      {(() => {
-                        const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD
-                        const isTuningCompletedToday = gameState.lastTuningDate === todayStr;
-                        return isTuningCompletedToday ? (
-                          <button 
-                            onClick={() => { 
-                              playSound('click'); 
-                              setActiveTab('mindTuningLog'); 
-                              setTimeout(() => {
-                                document.getElementById('tuning-log-section')?.scrollIntoView({ behavior: 'smooth' });
-                              }, 100);
-                            }}
-                            className="btn btn-secondary"
-                            style={{ 
-                              flex: 1, 
-                              fontSize: '13px', 
-                              padding: '10px 14px', 
-                              border: '1px solid #10b981', 
-                              color: '#10b981', 
-                              background: 'rgba(16, 185, 129, 0.05)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '4px'
-                            }}
-                          >
-                            <span>✅ 調律完了 (履歴)</span>
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={() => { playSound('click'); setActiveGame('mindTuning'); }} 
-                            className="btn btn-secondary hover-lift"
-                            style={{ 
-                              flex: 1, 
-                              fontSize: '13px', 
-                              padding: '10px 14px', 
-                              border: '1px solid var(--color-cyan)', 
-                              color: 'var(--color-cyan)', 
-                              background: 'rgba(6, 182, 212, 0.05)',
-                              boxShadow: '0 0 10px rgba(6, 182, 212, 0.15)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '4px'
-                            }}
-                          >
-                            <span>🧠 本日の思考調律 (未)</span>
-                          </button>
-                        );
-                      })()}
                     </div>
                   )
                 },
@@ -409,6 +359,73 @@ export default function Dashboard({
                       </button>
                     </div>
                   )
+                },
+                // Slide 4: Daily Mind Tuning (思考調律) Onboarding
+                {
+                  badge: "デイリールーティン",
+                  badgeColor: "rgba(16, 185, 129, 0.05)",
+                  badgeTextColor: "#10b981",
+                  badgeBorder: "rgba(16, 185, 129, 0.15)",
+                  level: null,
+                  icon: "🧠",
+                  title: "脳のメモリを解放する「思考調律」",
+                  tagline: "モヤモヤ・イライラをデバッグする、3分の新習慣",
+                  desc: (
+                    <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '13.5px', marginBottom: '24px' }}>
+                      頭の中で悩みや愚痴をループさせると、脳のワーキングメモリ（RAM）が浪費され、判断力が低下します。感情のノイズ（バイアス）をスキャンして事実ベースにリファクタリングし、思考をスッキリさせましょう！
+                    </p>
+                  ),
+                  actions: (
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      {(() => {
+                        const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD
+                        const isTuningCompletedToday = gameState.lastTuningDate === todayStr;
+                        return isTuningCompletedToday ? (
+                          <button 
+                            onClick={() => { 
+                              playSound('click'); 
+                              setActiveTab('mindTuningLog'); 
+                              setTimeout(() => {
+                                document.getElementById('tuning-log-section')?.scrollIntoView({ behavior: 'smooth' });
+                              }, 100);
+                            }}
+                            className="btn btn-primary"
+                            style={{ 
+                              flex: 1, 
+                              fontSize: '13.5px', 
+                              padding: '10px 18px', 
+                              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
+                              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            <span>✅ 本日の調律完了 (履歴を見る)</span>
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => { playSound('click'); setActiveGame('mindTuning'); }} 
+                            className="btn btn-primary hover-lift"
+                            style={{ 
+                              flex: 1, 
+                              fontSize: '13.5px', 
+                              padding: '10px 18px', 
+                              background: 'linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 100%)',
+                              boxShadow: '0 4px 15px rgba(6, 182, 212, 0.3)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            <span>🧠 本日の思考調律を起動 (未) [+100 XP]</span>
+                          </button>
+                        );
+                      })()}
+                    </div>
+                  )
                 }
               ];
 
@@ -424,7 +441,7 @@ export default function Dashboard({
                     borderLeft: `4px solid ${
                       activeSlide === 0 
                         ? (isFullUnlocked ? 'var(--color-primary)' : 'var(--color-cyan)')
-                        : (activeSlide === 1 ? 'var(--color-cyan)' : 'var(--color-rose)')
+                        : (activeSlide === 1 ? 'var(--color-cyan)' : (activeSlide === 2 ? 'var(--color-rose)' : '#10b981'))
                     }`,
                     display: 'flex',
                     flexDirection: 'column',
