@@ -11,8 +11,8 @@ import TreeQuest from './games/TreeQuest';
 import EqSimulator from './games/EqSimulator';
 import RecoveryGearSection from './common/RecoveryGearSection';
 
-export default function ProfessionalArena({ gameState, onFinish, playSound, onBack, muted, toggleMute }) {
-  const [activeArenaGame, setActiveArenaGame] = useState(null);
+export default function DebugLab({ gameState, onFinish, playSound, onBack, muted, toggleMute }) {
+  const [activeLabGame, setActiveLabGame] = useState(null);
 
   const games = [
     {
@@ -50,55 +50,55 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
     }
   ];
 
-  if (activeArenaGame === 'fallacyHunter') {
+  if (activeLabGame === 'fallacyHunter') {
     return (
       <FallacyHunter 
         onFinish={(score) => {
           onFinish('fallacyHunter', score, false);
-          setActiveArenaGame(null);
+          setActiveLabGame(null);
         }}
         playSound={playSound}
         muted={muted}
         toggleMute={toggleMute}
         onBack={() => {
           playSound('click');
-          setActiveArenaGame(null);
+          setActiveLabGame(null);
         }}
       />
     );
   }
 
-  if (activeArenaGame === 'treeQuest') {
+  if (activeLabGame === 'treeQuest') {
     return (
       <TreeQuest 
         onFinish={(score) => {
           onFinish('treeQuest', score, false);
-          setActiveArenaGame(null);
+          setActiveLabGame(null);
         }}
         playSound={playSound}
         muted={muted}
         toggleMute={toggleMute}
         onBack={() => {
           playSound('click');
-          setActiveArenaGame(null);
+          setActiveLabGame(null);
         }}
       />
     );
   }
 
-  if (activeArenaGame === 'eqSimulator') {
+  if (activeLabGame === 'eqSimulator') {
     return (
       <EqSimulator 
         onFinish={(score) => {
           onFinish('eqSimulator', score, false);
-          setActiveArenaGame(null);
+          setActiveLabGame(null);
         }}
         playSound={playSound}
         muted={muted}
         toggleMute={toggleMute}
         onBack={() => {
           playSound('click');
-          setActiveArenaGame(null);
+          setActiveLabGame(null);
         }}
       />
     );
@@ -177,7 +177,7 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
                   return;
                 }
                 playSound('click');
-                setActiveArenaGame(game.id);
+                setActiveLabGame(game.id);
               }}
               style={{
                 padding: '28px',
@@ -217,7 +217,7 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
                 </p>
               </div>
 
-              {/* statusバッジ（Coming Soon / ベストスコア） */}
+              {/* statusバッジ */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>診断カテゴリ: {game.difficulty}</span>
                 {isLocked ? (
@@ -259,10 +259,9 @@ export default function ProfessionalArena({ gameState, onFinish, playSound, onBa
         })}
       </div>
 
-      {/* 推奨デバッガー装備（アフィリエイト） */}
+      {/* 推奨デバッガー装備 */}
       <RecoveryGearSection />
 
     </div>
   );
 }
-

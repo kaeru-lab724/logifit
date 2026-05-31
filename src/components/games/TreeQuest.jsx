@@ -467,7 +467,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
     : 100;
   const totalScans = currentScanCounts.reduce((sum, c) => sum + c, 0);
 
-  // 6. 結果のセーブ＆アリーナに戻る
+  // 6. 結果のセーブ＆ラボに戻る
   const handleFinishGame = () => {
     if (reviewQuestionId && onFinishReview) {
       onFinishReview('treeQuest', reviewQuestionId);
@@ -503,7 +503,7 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
         .dungeon-wrapper {
           position: relative;
         }
-        .tree-arena {
+        .tree-lab {
           position: relative;
           background: radial-gradient(circle, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
           border-radius: 16px;
@@ -746,9 +746,9 @@ export default function TreeQuest({ onFinish, playSound, muted, toggleMute, onBa
             <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>※パーツを各スロットにドラッグ、またはクリックで配置してください。</span>
           </p>
 
-          {/* 3. ツリーアリーナ */}
+          {/* 3. ツリーラボ */}
           <div style={{ width: '100%', overflowX: 'auto', marginBottom: '24px' }}>
-            <div className="tree-arena" style={{ width: '780px', height: '340px', position: 'relative', flexShrink: 0, margin: '0 auto', display: 'block', padding: 0 }}>
+            <div className="tree-lab" style={{ width: '780px', height: '340px', position: 'relative', flexShrink: 0, margin: '0 auto', display: 'block', padding: 0 }}>
               <div className="grid-overlay" />
               
               {/* スキャンビーム */}

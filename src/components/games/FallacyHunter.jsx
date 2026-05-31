@@ -14,8 +14,8 @@ import {
   Award
 } from 'lucide-react';
 
-// アリーナ専用：上級・高難度誤謬バトルデータ
-const arenaQuestions = [
+// ラボ専用：上級・高難度誤謬バトルデータ
+const labQuestions = [
   {
     id: 'fh1',
     fallacyType: '大衆に訴える論証',
@@ -595,10 +595,10 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
 
   // 1. クイズの初期化
   const initializeGame = () => {
-    const shuffled = shuffleArray(arenaQuestions);
+    const shuffled = shuffleArray(labQuestions);
     let finalized = [];
     if (reviewQuestionId) {
-      const found = arenaQuestions.find(q => q.id === reviewQuestionId);
+      const found = labQuestions.find(q => q.id === reviewQuestionId);
       if (found) {
         finalized = [{
           ...found,
@@ -864,15 +864,15 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
   const diagnosis = getDiagnosis();
 
   return (
-    <div className={`arena-wrapper ${screenEffect === 'shake' ? 'shake-active' : ''}`} style={{ maxWidth: '800px', margin: '0 auto', padding: '0 16px' }}>
+    <div className={`lab-wrapper ${screenEffect === 'shake' ? 'shake-active' : ''}`} style={{ maxWidth: '800px', margin: '0 auto', padding: '0 16px' }}>
       
       {/* 画面エフェクト・キーフレーム定義のスタイルタグ */}
       <style>{`
-        .arena-wrapper {
+        .lab-wrapper {
           transition: transform 0.1s ease;
         }
         .shake-active {
-          animation: arena-shake 0.4s ease-in-out;
+          animation: lab-shake 0.4s ease-in-out;
           position: relative;
         }
         .shake-active::before {
@@ -885,7 +885,7 @@ export default function FallacyHunter({ onFinish, playSound, muted, toggleMute, 
           pointer-events: none;
           animation: damage-flash-ani 0.4s ease;
         }
-        @keyframes arena-shake {
+        @keyframes lab-shake {
           0%, 100% { transform: translate(0, 0); }
           10%, 90% { transform: translate(-4px, 2px); }
           20%, 80% { transform: translate(4px, -2px); }

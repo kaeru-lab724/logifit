@@ -750,7 +750,7 @@ export default function Dashboard({
                                 </div>
                               );
                             })}
-                            {/* Spinoff Cards (Moved to Professional Arena) */}
+                            {/* Spinoff Cards (Moved to Debug Lab) */}
                           </div>
                         </div>
                       );
@@ -762,7 +762,7 @@ export default function Dashboard({
                     {gameState.level >= 5 ? (
                       /* アンロック状態 */
                       <div 
-                        className="glass-panel arena-banner-active"
+                        className="glass-panel lab-banner-active"
                         style={{
                            padding: '24px 32px',
                            background: 'linear-gradient(135deg, var(--color-primary-soft) 0%, var(--glass-bg) 100%)',
@@ -780,7 +780,7 @@ export default function Dashboard({
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                          <span className="arena-gate-icon" style={{ fontSize: '32px', display: 'inline-block' }}>🔬</span>
+                          <span className="lab-gate-icon" style={{ fontSize: '32px', display: 'inline-block' }}>🔬</span>
                           <div style={{ textAlign: 'left' }}>
                             <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 'bold', letterSpacing: '1px' }}>
                               UNLOCKED SPECIAL GATE
@@ -794,8 +794,8 @@ export default function Dashboard({
                           </div>
                         </div>
                         <button 
-                          onClick={() => { playSound('success'); setActiveGame('professionalArena'); }}
-                          className="btn btn-primary arena-enter-btn" 
+                          onClick={() => { playSound('success'); setActiveGame('debugLab'); }}
+                          className="btn btn-primary lab-enter-btn" 
                           style={{ 
                             padding: '10px 24px', 
                             fontSize: '13px', 

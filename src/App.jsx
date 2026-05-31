@@ -17,7 +17,7 @@ import StrategicCompiler from './components/games/StrategicCompiler';
 import DiagnosticContainer from './components/DiagnosticContainer';
 import RakutenWidget from './components/common/RakutenWidget';
 import Dashboard from './components/Dashboard';
-import ProfessionalArena from './components/ProfessionalArena';
+import DebugLab from './components/DebugLab';
 import { 
   Award, 
   Brain, 
@@ -1121,8 +1121,8 @@ export default function App() {
           />
         )}
 
-        {activeGame === 'professionalArena' && (
-          <ProfessionalArena 
+        {activeGame === 'debugLab' && (
+          <DebugLab 
             gameState={gameState}
             onFinish={handleGameFinish}
             playSound={playSound}
