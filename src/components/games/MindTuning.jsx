@@ -136,6 +136,7 @@ export default function MindTuning({ onBack, playSound, onSaveLog }) {
     if (val.length <= 200) {
       setRawText(val);
       setCharLimitWarning(val.length >= 140);
+      playSound('keyboard'); // タイピングASMRクリック音
     }
   };
 
@@ -534,6 +535,7 @@ export default function MindTuning({ onBack, playSound, onSaveLog }) {
               onChange={(e) => {
                 if (e.target.value.length <= 200) {
                   setRefactoredText(e.target.value);
+                  playSound('keyboard'); // タイピングASMRクリック音
                 }
               }}
               placeholder="【事実】〇〇。【対策/現実的な見解】〇〇。"

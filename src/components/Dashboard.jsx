@@ -18,6 +18,7 @@ import {
 import RakutenWidget from './common/RakutenWidget';
 import { decodeState, calculateFriction } from '../data/spellHelper';
 import { diagnosticTypes } from '../data/diagnosticData';
+import { useSound } from '../hooks/useSound';
 
 export default function Dashboard({
   isNewUser,
@@ -55,6 +56,15 @@ export default function Dashboard({
   const [activeSlide, setActiveSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  const { 
+    bgmType, 
+    setBgmType, 
+    keyboardEnabled, 
+    setKeyboardEnabled,
+    bgmVolume,
+    setBgmVolume 
+  } = useSound();
 
   const getCriticalScore = () => {
     const f = displayScores.fallacy || 0;
@@ -1725,10 +1735,120 @@ export default function Dashboard({
               </div>
             </div>
 
-            {/* ② 脳内摩擦係数（相性）チェック (Friction Coefficient Matcher) */}
+            {/* ② 環境音・ASMR設定 (Sound Environment Panel) */}
+            <div 
+              className="glass-panel"
+              style={{
+                padding: '24px',
+                borderLeft: '4px solid #10b981',
+                background: 'rgba(16, 185, 129, 0.01)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                textAlign: 'left'
+              }}
+            >
+              <div>
+                <div style={{ marginBottom: '8px' }}>
+                  <span className="game-badge" style={{ background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.2)", color: "#10b981", padding: "4px 12px", borderRadius: "12px", fontSize: "11px", fontWeight: "bold" }}>
+                    🎧 COZY SOUND & ASMR
+                  </span>
+                </div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>
+                  環境音・タイピングASMR設定
+                </h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: '1.4', margin: 0 }}>
+                  思考に集中するためのBGMや、タイピング時の心地よい打鍵音をその場で合成・再生します。
+                </p>
+              </div>
+
+              {/* BGM Selector */}
+              <div>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>▼ バックグラウンド環境音</span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                  {[
+                    { id: 'none', label: '🍵 静寂' },
+                    { id: 'rain', label: '🌧️ 雨音' },
+                    { id: 'cozy_pad', label: '🌀 思考パッド' }
+                  ].map(item => (
+                    <button
+                      key={item.id}
+                      onClick={() => { playSound('click'); setBgmType(item.id); }}
+                      className="btn"
+                      style={{
+                        padding: '8px 4px',
+                        fontSize: '11.5px',
+                        borderRadius: '8px',
+                        border: bgmType === item.id ? 'none' : '1px solid var(--border-color)',
+                        background: bgmType === item.id ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'var(--bg-inner-box)',
+                        color: bgmType === item.id ? '#fff' : 'var(--text-secondary)',
+                        fontWeight: bgmType === item.id ? 'bold' : 'normal',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* BGM Volume Slider */}
+              {bgmType !== 'none' && (
+                <div style={{ transition: 'all 0.3s ease' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>BGM音量</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>{Math.round(bgmVolume * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="0.8"
+                    step="0.05"
+                    value={bgmVolume}
+                    onChange={(e) => setBgmVolume(parseFloat(e.target.value))}
+                    style={{
+                      width: '100%',
+                      accentColor: '#10b981',
+                      background: 'rgba(255,255,255,0.05)',
+                      height: '4px',
+                      borderRadius: '2px',
+                      outline: 'none',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Keyboard ASMR Switch */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '12.5px', fontWeight: 'bold', color: 'var(--text-primary)' }}>⌨️ タイピングASMR音</span>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>キーを押した時に打鍵音を鳴らす</span>
+                </div>
+                <button
+                  onClick={() => { playSound('click'); setKeyboardEnabled(!keyboardEnabled); }}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '11px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: keyboardEnabled ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-inner-box)',
+                    color: keyboardEnabled ? '#10b981' : 'var(--text-muted)',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {keyboardEnabled ? 'ON' : 'OFF'}
+                </button>
+              </div>
+            </div>
+
+            {/* ③ 脳内摩擦係数（相性）チェック (Friction Coefficient Matcher) */}
             <div 
               className="glass-panel" 
-              style={{ 
+              style={{  
                 padding: '32px 24px', 
                 borderLeft: '4px solid var(--color-cyan)',
                 background: 'rgba(6, 182, 212, 0.01)',
